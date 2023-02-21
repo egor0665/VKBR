@@ -1,15 +1,15 @@
-#ifndef SPACEPORT_H
-#define SPACEPORT_H
+#ifndef DBSPACEPORT_H
+#define DBSPACEPORT_H
 
 #include <QMainWindow>
 #include <QObject>
 #include <QWidget>
 
-class Spaceport
+class DBSpaceport
 {
 public:
-    Spaceport();
-    Spaceport(int id, const QString &name);
+    DBSpaceport();
+    DBSpaceport(int id, const QString &name);
     int id() const;
     void setId(int newId);
     const QString &name() const;
@@ -20,4 +20,4 @@ private:
     QString _name ;
 };
 
-#endif // SPACEPORT_H
+#endif // DBSPACEPORT_H

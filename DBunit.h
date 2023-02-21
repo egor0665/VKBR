@@ -1,12 +1,12 @@
-#ifndef UNIT_H
-#define UNIT_H
+#ifndef DBUNIT_H
+#define DBUNIT_H
 
 #include <QDateTime>
 #include <QString>
 
 
 
-class Unit
+class DBUnit
 {
 public:
 
@@ -18,16 +18,17 @@ public:
                                      "Цель",
                                      "Состояние работ",
                                      "Разработчик",
+                                     "Разработчик 2",
                                      "Производитель",
                                      "Запусков",
-                                     "Успешных запусков",
                                      "Заказчик",
+                                     "Успешных запусков",
                                      "Первый запуск",
                                      "Космодром первого запуска",
                                      "Тип финансирования",
-                                     "Система контроля" };
-    Unit();
-    Unit(int id,
+                                     "Система контроля"};
+    DBUnit();
+    DBUnit(int id,
          const QString &unit_class,
          const QString &name,
          const QString &purpose,
@@ -35,6 +36,7 @@ public:
          const QString &objective,
          const QString &work_status,
          int developer_id,
+         int extra_developer_id,
          int manufacturer_id,
          int launches,
          int customer_id,
@@ -107,6 +109,10 @@ public:
 
     QStringList getValues();
 
+
+    int extra_developer_id() const;
+    void setExtra_developer_id(int newExtra_developer_id);
+
 private:
     int _id;
     QString _unit_class ;
@@ -116,6 +122,7 @@ private:
     QString _objective;
     QString _work_status;
     int _developer_id;
+    int _extra_developer_id;
     int _manufacturer_id;
     int _launches;
     int _customer_id;
@@ -129,4 +136,4 @@ private:
     int _price_year;
 };
 
-#endif // UNIT_H
+#endif // DBUNIT_H

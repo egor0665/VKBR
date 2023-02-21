@@ -1,19 +1,19 @@
-#ifndef UPPER_BLOCK_H
-#define UPPER_BLOCK_H
+#ifndef DBUPPER_BLOCK_H
+#define DBUPPER_BLOCK_H
 
 #include <QMainWindow>
 #include <QObject>
 #include <QWidget>
 
-class Upper_block
+class DBUpper_block
 {
 public:
 
     const int UPPER_BLOCK_DEF_ROW_NUM = 2;
     const QStringList UPPER_BLOCK_VALUES = {"phys_info", "econ_info"};
 
-    Upper_block();
-    Upper_block(int id, const QString &phys_info, const QString &econ_indo);
+    DBUpper_block();
+    DBUpper_block(int id, const QString &phys_info, const QString &econ_indo);
 
     QStringList getValues();
 
@@ -31,4 +31,4 @@ private:
 
 };
 
-#endif // UPPER_BLOCK_H
+#endif // DBUPPER_BLOCK_H

@@ -1,3 +1,5 @@
+#include "DBProject.h"
+#include "DBspacecraft.h"
 #include "database.h"
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSql>
@@ -10,10 +12,12 @@
 #include<QVariant>
 #include<QDebug>
 #include<QPair>
-#include <unit.h>
-#include <organization.h>
-#include <spaceport.h>
-#include <booster_rocket.h>
+#include <DBunit.h>
+#include <DBorganization.h>
+#include <DBspaceport.h>
+#include <DBbooster_rocket.h>
+#include <dbChangeValue.h>
+#include <DBlaunch.h>
 
 database::database()
 {
@@ -50,9 +54,9 @@ QVector<QPair<QString,QString>> database::getUnitClassesAndNames()
     return unit_vector;
 }
 
-QStringList database::getUnitNames()
+QVector <QString> database::getUnitNames()
 {
-    QStringList name_vector;
+    QVector <QString> name_vector;
     QSqlQuery query;
     query.exec("SELECT name FROM unit ORDER BY unit_class");
     while (query.next()) {
@@ -63,7 +67,7 @@ QStringList database::getUnitNames()
     return name_vector;
 }
 
-Unit database::getUnitInfoFromName(QString name)
+DBUnit database::getUnitInfoFromName(QString name)
 {
     /*unit
      * id
@@ -74,6 +78,7 @@ Unit database::getUnitInfoFromName(QString name)
      * objective
      * work_status
      * developer_id
+     * extra_developer_id
      * manufacturer_id
      * launches
      * customer_id
@@ -88,10 +93,10 @@ Unit database::getUnitInfoFromName(QString name)
      * */
 
     QSqlQuery query;
-    query.exec("SELECT * FROM unit WHERE unit.name LIKE '%" + name + "%'");
+    query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.name LIKE '" + name + "%'");
     query.next();
     qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
-    Unit tmpUnit = Unit(query.value(0).toInt(),
+    DBUnit tmpUnit = DBUnit(query.value(0).toInt(),
                         query.value(1).toString().trimmed(),
                         query.value(2).toString().trimmed(),
                         query.value(3).toString().trimmed(),
@@ -103,24 +108,25 @@ Unit database::getUnitInfoFromName(QString name)
                         query.value(9).toInt(),
                         query.value(10).toInt(),
                         query.value(11).toInt(),
+                        query.value(12).toInt(),
                         QDateTime(),
-                        query.value(13).toInt(),
-                        query.value(14).toString().trimmed(),
+                        query.value(14).toInt(),
                         query.value(15).toString().trimmed(),
                         query.value(16).toString().trimmed(),
-                        query.value(17).toReal(),
-                        query.value(18).toInt());
+                        query.value(17).toString().trimmed(),
+                        query.value(18).toReal(),
+                        query.value(19).toInt());
     return tmpUnit;
     qDebug() << query.value(0);
 }
 
-Unit database::getUnitInfoFromId(int unitId)
+DBUnit database::getUnitInfoFromId(int unitId)
 {
     QSqlQuery query;
-    query.exec("SELECT * FROM unit WHERE unit.id = " + QString::number(unitId));
+    query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.id = " + QString::number(unitId));
     query.next();
     qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
-    Unit tmpUnit = Unit(query.value(0).toInt(),
+    DBUnit tmpUnit = DBUnit(query.value(0).toInt(),
                         query.value(1).toString().trimmed(),
                         query.value(2).toString().trimmed(),
                         query.value(3).toString().trimmed(),
@@ -132,21 +138,22 @@ Unit database::getUnitInfoFromId(int unitId)
                         query.value(9).toInt(),
                         query.value(10).toInt(),
                         query.value(11).toInt(),
+                        query.value(12).toInt(),
                         QDateTime(),
-                        query.value(13).toInt(),
-                        query.value(14).toString().trimmed(),
+                        query.value(14).toInt(),
                         query.value(15).toString().trimmed(),
                         query.value(16).toString().trimmed(),
-                        query.value(17).toReal(),
-                        query.value(18).toInt());
+                        query.value(17).toString().trimmed(),
+                        query.value(18).toReal(),
+                        query.value(19).toInt());
     return tmpUnit;
     qDebug() << query.value(0);
 }
 
-int database::getUnitIdFromName(QString name)
+int database::getUnitIdByName(QString name)
 {
     QSqlQuery query;
-    query.exec("SELECT id FROM unit WHERE unit.name LIKE '%" + name + "%'");
+    query.exec("SELECT id FROM unit WHERE unit.name LIKE '" + name + "%'");
     query.next();
     qDebug() <<query.value(0);
     return query.value(0).toInt();
@@ -161,48 +168,48 @@ QString database::getUnitImageFromId(int unitId)
     return query.value(0).toString().trimmed();
 }
 
-Organization database::getOrganizationInfoFromId(int id)
+DBOrganization database::getOrganizationInfoFromId(int id)
 {
     QSqlQuery query;
-    query.exec("SELECT * FROM organization WHERE organization.id=" + QString::number(id));
+    query.exec("SELECT id, name FROM organization WHERE organization.id=" + QString::number(id));
     query.next();
     qDebug() <<query.value(0)<<query.value(1);
-    Organization tmpOrganization = Organization(query.value(0).toInt(),
+    DBOrganization tmpOrganization = DBOrganization(query.value(0).toInt(),
                         query.value(1).toString().trimmed());
     return tmpOrganization;
 }
 
-Spaceport database::getSpaceportInfoFromId(int id)
+DBSpaceport database::getSpaceportInfoFromId(int id)
 {
     QSqlQuery query;
-    query.exec("SELECT * FROM spaceport WHERE spaceport.id=" + QString::number(id));
+    query.exec("SELECT id, name FROM spaceport WHERE spaceport.id=" + QString::number(id));
     query.next();
     qDebug() <<query.value(0)<<query.value(1);
-    Spaceport tmpSpaceport = Spaceport(query.value(0).toInt(),
+    DBSpaceport tmpSpaceport = DBSpaceport(query.value(0).toInt(),
                         query.value(1).toString().trimmed());
     return tmpSpaceport;
 }
 
-Booster_rocket database::getBooster_rocketInfoFromId(int unitId)
+DBBooster_rocket database::getBooster_rocketInfoFromId(int unitId)
 {
     QSqlQuery query;
-    query.exec("SELECT * FROM booster_rocket WHERE id=" + QString::number(unitId));
+    query.exec("SELECT id, max_payload, min_payload, phys_info, econ_info FROM booster_rocket WHERE id=" + QString::number(unitId));
     query.next();
     qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4);
-    Booster_rocket tmpBooster_rocket = Booster_rocket(query.value(0).toInt(),
-                                                 query.value(1).toString().trimmed(),
+    DBBooster_rocket tmpBooster_rocket = DBBooster_rocket(query.value(0).toInt(),
+                                                 query.value(1).toInt(),
                                                  query.value(2).toInt(),
-                                                 query.value(3).toString().trimmed(),
-                                                 query.value(4).toString().trimmed());
+                                                 query.value(4).toString().trimmed(),
+                                                 query.value(5).toString().trimmed());
     return tmpBooster_rocket;
 }
-Upper_block database::getUpper_blockInfoFromId(int unitId)
+DBUpper_block database::getUpper_blockInfoFromId(int unitId)
 {
     QSqlQuery query;
-    query.exec("SELECT * FROM upper_block WHERE id=" + QString::number(unitId));
+    query.exec("SELECT id, phys_info, econ_info FROM upper_block WHERE id=" + QString::number(unitId));
     query.next();
     qDebug() <<query.value(0)<<query.value(1)<<query.value(2);
-    Upper_block tmpUpper_block = Upper_block(query.value(0).toInt(),
+    DBUpper_block tmpUpper_block = DBUpper_block(query.value(0).toInt(),
                                                  query.value(1).toString().trimmed(),
                                                  query.value(2).toString().trimmed());
     return tmpUpper_block;
@@ -217,3 +224,334 @@ QString database::getUnitClassById(int unitId)
     QString unitClass  = query.value(0).toString().trimmed();
     return unitClass;
 }
+
+QVector<QString> database::getOrganizationNames()
+{
+    QVector<QString> organization_vector = QVector<QString>();
+    QSqlQuery query;
+    query.exec("SELECT name FROM organization ORDER BY name");
+    while (query.next()) {
+           QString _name = query.value(0).toString().trimmed();
+           organization_vector.append(_name);
+           qDebug() << _name << endl;
+       }
+    return organization_vector;
+}
+
+QVector<QString> database::getNamesFromTable(QString tableName)
+{
+    QVector<QString> name_vector = QVector<QString>();
+    QSqlQuery query;
+    query.exec("SELECT name FROM "+ tableName+ " ORDER BY name");
+    while (query.next()) {
+           QString _name = query.value(0).toString().trimmed();
+           name_vector.append(_name);
+           qDebug() << _name << endl;
+       }
+    return name_vector;
+}
+
+QVector <QString> database::getTableNames()
+{
+    QVector<QString> table_vector = QVector<QString>();
+    QSqlQuery query;
+    query.exec("SELECT name FROM tables WHERE editable = true");
+    qDebug() << query.lastError();
+    while (query.next()) {
+           QString _name = query.value(0).toString().trimmed();
+           table_vector.append(_name);
+           qDebug() << _name << endl;
+       }
+    return table_vector;
+}
+
+QVector <QString> database::getTableDescriptions()
+{
+    QVector<QString> description_vector = QVector<QString>();
+    QSqlQuery query;
+    query.exec("SELECT table_name from INFORMATION_SCHEMA.tables WHERE table_schema='public'");
+    qDebug() << query.lastError();
+    while (query.next()) {
+           QString _name = query.value(0).toString().trimmed();
+           description_vector.append(_name);
+           qDebug() << _name << endl;
+       }
+    return description_vector;
+}
+
+QVector <QString> database::getTableColumnNames(QString tableName)
+{
+    QVector<QString> name_vector = QVector<QString>();
+    QSqlQuery query;
+    query.exec("SELECT column_name FROM INFORMATION_SCHEMA.columns WHERE table_schema = 'public' AND table_name = '"+tableName+"'");
+    qDebug() << query.lastError();
+    while (query.next()) {
+           QString _name = query.value(0).toString().trimmed();
+           name_vector.append(_name);
+           qDebug() << _name << endl;
+       }
+    return name_vector;
+}
+
+int database::getTableColumnCount(QString tableName)
+{
+    int count = 0;
+    QSqlQuery query;
+    query.exec("SELECT count(*) FROM INFORMATION_SCHEMA.columns WHERE table_name = '"+tableName+"'");
+    qDebug() << query.lastError();
+    while (query.next()) {
+           count = query.value(0).toString().trimmed().toInt();
+           qDebug() << count << endl;
+       }
+    return count;
+}
+
+QVector<QVector<QString>> database::getValuesFromTable(QString tableName, int valuesNum)
+{
+    QVector<QVector<QString>> values;
+    QSqlQuery query;
+    query.exec("SELECT * FROM "+ tableName);
+    while (query.next()) {
+        QVector<QString> tmpVal;
+        for (int i=0;i<valuesNum;i++)
+            tmpVal.append(query.value(i).toString().trimmed());
+        values.append(tmpVal);
+       }
+    return values;
+}
+
+QString database::updateDataInTable(QString tableName, QVector<dbChangeValue> dbValuesToChange)
+{
+    QSqlQuery query;
+    for (int i=0;i<dbValuesToChange.length();i++){
+        QString queryString = "UPDATE public."+ tableName +" SET " + dbValuesToChange[i].getHeader() +" = '" + dbValuesToChange[i].getValue() + "' WHERE id = '" + dbValuesToChange[i].getId()+"' ORDER BY id";
+        qDebug() <<queryString;
+        query.exec(queryString);
+    }
+    return query.lastError().text();
+}
+
+int database::getOrganizationIdFromName(QString organizationName)
+{
+    int organizationId;
+    QSqlQuery query;
+    query.exec("SELECT id FROM organization WHERE name LIKE '" + organizationName+ "%'");
+    while (query.next()) {
+           organizationId = query.value(0).toString().trimmed().toInt();
+       }
+    return organizationId;
+}
+
+int database::getSpaceportIdFromName(QString spaceportName)
+{
+    int spaceportId;
+    QSqlQuery query;
+    query.exec("SELECT id FROM spaceport WHERE name LIKE '" + spaceportName + "%'");
+    while (query.next()) {
+           spaceportId = query.value(0).toString().trimmed().toInt();
+       }
+    return spaceportId;
+}
+
+int database::addUnitToDBRetId(DBUnit unit)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO unit ( unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year) VALUES ('" +
+               unit.unit_class() + "', '" +
+               unit.name() + "', '" +
+               unit.purpose() + "', " +
+               QString::number(unit.project()) + ", '" +
+               unit.objective() + "', '" +
+               unit.work_status() + "', " +
+               QString::number(unit.developer_id()) + ", " +
+               QString::number(unit.extra_developer_id()) + ", " +
+               QString::number(unit.manufacturer_id()) + ", " +
+               QString::number(unit.launches()) + ", " +
+               QString::number(unit.customer_id()) + ", " +
+               QString::number(unit.successful()) + ", '" +
+               unit.first_launch().toString("yyyy-mm-dd HH:mm:ss") + "', " +
+               QString::number(unit.first_launch_spaceport_id()) + ", '" +
+               unit.financing_type() + "', '" +
+               unit.control_system_type() + "', '" +
+               unit.image_url() + "', " +
+               QString::number(unit.price()) + ", " +
+               QString::number(unit.price_year())+") RETURNING id");
+    qDebug() << query.lastError();
+    query.next();
+    return query.value(0).toString().trimmed().toInt();
+
+}
+
+void database::addBoosterRocketToDB(DBBooster_rocket boosterRocket)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO booster_rocket ( id, max_payload, min_payload, phys_info, econ_info ) VALUES (" +
+               QString::number(boosterRocket.id()) + ", " +
+               QString::number(boosterRocket.max_payload()) + ", " +
+               QString::number(boosterRocket.min_payload()) + ", '" +
+               boosterRocket.phys_info() + "', '" +
+               boosterRocket.econ_info()+"')");
+    qDebug() << query.lastError();
+    return;
+}
+
+void database::addUpperBlockToDB(DBUpper_block upperBlock)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO upper_block ( id, phys_info, econ_info ) VALUES (" +
+               QString::number(upperBlock.id()) + ", '" +
+               upperBlock.phys_info() + "', '" +
+               upperBlock.econ_info()+"')");
+    qDebug() << query.lastError();
+    return;
+}
+
+void database::addOrganoizationToDB(DBOrganization newOrganization)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO organization ( name ) VALUES ('" +
+               newOrganization.name() +"')");
+    qDebug() << query.lastError();
+    return;
+}
+
+void database::addSpaceportToDB(DBSpaceport newSpaceport)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO spaceport ( name ) VALUES ('" +
+               newSpaceport.name() +"')");
+    qDebug() << query.lastError();
+    return;
+}
+
+void database::addProjectToDB(DBProject newProject)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO project ( name, type, unit_id, pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices ) VALUES ('" +
+               newProject.name() + "', '" +
+               newProject.type() + "', " +
+               QString::number(newProject.unit_id())+ ", '" +
+               newProject.pre_prices() + "', '" +
+               newProject.first_unit_prices() + "', '" +
+               newProject.last_unit_prices() + "', '" +
+               newProject.post_prices() + "', '" +
+               newProject.serial_prices() + "')");
+    qDebug() << query.lastError();
+    return;
+}
+
+void database::addSpacecraftToDB(DBSpacecraft newSpacecraft)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO spacecraft ( id, weight, phys_info, econ_info ) VALUES (" +
+               QString::number(newSpacecraft.id()) + ", " +
+               QString::number(newSpacecraft.weight()) + ", '" +
+               newSpacecraft.phys_info() + "', '" +
+               newSpacecraft.econ_info()+"')");
+    qDebug() << query.lastError();
+    return;
+}
+
+DBProject database::getProjectInfoFromName(QString projectName)
+{
+    QSqlQuery query;
+    query.exec("SELECT id, name, type, unit_id, pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices FROM project WHERE project.name LIKE '" + projectName + "%'");
+    query.next();
+    //qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
+    DBProject tmpProject = DBProject(query.value(0).toInt(),
+                        query.value(1).toString().trimmed(),
+                        query.value(2).toString().trimmed(),
+                        query.value(3).toInt(),
+                        query.value(4).toString().trimmed(),
+                        query.value(5).toString().trimmed(),
+                        query.value(6).toString().trimmed(),
+                        query.value(7).toString().trimmed(),
+                        query.value(8).toString().trimmed());
+    return tmpProject;
+}
+
+void database::updateProjectPricesByName(QString projectName, QString new_pre_prices, QString new_first_unit_prices, QString new_last_unit_prices, QString new_post_prices, QString new_serial_prices)
+{
+    QSqlQuery query;
+    QString queryString = "UPDATE public.project SET pre_prices = '" + new_pre_prices + "', first_unit_prices = '" + new_first_unit_prices + "',last_unit_prices = '" + new_last_unit_prices + "', post_prices = '" + new_post_prices + "', serial_prices = '" + new_serial_prices + "' WHERE name LIKE '" + projectName + "%'";
+    qDebug() <<queryString;
+    query.exec(queryString);
+    qDebug() << query.lastError().text();
+}
+
+QVector <int> database::getIdsFromTable(QString tableName)
+{
+    QVector <int>  ids;
+    QSqlQuery query;
+    query.exec("SELECT id FROM " + tableName);
+    while (query.next()) {
+           ids.append(query.value(0).toString().trimmed().toInt());
+       }
+    return ids;
+}
+
+void database::addLaunchInformation(DBlaunch launch)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO launch (booster_rocket_id, upper_block_id, spaceport_id, price_year, prices, launch_price, delivery_price, min_payload, max_payload) VALUES (" +
+                QString::number(launch.booster_rocket_id()) + ", " +
+                QString::number(launch.upper_block_id()) + ", " +
+                QString::number(launch.spaceport_id()) + ", " +
+                QString::number(launch.price_year()) + ", '" +
+                launch.prices() + "', " +
+                QString::number(launch.launch_price()) + ", " +
+                QString::number(launch.delivery_price()) + ", " +
+                QString::number(launch.min_payload()) + ", " +
+                QString::number(launch.max_payload()) + ")");
+    qDebug() << query.lastError();
+    return;
+}
+
+QVector <QString> database::getUnitNamesByType(QString type)
+{
+    QVector <QString>  names;
+    QSqlQuery query;
+    query.exec("SELECT name FROM unit WHERE unit_class LIKE '" + type + "%'");
+    while (query.next()) {
+           names.append(query.value(0).toString().trimmed());
+       }
+    return names;
+}
+
+DBlaunch database::getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport)
+{
+    DBlaunch  launch;
+    QSqlQuery query;
+    query.exec("SELECT lnch.id, lnch.booster_rocket_id, lnch.upper_block_id, lnch.spaceport_id, lnch.price_year, lnch.prices, lnch.launch_price, lnch.delivery_price, lnch.min_payload, lnch.max_payload "
+               "FROM launch lnch, unit unt1, unit unt2, spaceport spcprt "
+               "WHERE unt1.name LIKE '" + boosterRocket + "%' AND lnch.booster_rocket_id = unt1.id "
+               "AND unt2.name LIKE '" + upperBlock + "%' AND lnch.upper_block_id = unt2.id "
+               "AND spcprt.name LIKE '" + spaceport + "%' AND lnch.spaceport_id = spcprt.id");
+    while (query.next()) {
+        launch = DBlaunch(query.value(0).toString().trimmed().toInt(),
+                          query.value(1).toString().trimmed().toInt(),
+                          query.value(2).toString().trimmed().toInt(),
+                          query.value(3).toString().trimmed().toInt(),
+                          query.value(4).toString().trimmed().toInt(),
+                          query.value(5).toString().trimmed(),
+                          query.value(6).toString().trimmed().toDouble(),
+                          query.value(7).toString().trimmed().toDouble(),
+                          query.value(8).toString().trimmed().toDouble(),
+                          query.value(9).toString().trimmed().toDouble());
+    }
+    qDebug() << query.lastError();
+    return launch;
+}
+
+
+//QString database::getSpaceportsInfoByUnitId(int unitId)
+//{
+//    QSqlQuery query;
+//    query.exec("SELECT s.name FROM spaceport s, u_s us, unit u WHERE u.id=us.id and s.id=us.id and u.id=" + QString::number(unitId));
+//    query.next();
+//    qDebug() <<query.value(0)<<query.value(1)<<query.value(2);
+//    Upper_block tmpUpper_block = Upper_block(query.value(0).toInt(),
+//                                                 query.value(1).toString().trimmed(),
+//                                                 query.value(2).toString().trimmed());
+//    return tmpUpper_block;
+//}

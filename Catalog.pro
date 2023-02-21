@@ -1,4 +1,4 @@
-QT       += core gui sql
+QT       += core gui sql charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -33,31 +33,50 @@ QTPLUGIN += QPSQL
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    booster_rocket.cpp \
+    DBbooster_rocket.cpp \
+    DBlaunch.cpp \
+    DBorganization.cpp \
+    DBspaceport.cpp \
+    DBunit.cpp \
+    DBupper_block.cpp \
+    chartdialog.cpp \
+    chartview.cpp \
     database.cpp \
     databaseloginwindow.cpp \
+    dbproject.cpp \
+    dbspacecraft.cpp \
     main.cpp \
     mainmodel.cpp \
     mainwindow.cpp \
     menu.cpp \
-    organization.cpp \
-    spaceport.cpp \
-    unit.cpp \
-    upper_block.cpp
+    predictionmodel.cpp \
+    projectset.cpp \
+    unitcomparator.cpp
 
 HEADERS += \
-    booster_rocket.h \
+    DBbooster_rocket.h \
+    DBlaunch.h \
+    DBorganization.h \
+    DBspacecraft.h \
+    DBspaceport.h \
+    DBunit.h \
+    DBupper_block.h \
+    chartdialog.h \
+    chartview.h \
+    comparevalue.h \
     database.h \
     databaseloginwindow.h \
+    dbChangeValue.h \
+    dbproject.h \
     mainmodel.h \
     mainwindow.h \
     menu.h \
-    organization.h \
-    spaceport.h \
-    unit.h \
-    upper_block.h
+    predictionmodel.h \
+    projectset.h \
+    unitcomparator.h
 
 FORMS += \
+    chartdialog.ui \
     databaseloginwindow.ui \
     mainwindow.ui
 

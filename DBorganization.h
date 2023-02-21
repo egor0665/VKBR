@@ -1,15 +1,15 @@
-#ifndef ORGANIZATION_H
-#define ORGANIZATION_H
+#ifndef DBORGANIZATION_H
+#define DBORGANIZATION_H
 
 #include <QMainWindow>
 #include <QObject>
 #include <QWidget>
 
-class Organization
+class DBOrganization
 {
 public:
-    Organization();
-    Organization(int id, const QString &name);
+    DBOrganization();
+    DBOrganization(int id, const QString &name);
     int id() const;
     void setId(int newId);
     const QString &name() const;
@@ -20,4 +20,4 @@ private:
     QString _name ;
 };
 
-#endif // ORGANIZATION_H
+#endif // DBORGANIZATION_H
