@@ -42,7 +42,6 @@ SOURCES += \
     chartdialog.cpp \
     chartview.cpp \
     database.cpp \
-    databaseloginwindow.cpp \
     dbproject.cpp \
     dbspacecraft.cpp \
     main.cpp \
@@ -51,7 +50,8 @@ SOURCES += \
     menu.cpp \
     predictionmodel.cpp \
     projectset.cpp \
-    unitcomparator.cpp
+    unitcomparator.cpp \
+    userloginwindow.cpp
 
 HEADERS += \
     DBbooster_rocket.h \
@@ -65,7 +65,6 @@ HEADERS += \
     chartview.h \
     comparevalue.h \
     database.h \
-    databaseloginwindow.h \
     dbChangeValue.h \
     dbproject.h \
     mainmodel.h \
@@ -73,12 +72,13 @@ HEADERS += \
     menu.h \
     predictionmodel.h \
     projectset.h \
-    unitcomparator.h
+    unitcomparator.h \
+    userloginwindow.h
 
 FORMS += \
     chartdialog.ui \
-    databaseloginwindow.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    userloginwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

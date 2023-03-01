@@ -20,6 +20,9 @@ public:
     int getProjectNumber(QString projectName);
 
     int addProject(ProjectSet project);
+    QString getProjectType(QString projectName);
+    ProjectSet getProjectSetByName(QString projectName);
+    int getUnitLifetime(QString projectName);
 protected:
     QVector <ProjectSet> projects;
     QVector <qreal> inflationPercents;

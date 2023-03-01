@@ -9,8 +9,9 @@ class ProjectSet
 {
 public:
     ProjectSet();
-    ProjectSet(const QString &projectType, const QString &projectName, int projectId, int unitId, const QVector<qreal> &prePrices, int prePricesStartYear, const QVector<qreal> &firstUnitPrices, int firstUnitStartYear, const QVector<qreal> &lastUnitPrices, int lastUnitStartYear, const QVector<qreal> &postPrices, int postPricesStartYear, const QVector<qreal> &serialPrices, int serialPricesStartYear);
-    ProjectSet(const QString &projectType, const QString &projectName, int projectId, int unitId, const QVector<int> &EDWLaunchYears, const QVector<int> &seriesLaunchYears, const QVector<qreal> &spacecraftPrices, const QVector<QString> &boosterRockets, const QVector<int> &spacecraftBlocks, const QVector<qreal> &boosterRocketPrices, const QVector<qreal> &prePrices, int prePricesStartYear, const QVector<qreal> &firstUnitPrices, int firstUnitStartYear, const QVector<qreal> &lastUnitPrices, int lastUnitStartYear, const QVector<qreal> &postPrices, int postPricesStartYear, const QVector<qreal> &serialPrices, int serialPricesStartYear);
+    ProjectSet(const QString &projectType, const QString &projectName, int projectId, int unitId, int activeLifetime, const QVector<qreal> &prePrices, int prePricesStartYear, const QVector<qreal> &firstUnitPrices, int firstUnitStartYear, const QVector<qreal> &lastUnitPrices, int lastUnitStartYear, const QVector<qreal> &postPrices, int postPricesStartYear, const QVector<qreal> &serialPrices, int serialPricesStartYear);
+    //ProjectSet(const QString &projectType, const QString &projectName, int projectId, int unitId, const QVector<qreal> &prePrices, int prePricesStartYear, const QVector<qreal> &firstUnitPrices, int firstUnitStartYear, const QVector<qreal> &lastUnitPrices, int lastUnitStartYear, const QVector<qreal> &postPrices, int postPricesStartYear, const QVector<qreal> &serialPrices, int serialPricesStartYear, int activeLifetime);
+    //ProjectSet(const QString &projectType, const QString &projectName, int projectId, int unitId, const QVector<int> &EDWLaunchYears, const QVector<int> &seriesLaunchYears, const QVector<qreal> &spacecraftPrices, const QVector<QString> &boosterRockets, const QVector<int> &spacecraftBlocks, const QVector<qreal> &boosterRocketPrices, const QVector<qreal> &prePrices, int prePricesStartYear, const QVector<qreal> &firstUnitPrices, int firstUnitStartYear, const QVector<qreal> &lastUnitPrices, int lastUnitStartYear, const QVector<qreal> &postPrices, int postPricesStartYear, const QVector<qreal> &serialPrices, int serialPricesStartYear);
 
     const QVector<int> &getEDWLaunchYears() const;
     void setEDWLaunchYears(const QVector<int> &newEDWLaunchYears);
@@ -54,11 +55,16 @@ public:
     int getUnitId() const;
     void setUnitId(int newUnitId);
 
+    int getActiveLifetime() const;
+    void setActiveLifetime(int newActiveLifetime);
+
 protected:
     QString projectType;
     QString projectName;
     int projectId;
     int unitId;
+
+    int activeLifetime;
 
     QVector <int> EDWLaunchYears;
     QVector <int> seriesLaunchYears;

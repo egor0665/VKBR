@@ -83,6 +83,10 @@ public:
     QStringList getUnitNamesByTypeStringList(QString type);
     DBlaunch getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport);
     QVector<qreal> pricesToVector(QString prices);
+    QVector<QVector<QPair<QString, QString> > > predictPrices(QString projectName, QVector<QVector<int>> yearsValues, QVector<QString> boosterRocketValues);
+    int projectModelGetUnitLifetime(QString projectName);
+    void updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload);
+    QStringList getValidLaunchesNamesStringList();
 protected:
     QVector <QPair<QString,QString>> splitValues(QString values);
     void addTreeChild(QTreeWidgetItem *parent, QString name, QVector <QString> child_array);

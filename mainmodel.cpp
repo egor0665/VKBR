@@ -542,10 +542,17 @@ int MainModel::projectModelAddProject(QString projectName)
     QVector <qreal> serialPrices = pricesTmp.first;
     int serialPricesStartYear = pricesTmp.second;
     qDebug()<< prePrices << prePricesStartYear<<firstUnitPrices<<firstUnitStartYear<<lastUnitPrices<<lastUnitStartYear<<postPrices<<postPricesStartYear<<serialPrices<<serialPricesStartYear;
+    int projectLifetime = -1;
+    if (project.type()!="Другое")
+    {
+        projectLifetime = db.getSpacecraftLifetimeById(project.unit_id());
+    }
+
     ProjectSet newProjectSet = ProjectSet(project.type(),
                                           project.name(),
                                           project.id(),
                                           project.unit_id(),
+                                          projectLifetime,
                                           prePrices,
                                           prePricesStartYear,
                                           firstUnitPrices,
@@ -556,7 +563,8 @@ int MainModel::projectModelAddProject(QString projectName)
                                           postPricesStartYear,
                                           serialPrices,
                                           serialPricesStartYear);
-    int index = predictionModel.addProject(newProjectSet) * 5;
+
+    int index = predictionModel.addProject(newProjectSet) * 7;
     if (project.type() == "Связь")
         index += 1;
     else if (project.type() == "ДЗЗ")
@@ -575,7 +583,17 @@ void MainModel::projectModelRemoveProject(QString projectName)
 
 int MainModel::projectModelGetProjectNumber(QString projectName)
 {
-    return predictionModel.getProjectNumber(projectName);
+    QString projectType = predictionModel.getProjectType(projectName);
+    int index = predictionModel.getProjectNumber(projectName) * 7;
+    if (projectType == "Связь")
+        index += 1;
+    else if (projectType == "ДЗЗ")
+        index += 2;
+    else if (projectType == "ФКИ")
+        index += 3;
+    if (projectType == "Другое")
+        index += 4;
+    return index;
 }
 
 QStringList MainModel::getUnitNamesByTypeStringList(QString type)
@@ -596,4 +614,123 @@ QVector<qreal> MainModel::pricesToVector(QString prices)
         pricesVector.append(vals[i].trimmed().toDouble());
     qDebug()<<pricesVector;
     return pricesVector;
+}
+
+QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projectName, QVector<QVector<int>> yearsValues, QVector<QString> boosterRocketValues)
+{
+    ProjectSet currentProject = predictionModel.getProjectSetByName(projectName);
+    int unitLifeTime = predictionModel.getUnitLifetime(projectName);
+    QVector<QVector<QPair<QString,QString>>> tmp;
+    QVector <qreal> unitPrices ({0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+    QVector <int> okrYears = yearsValues[0];
+    QVector <int> serialYears = yearsValues[1];
+    QVector <int> blockValues = yearsValues[2];
+    bool firstUnit = true;
+    int difPreFirstUnit = currentProject.getFirstUnitStartYear() - (currentProject.getPrePricesStartYear());
+    qDebug() <<difPreFirstUnit;
+
+    QVector<QPair<QString,QString>> unitResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
+    QVector<QPair<QString,QString>> serialUnitResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
+    QVector<QPair<QString,QString>> blockResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
+    QVector<QPair<QString,QString>> boosterRocketResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
+    QVector<QPair<QString,QString>> unitPricesResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
+    QVector<QPair<QString,QString>> rocketPricesResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
+
+    for (int i=0;i<okrYears.length();i++)
+    {
+        if (okrYears[i]>0)
+        {
+            int curYear = i;
+            if (firstUnit)
+            {
+                for (int j=currentProject.getPrePrices().length()-1;j>-1;j--)
+                {
+                    if (curYear-difPreFirstUnit>=0)
+                        unitPrices[curYear-difPreFirstUnit]+=currentProject.getPrePrices()[j];
+                    curYear--;
+                }
+            }
+            curYear = i;
+            for (int j=currentProject.getFirstUnitPrices().length()-1;j>-1;j--)
+            {
+                if (curYear>=0)
+                    unitPrices[curYear]+=currentProject.getFirstUnitPrices()[j];
+                curYear--;
+            }
+            firstUnit = false;
+        }
+    }
+
+    bool lastUnit = true;
+    for (int i=okrYears.length()-1;i>-1;i--)
+    {
+        unitResultValues[i].first = QString::number(okrYears[i]);
+        unitResultValues[i].second = "normal";
+        serialUnitResultValues[i].first = QString::number(serialYears[i]);
+        serialUnitResultValues[i].second = "normal";
+
+        blockResultValues[i].first = QString::number(blockValues[i]);
+        blockResultValues[i].second = "normal";
+        boosterRocketResultValues[i].first = boosterRocketValues[i];
+        boosterRocketResultValues[i].second = "normal";
+
+        unitPricesResultValues[i].first = QString::number(unitPrices[i]);
+        unitPricesResultValues[i].second = "number";
+        rocketPricesResultValues[i].first = QString::number(0);
+        rocketPricesResultValues[i].second = "number";
+
+        if (okrYears[i]>0)
+            unitResultValues[i].second = "current";
+        if (serialYears[i]>0)
+            serialUnitResultValues[i].second = "current";
+        if ((lastUnit) && (okrYears[i]>0 || serialYears[i]>0))
+        {
+            if (i+unitLifeTime < okrYears.length())
+            {
+                unitResultValues[i+unitLifeTime].second = "expected";
+                serialUnitResultValues[i+unitLifeTime].second = "expected";
+            }
+            lastUnit = false;
+        }
+
+    }
+
+    QVector<QVector<QPair<QString,QString>>> resultVector;
+    resultVector.append(unitResultValues);
+    resultVector.append(serialUnitResultValues);
+    resultVector.append(blockResultValues);
+    resultVector.append(boosterRocketResultValues);
+    resultVector.append(unitPricesResultValues);
+    resultVector.append(rocketPricesResultValues);
+    //resultVector.append(unitPrices);
+    qDebug()<<resultVector;
+    return resultVector;
+}
+
+int MainModel::projectModelGetUnitLifetime(QString projectName)
+{
+    return predictionModel.getUnitLifetime(projectName);
+}
+
+void MainModel::updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload)
+{
+    int boosterRocketId = db.getUnitIdByName(boosterRocketName);
+    int upperBlockId = db.getUnitIdByName(upperBlockName);
+    int spaceportId = db.getSpaceportIdFromName(spaceportName);
+    db.updateLaunchPricesByIds(boosterRocketId, upperBlockId, spaceportId,priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload);
+}
+
+QStringList MainModel::getValidLaunchesNamesStringList()
+{
+    QVector<QVector<int>> ids = db.getValidLaunchesIds();
+    QVector<QString> names;
+    for (int i=0;i<ids.length();i++)
+    {
+        QString boosterRocketName = db.getNameFromTableById("unit",ids[i][0]);
+        QString upperBlockName = db.getNameFromTableById("unit",ids[i][1]);
+        QString spaceportName = db.getNameFromTableById("spaceport",ids[i][2]);
+        names.append(boosterRocketName + " с " + upperBlockName + " (" + spaceportName+ ")");
+    }
+
+    return QVectorToQStringList(names);
 }

@@ -493,7 +493,7 @@ QVector <int> database::getIdsFromTable(QString tableName)
 void database::addLaunchInformation(DBlaunch launch)
 {
     QSqlQuery query;
-    query.exec("INSERT INTO launch (booster_rocket_id, upper_block_id, spaceport_id, price_year, prices, launch_price, delivery_price, min_payload, max_payload) VALUES (" +
+    query.exec("INSERT INTO launch (booster_rocket_id, upper_block_id, spaceport_id, price_year, prices, launch_price, delivery_price, min_payload, max_payload, valid) VALUES (" +
                 QString::number(launch.booster_rocket_id()) + ", " +
                 QString::number(launch.upper_block_id()) + ", " +
                 QString::number(launch.spaceport_id()) + ", " +
@@ -502,7 +502,8 @@ void database::addLaunchInformation(DBlaunch launch)
                 QString::number(launch.launch_price()) + ", " +
                 QString::number(launch.delivery_price()) + ", " +
                 QString::number(launch.min_payload()) + ", " +
-                QString::number(launch.max_payload()) + ")");
+                QString::number(launch.max_payload()) + ", " +
+                QString::number(0) + ")");
     qDebug() << query.lastError();
     return;
 }
@@ -543,7 +544,51 @@ DBlaunch database::getLaunchFromParamIds(QString boosterRocket, QString upperBlo
     return launch;
 }
 
+int database::getSpacecraftLifetimeById(int unitId)
+{
+    int unitLifetime;
+    QSqlQuery query;
+    query.exec("SELECT active_lifetime FROM spacecraft WHERE id = "  + QString::number(unitId));
+    while (query.next()) {
+           unitLifetime = query.value(0).toString().trimmed().toInt();
+       }
+    return unitLifetime;
+}
 
+void database::updateLaunchPricesByIds(int boosterRocketId, int upperBlockId, int spaceportId, int price_year, QString prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload)
+{
+    QSqlQuery query;
+    QString queryString = "UPDATE public.launch SET price_year = " + QString::number(price_year) + ", prices = '" + prices + "', delivery_price = " + QString::number(delivery_price) + ", min_payload = " + QString::number(min_payload) + ", max_payload = " + QString::number(max_payload) + ", valid = true WHERE booster_rocket_id = " + QString::number(boosterRocketId) + " AND upper_block_id = " + QString::number(upperBlockId) + " AND spaceport_id = " + QString::number(spaceportId);
+    qDebug() <<queryString;
+    query.exec(queryString);
+    qDebug() << query.lastError().text();
+}
+
+QVector <QVector<int>> database::getValidLaunchesIds()
+{
+    QVector <QVector<int>> resultValues;
+    QSqlQuery query;
+    query.exec("SELECT booster_rocket_id, upper_block_id, spaceport_id FROM launch WHERE valid = true");
+    while (query.next()) {
+            QVector<int> ids;
+           ids.append(query.value(0).toString().trimmed().toInt());
+           ids.append(query.value(1).toString().trimmed().toInt());
+           ids.append(query.value(2).toString().trimmed().toInt());
+           resultValues.append(ids);
+       }
+    return resultValues;
+}
+
+QString database::getNameFromTableById(QString tableName, int id)
+{
+    QString name;
+    QSqlQuery query;
+    query.exec("SELECT name FROM " + tableName + " WHERE id = " + QString::number(id));
+    while (query.next()) {
+           name = query.value(0).toString().trimmed();
+       }
+    return name;
+}
 //QString database::getSpaceportsInfoByUnitId(int unitId)
 //{
 //    QSqlQuery query;

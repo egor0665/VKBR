@@ -89,3 +89,30 @@ int PredictionModel::getProjectNumber(QString projectName)
             return i;
     }
 }
+
+QString PredictionModel::getProjectType(QString projectName)
+{
+    for(int i=0;i<projects.length();i++)
+    {
+        if (projects[i].getProjectName() == projectName)
+            return projects[i].getProjectType();
+    }
+}
+
+ProjectSet PredictionModel::getProjectSetByName(QString projectName)
+{
+    for(int i=0;i<projects.length();i++)
+    {
+        if (projects[i].getProjectName() == projectName)
+            return projects[i];
+    }
+}
+
+int PredictionModel::getUnitLifetime(QString projectName)
+{
+    for(int i=0;i<projects.length();i++)
+    {
+        if (projects[i].getProjectName() == projectName)
+            return projects[i].getActiveLifetime();
+    }
+}

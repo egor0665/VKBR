@@ -1,12 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "databaseloginwindow.h"
+#include "loginwindow.h"
 #include "chartWidget.h"
 #include <QVariant>
 #include <QDebug>
 #include <QGraphicsPixmapItem>
 #include <ChartView.h>
 #include <chartDialog.h>
+#include <userLoginWindow.h>
 #include <QtCharts/QAbstractAxis>
 #include <QtCharts/qpolarchart.h>
 #include <QtCharts/QtCharts>
@@ -17,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     rebuildTabs();
-    //databaseloginwindow *loginwindow = new databaseloginwindow(this);
+    //loginWindow = userLoginWindow(this);
 }
 
 MainWindow::~MainWindow()
@@ -35,8 +36,14 @@ void MainWindow::rebuildTabs()
     buildEditProjectTab();
     buildAddExtrasTab();
     buildPredictionTab();
+
+    startAuth();
 }
 
+QString MainWindow::startAuth()
+{
+    loginWindow.show();
+}
 //===============================================================================================================================================
 //                                                          Display tab
 //===============================================================================================================================================
@@ -593,6 +600,8 @@ void MainWindow::on_pushButton_11_clicked()
 
 void MainWindow::buildPredictionTab()
 {
+    predictionTableEditedByUser = false;
+    listWidgetEditedByUser = false;
     QStringList projectNames = model.getNamesFromTableStringList("project");
     ui->listWidget->addItems(projectNames);
     for(int i=0;i<ui->listWidget->count();i++)
@@ -645,61 +654,97 @@ void MainWindow::buildPredictionTab()
     ui->tableWidget_8->item(rowCount+4, 0)->setText("Цены КА");
     ui->tableWidget_8->item(rowCount+5, 0)->setText("Цены РН");
     ui->tableWidget_8->item(rowCount+6, 0)->setText("Итого");
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount,0,QColor(240,240,240));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+1,0,QColor(240,240,240));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+2,0,QColor(240,240,240));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+3,0,QColor(240,240,240));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+4,0,QColor(204,229,255));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+5,0,QColor(204,255,229));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+6,0,QColor(204,255,255));
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount,0,QColor(255,239,214));
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+1,0,QColor(255,239,214));
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+2,0,QColor(255,239,214));
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+3,0,QColor(255,239,214));
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+4,0,QColor(244,244,255));
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+5,0,QColor(244,244,255));
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+6,0,QColor(244,244,255));
+
+    listWidgetEditedByUser = true;
+    predictionTableEditedByUser = true;
 }
 
 void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
 {
-    int rowCount = ui->tableWidget_8->rowCount();
-    if (item->checkState()==Qt::Checked)
+
+    if (listWidgetEditedByUser)
     {
-        int index = model.projectModelAddProject(item->text());
-
-        for (int i=0;i<5;i++)
+        predictionTableEditedByUser = false;
+        int rowCount = ui->tableWidget_8->rowCount();
+        if (item->checkState()==Qt::Checked)
         {
-             ui->tableWidget_8->insertRow(i + index);
+
+            int index = model.projectModelAddProject(item->text());
+            //int unitLifetime = model.projectModelGetUnitLifetime(item->text());
+
+            for (int i=0;i<7;i++)
+            {
+                 ui->tableWidget_8->insertRow(i + index);
+            }
+            for (int i=0;i<ui->tableWidget_8->columnCount();i++)
+                for (int j=index;j<7 + index;j++)
+                    ui->tableWidget_8->setItem(j, i,  new QTableWidgetItem(""));
+
+            for (int i=0;i<ui->tableWidget_8->columnCount();i++)
+            {
+                ui->tableWidget_8->item(index, i)->setFlags(Qt::ItemIsEnabled);
+                ui->tableWidget_8->item(index+5, i)->setFlags(Qt::ItemIsEnabled);
+                ui->tableWidget_8->item(index+6, i)->setFlags(Qt::ItemIsEnabled);
+            }
+            ui->tableWidget_8->setItem(index, 0,  new QTableWidgetItem(item->text())); //+" (САС "+QString::number(unitLifetime)+" лет)")
+
+
+            ui->tableWidget_8->item(index, 1)->setFlags(Qt::ItemIsEnabled);
+
+            ui->tableWidget_8->setItem(1 + index, 0,  new QTableWidgetItem("Запуск ОКР аппаратов"));
+            ui->tableWidget_8->setItem(2 + index, 0,  new QTableWidgetItem("Запуск серийных аппаратов"));
+            ui->tableWidget_8->setItem(3 + index, 0,  new QTableWidgetItem("Блок КА"));
+            ui->tableWidget_8->setItem(4 + index, 0,  new QTableWidgetItem("Ракета-носитель"));
+            ui->tableWidget_8->setItem(5 + index, 0,  new QTableWidgetItem("Цены 1"));
+            ui->tableWidget_8->setItem(6 + index, 0,  new QTableWidgetItem("Цены РН"));
+            ui->tableWidget_8->item(1 + index, 0)->setFlags(Qt::ItemIsEnabled);
+            ui->tableWidget_8->item(2 + index, 0)->setFlags(Qt::ItemIsEnabled);
+            ui->tableWidget_8->item(3 + index, 0)->setFlags(Qt::ItemIsEnabled);
+            ui->tableWidget_8->item(4 + index, 0)->setFlags(Qt::ItemIsEnabled);
+            ui->tableWidget_8->item(5 + index, 0)->setFlags(Qt::ItemIsEnabled);
+            ui->tableWidget_8->item(6 + index, 0)->setFlags(Qt::ItemIsEnabled);
+            setTableWidgetRowColor(ui->tableWidget_8, index, 0, QColor(255,245,224));
+            setTableWidgetRowColor(ui->tableWidget_8, index + 5, 0, QColor(244,244,255));
+            setTableWidgetRowColor(ui->tableWidget_8, index + 6, 0, QColor(244,244,255));
+            QStringList launches = model.getValidLaunchesNamesStringList();
+            for (int i=1;i<ui->tableWidget_8->columnCount();i++)
+            {
+                QComboBox *a = new QComboBox();
+                a->addItems(launches);
+                a->setProperty("row", 4 + index);
+                a->setProperty("column", i);
+                QObject::connect(a,SIGNAL(currentIndexChanged(const QString &)),this,SLOT(on_tableWidget_8_comboBox_index_changed(const QString &)));
+                ui->tableWidget_8->setCellWidget(4 + index,i,a);
+            }
+     //       for (int i=1;i<ui->tableWidget_8->columnCount();i++)
+    //            for (int j=index+1;j<4 + index;j++)
+    //            {
+    //                QSpinBox *a = new QSpinBox();
+    //                ui->tableWidget_8->setCellWidget(j, i,  a);
+    //            }
+
         }
-        for (int i=0;i<ui->tableWidget_8->columnCount();i++)
-            for (int j=index;j<4 + index;j++)
-                ui->tableWidget_8->setItem(j, i,  new QTableWidgetItem(""));
-
-        for (int i=0;i<ui->tableWidget_8->columnCount();i++)
-            ui->tableWidget_8->item(index, i)->setFlags(Qt::ItemIsEnabled);
-        ui->tableWidget_8->setItem(index, 0,  new QTableWidgetItem(item->text()));
-        setTableWidgetRowColor(ui->tableWidget_8, index, 0, QColor(255,229,204));
-        ui->tableWidget_8->item(index, 1)->setFlags(Qt::ItemIsEnabled);
-
-        ui->tableWidget_8->setItem(1 + index, 0,  new QTableWidgetItem("Запуск ОКР аппаратов"));
-        ui->tableWidget_8->setItem(2 + index, 0,  new QTableWidgetItem("Запуск серийных аппаратов"));
-        ui->tableWidget_8->setItem(3 + index, 0,  new QTableWidgetItem("Блок КА"));
-        ui->tableWidget_8->setItem(4 + index, 0,  new QTableWidgetItem("Ракета-носитель"));
-        ui->tableWidget_8->item(1 + index, 0)->setFlags(Qt::ItemIsEnabled);
-        ui->tableWidget_8->item(2 + index, 0)->setFlags(Qt::ItemIsEnabled);
-        ui->tableWidget_8->item(3 + index, 0)->setFlags(Qt::ItemIsEnabled);
-        ui->tableWidget_8->item(4 + index, 0)->setFlags(Qt::ItemIsEnabled);
-        for (int i=1;i<ui->tableWidget_8->columnCount();i++)
+        else
         {
-            QComboBox *a = new QComboBox();
-            ui->tableWidget_8->setCellWidget(4 + index,i,a);
+            int projectNumber = model.projectModelGetProjectNumber(item->text());
+            qDebug() << projectNumber;
+            for (int i=0;i<7; i++)
+                 ui->tableWidget_8->removeRow(projectNumber);
+            model.projectModelRemoveProject(item->text());
+            for (int i=0;i<7;i++){
+                 ui->tableWidget_8->removeRow(rowCount-3);
+            }
         }
+        predictionTableEditedByUser = true;
     }
-    else
-    {
-        int projectNumber = model.projectModelGetProjectNumber(item->text());
-        qDebug() << projectNumber;
-        for (int i=0;i<5; i++)
-             ui->tableWidget_8->removeRow(projectNumber * 5);
-        model.projectModelRemoveProject(item->text());
-        for (int i=0;i<5;i++){
-             ui->tableWidget_8->removeRow(rowCount-3);
-        }
-    }
+
 }
 
 
@@ -707,9 +752,110 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
 //
 //===============================================================================================================================================
 
+
+
 void MainWindow::setTableWidgetRowColor(QTableWidget *tableWidget, int row, int startColumn, QColor color)
 {
     for (int i=startColumn;i<tableWidget->columnCount();i++){
         tableWidget->item(row,i)->setBackground(color);
     }
 }
+
+void MainWindow::on_tableWidget_8_comboBox_index_changed(const QString &)
+{
+    QComboBox *cb = qobject_cast<QComboBox*>(sender());
+    emit on_tableWidget_8_cellChanged(cb->property("row").toInt(),cb->property("column").toInt());
+}
+
+void MainWindow::on_tableWidget_8_cellChanged(int row, int column)
+{
+    if (predictionTableEditedByUser)
+    {
+        qDebug() << "adss";
+        QRegExp number("\\d*");
+        if ((ui->tableWidget_8->item(row,0)->text()== "Ракета-носитель")||(number.exactMatch(ui->tableWidget_8->item(row,column)->text()))) // is number
+        {
+            QVector<QVector<int>> yearsValues;
+            QVector<QString> boosterRocketValues;
+            int startRow = row;
+            QString currentRowTextValue = ui->tableWidget_8->item(row,0)->text();
+            if (currentRowTextValue == "Запуск ОКР аппаратов")
+                startRow = row;
+            else if (currentRowTextValue == "Запуск серийных аппаратов")
+                startRow = row - 1;
+            else if (currentRowTextValue == "Блок КА")
+                startRow = row - 2;
+            else if (currentRowTextValue == "Ракета-носитель")
+                startRow = row - 3;
+            qDebug() << startRow;
+            for (int i=startRow;i<startRow+3;i++)
+            {
+                QVector <int> tmp;
+                for (int j=1;j<ui->tableWidget_8->columnCount();j++)
+                    tmp.append(ui->tableWidget_8->item(i,j)->text().toInt());
+                yearsValues.append(tmp);
+            }
+            qDebug() <<yearsValues;
+            for (int i=1;i<ui->tableWidget_8->columnCount();i++)
+                boosterRocketValues.append(QComboBox(ui->tableWidget_8->cellWidget(startRow+3,i)).currentText());
+            QString projectName = ui->tableWidget_8->item(startRow-1,0)->text();
+
+            QVector<QVector<QPair<QString,QString>>> valuesVector = model.predictPrices(projectName,yearsValues,boosterRocketValues);
+            predictionTableEditedByUser = false;
+            for (int i=0;i<valuesVector.length()-2;i++)
+                for(int j=1;j<ui->tableWidget_8->rowCount();j++)
+                {
+                    ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
+                    if (valuesVector[i][j-1].second == "normal")
+                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,255,255));
+                    if (valuesVector[i][j-1].second == "current")
+                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(244,255,244));
+                    if (valuesVector[i][j-1].second == "expected")
+                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,244,244));
+                }
+            for(int i=1;i<ui->tableWidget_8->rowCount()-2;i++)
+            {
+                QComboBox(ui->tableWidget_8->cellWidget(startRow+3,i)).setCurrentText(valuesVector[3][i-1].first);
+            }
+            for (int i=valuesVector.length()-3;i<valuesVector.length();i++)
+                for(int j=1;j<ui->tableWidget_8->rowCount();j++)
+                {
+                    ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
+//                    if (valuesVector[i][j-1].second == "normal")
+//                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,255,255));
+//                    if (valuesVector[i][j-1].second == "current")
+//                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(244,255,244));
+//                    if (valuesVector[i][j-1].second == "expected")
+//                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,244,244));
+                }
+            predictionTableEditedByUser = true;
+
+            qDebug() << yearsValues << boosterRocketValues;
+        }
+        //else if ()
+        else
+        {
+            ui->tableWidget_8->item(row,column)->setText("");
+        }
+    }
+}
+
+
+void MainWindow::on_pushButton_12_clicked()
+{
+    QString boosterRocketName = ui->comboBox_6->currentText();
+    QString upperBlockName = ui->comboBox_7->currentText();
+    QString spaceportName = ui->comboBox_8->currentText();
+    int priceYear = ui->spinBox_2->value();
+    QString prices = "";
+    for (int i=1;i<ui->tableWidget_9->columnCount();i++)
+    {
+        prices += ui->tableWidget_9->item(0,i)->text() + ";";
+    }
+    qreal launchPrice = ui->doubleSpinBox_2->value();
+    qreal deliveryPrice = ui->doubleSpinBox->value();
+    qreal minPayload = ui->doubleSpinBox_3->value();
+    qreal maxPayload = ui->doubleSpinBox_4->value();
+    model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload);
+}
+

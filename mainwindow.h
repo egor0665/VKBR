@@ -8,6 +8,7 @@
 #include <dbChangeValue.h>
 #include <mainmodel.h>
 #include <predictionModel.h>
+#include <userLoginWindow.h>
 #include "database.h"
 
 QT_BEGIN_NAMESPACE
@@ -25,6 +26,9 @@ public:
     database db;
     MainModel model;
     UnitComparator comparator;
+    bool predictionTableEditedByUser;
+    bool listWidgetEditedByUser;
+    userLoginWindow loginWindow ;
     QTreeWidgetItem *addTreeRoot(QString name);
 protected:
     QDoubleSpinBox *maxPayloadField;
@@ -52,6 +56,7 @@ protected:
     void buildPredictionTab();
     void setTableWidgetRowColor(QTableWidget *tableWidget, int row, int startColumn, QColor color);
     void rebuildEditLaunchTable(QString boosterRocket, QString upperBlock, QString spaceport);
+    QString startAuth();
 private slots:
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
@@ -92,6 +97,12 @@ private slots:
     void on_comboBox_7_currentIndexChanged(const QString &arg1);
 
     void on_comboBox_8_currentIndexChanged(const QString &arg1);
+
+    void on_tableWidget_8_comboBox_index_changed(const QString &arg1);
+
+    void on_tableWidget_8_cellChanged(int row, int column);
+
+    void on_pushButton_12_clicked();
 
 private:
     Ui::MainWindow *ui;

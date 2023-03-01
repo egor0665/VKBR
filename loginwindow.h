@@ -1,5 +1,5 @@
-#ifndef DATABASELOGINWINDOW_H
-#define DATABASELOGINWINDOW_H
+#ifndef LOGINWINDOW_H
+#define LOGINWINDOW_H
 
 #include <QDialog>
 
@@ -20,4 +20,4 @@ private:
     Ui::databaseloginwindow *ui;
 };
 
-#endif // DATABASELOGINWINDOW_H
+#endif // LOGINWINDOW_H
