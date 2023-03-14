@@ -44,6 +44,7 @@ SOURCES += \
     database.cpp \
     dbproject.cpp \
     dbspacecraft.cpp \
+    launchdata.cpp \
     main.cpp \
     mainmodel.cpp \
     mainwindow.cpp \
@@ -67,6 +68,7 @@ HEADERS += \
     database.h \
     dbChangeValue.h \
     dbproject.h \
+    launchdata.h \
     mainmodel.h \
     mainwindow.h \
     menu.h \

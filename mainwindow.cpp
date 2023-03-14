@@ -561,6 +561,7 @@ void MainWindow::buildEditProjectTab()
 void MainWindow::on_pushButton_9_clicked()
 {
     model.addProjectToDB(ui->lineEdit_2->text(),ui->comboBox_4->currentText(), ui->comboBox_9->currentText());
+    buildEditProjectTab();
 }
 
 void MainWindow::on_comboBox_5_currentIndexChanged(const QString &arg1)
@@ -779,6 +780,7 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column)
             QVector<QString> boosterRocketValues;
             int startRow = row;
             QString currentRowTextValue = ui->tableWidget_8->item(row,0)->text();
+            bool brChanged = false;
             if (currentRowTextValue == "Запуск ОКР аппаратов")
                 startRow = row;
             else if (currentRowTextValue == "Запуск серийных аппаратов")
@@ -786,7 +788,10 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column)
             else if (currentRowTextValue == "Блок КА")
                 startRow = row - 2;
             else if (currentRowTextValue == "Ракета-носитель")
+            {
                 startRow = row - 3;
+                brChanged = true;
+            }
             qDebug() << startRow;
             for (int i=startRow;i<startRow+3;i++)
             {
@@ -797,15 +802,16 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column)
             }
             qDebug() <<yearsValues;
             for (int i=1;i<ui->tableWidget_8->columnCount();i++)
-                boosterRocketValues.append(QComboBox(ui->tableWidget_8->cellWidget(startRow+3,i)).currentText());
+                boosterRocketValues.append(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(startRow+3,i))->currentText());
             QString projectName = ui->tableWidget_8->item(startRow-1,0)->text();
-
-            QVector<QVector<QPair<QString,QString>>> valuesVector = model.predictPrices(projectName,yearsValues,boosterRocketValues);
+            QVector<QVector<QPair<QString,QString>>> valuesVector = model.predictPrices(projectName,yearsValues,boosterRocketValues, brChanged, column-1);
             predictionTableEditedByUser = false;
             for (int i=0;i<valuesVector.length()-2;i++)
-                for(int j=1;j<ui->tableWidget_8->rowCount();j++)
+                for(int j=1;j<ui->tableWidget_8->columnCount();j++)
                 {
-                    ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
+                    if (valuesVector[i][j-1].first!="0") ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
+                    else ui->tableWidget_8->item(startRow+i,j)->setText("");
+                    //ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
                     if (valuesVector[i][j-1].second == "normal")
                         ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,255,255));
                     if (valuesVector[i][j-1].second == "current")
@@ -813,14 +819,15 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column)
                     if (valuesVector[i][j-1].second == "expected")
                         ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,244,244));
                 }
-            for(int i=1;i<ui->tableWidget_8->rowCount()-2;i++)
-            {
-                QComboBox(ui->tableWidget_8->cellWidget(startRow+3,i)).setCurrentText(valuesVector[3][i-1].first);
-            }
+//            for(int i=1;i<ui->tableWidget_8->rowCount()-2;i++)
+//            {
+//                QComboBox(ui->tableWidget_8->cellWidget(startRow+3,i)).setCurrentText(valuesVector[3][i-1].first);
+//            }
             for (int i=valuesVector.length()-3;i<valuesVector.length();i++)
-                for(int j=1;j<ui->tableWidget_8->rowCount();j++)
+                for(int j=1;j<ui->tableWidget_8->columnCount();j++)
                 {
-                    ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
+                    if (valuesVector[i][j-1].first!="0") ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
+                    else ui->tableWidget_8->item(startRow+i,j)->setText("");
 //                    if (valuesVector[i][j-1].second == "normal")
 //                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,255,255));
 //                    if (valuesVector[i][j-1].second == "current")

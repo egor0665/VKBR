@@ -64,6 +64,7 @@ public:
     void updateLaunchPricesByIds(int boosterRocketId, int upperBlockId, int spaceportId, int price_year, QString prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload);
     QVector<QVector<int>> getValidLaunchesIds();
     QString getNameFromTableById(QString tableName, int id);
+    qreal getSpacecraftWeightByProjectName(QString projectName);
 };
 
 #endif // DATABASE_H

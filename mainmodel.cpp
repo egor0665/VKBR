@@ -616,18 +616,20 @@ QVector<qreal> MainModel::pricesToVector(QString prices)
     return pricesVector;
 }
 
-QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projectName, QVector<QVector<int>> yearsValues, QVector<QString> boosterRocketValues)
+QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projectName, QVector<QVector<int>> yearsValues, QVector<QString> boosterRocketValues, bool brChanged, int column)
 {
     ProjectSet currentProject = predictionModel.getProjectSetByName(projectName);
     int unitLifeTime = predictionModel.getUnitLifetime(projectName);
     QVector<QVector<QPair<QString,QString>>> tmp;
     QVector <qreal> unitPrices ({0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+    QVector <qreal> boosterRocketPrices ({0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
     QVector <int> okrYears = yearsValues[0];
     QVector <int> serialYears = yearsValues[1];
     QVector <int> blockValues = yearsValues[2];
     bool firstUnit = true;
-    int difPreFirstUnit = currentProject.getFirstUnitStartYear() - (currentProject.getPrePricesStartYear());
-    qDebug() <<difPreFirstUnit;
+    int difPreFirstUnit = currentProject.getFirstUnitStartYear() - currentProject.getPrePricesStartYear();
+    int difPostLastUnit = -1* (currentProject.getPostPricesStartYear() + currentProject.getPostPrices().length() - currentProject.getLastUnitStartYear() - currentProject.getLastUnitPrices().length() );
+    qDebug() << difPreFirstUnit;
 
     QVector<QPair<QString,QString>> unitResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
     QVector<QPair<QString,QString>> serialUnitResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
@@ -636,33 +638,95 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
     QVector<QPair<QString,QString>> unitPricesResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
     QVector<QPair<QString,QString>> rocketPricesResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
 
-    for (int i=0;i<okrYears.length();i++)
-    {
+    int lastUnitYear = 0;
+    for (int i=okrYears.length()-1;i > -1;i--)
         if (okrYears[i]>0)
         {
+            lastUnitYear = i;
+            break;
+        }
+
+
+    for (int i=0;i<okrYears.length();i++)
+    {
+        if (okrYears[i]>0 || serialYears[i]>0)
+        {
             int curYear = i;
-            if (firstUnit)
+            if (okrYears[i]>0)
             {
-                for (int j=currentProject.getPrePrices().length()-1;j>-1;j--)
+                if (firstUnit)
                 {
-                    if (curYear-difPreFirstUnit>=0)
-                        unitPrices[curYear-difPreFirstUnit]+=currentProject.getPrePrices()[j];
+                    for (int j=currentProject.getPrePrices().length()-1;j>-1;j--)
+                    {
+                        if (curYear-difPreFirstUnit>=0 && curYear-difPostLastUnit<okrYears.length())
+                            unitPrices[curYear-difPreFirstUnit]+=currentProject.getPrePrices()[j];
+                        curYear--;
+                    }
+                }
+                curYear = i;
+                if (i == lastUnitYear)
+                {
+                    for (int j=currentProject.getPostPrices().length()-1;j>-1;j--)
+                    {
+                        if (curYear-difPostLastUnit>=0 && curYear-difPostLastUnit<okrYears.length())
+                            unitPrices[curYear-difPostLastUnit]+=currentProject.getPostPrices()[j];
+                        curYear--;
+                    }
+                }
+                curYear = i;
+                for (int j=currentProject.getFirstUnitPrices().length()-1;j>-1;j--)
+                {
+                    if (curYear>=0&& curYear<okrYears.length())
+                        unitPrices[curYear]+=currentProject.getFirstUnitPrices()[j]*okrYears[i];
+                    curYear--;
+                }
+
+            }
+            if (serialYears[i]>0)
+            {
+                int curYear = i;
+                for (int j=currentProject.getFirstUnitPrices().length()-1;j>-1;j--)
+                {
+                    if (curYear>=0&& curYear<okrYears.length())
+                        unitPrices[curYear]+=currentProject.getSerialPrices()[j]*serialYears[i];
                     curYear--;
                 }
             }
-            curYear = i;
-            for (int j=currentProject.getFirstUnitPrices().length()-1;j>-1;j--)
-            {
-                if (curYear>=0)
-                    unitPrices[curYear]+=currentProject.getFirstUnitPrices()[j];
-                curYear--;
-            }
+            qreal spacecraftWeigth = db.getSpacecraftWeightByProjectName(projectName);
             firstUnit = false;
+            int fInd;
+            int sInd;
+            fInd = boosterRocketValues[i].indexOf(" ");
+            QString boosterRocketName = boosterRocketValues[i].mid(0,fInd);
+            sInd = boosterRocketValues[i].indexOf("(");
+            QString upperBlockName = boosterRocketValues[i].mid(fInd+3,sInd-(fInd+4));
+            QString spaceportName = boosterRocketValues[i].mid(sInd+1, boosterRocketValues[i].length()-(sInd+2));
+            DBlaunch currentLaunch = db.getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName);
+            QPair<QVector<qreal>,int> boosterRocketPricesYear = pricesTextToVector(currentLaunch.prices());
+            QVector<qreal> boosterRocketPricestmp = boosterRocketPricesYear.first;
+            int boosterRocketStartYear = boosterRocketPricesYear.second;
+            curYear = i;
+            if (currentLaunch.max_payload() >= spacecraftWeigth){
+                if ((blockValues[i]==0)|| (brChanged && column == i)) blockValues[i] = currentLaunch.max_payload() / spacecraftWeigth;
+                for (int j=boosterRocketPricestmp.length()-1;j>-1;j--)
+                {
+                    if (curYear>=0 && curYear<okrYears.length())
+                        boosterRocketPrices[curYear]+=boosterRocketPricestmp[j]*int(((okrYears[i]+serialYears[i])+blockValues[i]-1)/blockValues[i]);
+                    curYear--;
+                }
+
+            }
+        }
+        else
+        {
+            blockValues[i]=0;
         }
     }
 
-    bool lastUnit = true;
-    for (int i=okrYears.length()-1;i>-1;i--)
+
+    bool expected = false;
+    int expectedYears = -1;
+    for (int i=0;i<okrYears.length();i++)
     {
         unitResultValues[i].first = QString::number(okrYears[i]);
         unitResultValues[i].second = "normal";
@@ -676,23 +740,24 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
 
         unitPricesResultValues[i].first = QString::number(unitPrices[i]);
         unitPricesResultValues[i].second = "number";
-        rocketPricesResultValues[i].first = QString::number(0);
+        rocketPricesResultValues[i].first = QString::number(boosterRocketPrices[i]);
         rocketPricesResultValues[i].second = "number";
-
-        if (okrYears[i]>0)
-            unitResultValues[i].second = "current";
-        if (serialYears[i]>0)
-            serialUnitResultValues[i].second = "current";
-        if ((lastUnit) && (okrYears[i]>0 || serialYears[i]>0))
+        if (okrYears[i]>0 || serialYears[i]>0)
         {
-            if (i+unitLifeTime < okrYears.length())
-            {
-                unitResultValues[i+unitLifeTime].second = "expected";
-                serialUnitResultValues[i+unitLifeTime].second = "expected";
-            }
-            lastUnit = false;
+            if (okrYears[i]>0)
+                unitResultValues[i].second = "current";
+            if (serialYears[i]>0)
+                serialUnitResultValues[i].second = "current";
+            expected = true;
+            expectedYears = unitLifeTime;
         }
-
+        if (expectedYears == 0)
+        {
+            expected = false;
+            unitResultValues[i].second = "expected";
+            serialUnitResultValues[i].second = "expected";
+        }
+        expectedYears --;
     }
 
     QVector<QVector<QPair<QString,QString>>> resultVector;
@@ -703,7 +768,7 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
     resultVector.append(unitPricesResultValues);
     resultVector.append(rocketPricesResultValues);
     //resultVector.append(unitPrices);
-    qDebug()<<resultVector;
+    //qDebug()<<resultVector;
     return resultVector;
 }
 

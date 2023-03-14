@@ -521,7 +521,7 @@ QVector <QString> database::getUnitNamesByType(QString type)
 
 DBlaunch database::getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport)
 {
-    DBlaunch  launch;
+    DBlaunch launch;
     QSqlQuery query;
     query.exec("SELECT lnch.id, lnch.booster_rocket_id, lnch.upper_block_id, lnch.spaceport_id, lnch.price_year, lnch.prices, lnch.launch_price, lnch.delivery_price, lnch.min_payload, lnch.max_payload "
                "FROM launch lnch, unit unt1, unit unt2, spaceport spcprt "
@@ -558,7 +558,7 @@ int database::getSpacecraftLifetimeById(int unitId)
 void database::updateLaunchPricesByIds(int boosterRocketId, int upperBlockId, int spaceportId, int price_year, QString prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload)
 {
     QSqlQuery query;
-    QString queryString = "UPDATE public.launch SET price_year = " + QString::number(price_year) + ", prices = '" + prices + "', delivery_price = " + QString::number(delivery_price) + ", min_payload = " + QString::number(min_payload) + ", max_payload = " + QString::number(max_payload) + ", valid = true WHERE booster_rocket_id = " + QString::number(boosterRocketId) + " AND upper_block_id = " + QString::number(upperBlockId) + " AND spaceport_id = " + QString::number(spaceportId);
+    QString queryString = "UPDATE public.launch SET price_year = " + QString::number(price_year) + ", prices = '" + prices + "', launch_price = " + QString::number(launch_price) + ", delivery_price = " + QString::number(delivery_price) + ", min_payload = " + QString::number(min_payload) + ", max_payload = " + QString::number(max_payload) + ", valid = true WHERE booster_rocket_id = " + QString::number(boosterRocketId) + " AND upper_block_id = " + QString::number(upperBlockId) + " AND spaceport_id = " + QString::number(spaceportId);
     qDebug() <<queryString;
     query.exec(queryString);
     qDebug() << query.lastError().text();
@@ -584,10 +584,24 @@ QString database::getNameFromTableById(QString tableName, int id)
     QString name;
     QSqlQuery query;
     query.exec("SELECT name FROM " + tableName + " WHERE id = " + QString::number(id));
-    while (query.next()) {
-           name = query.value(0).toString().trimmed();
-       }
+    while (query.next())
+    {
+        name = query.value(0).toString().trimmed();
+    }
     return name;
+}
+
+qreal database::getSpacecraftWeightByProjectName(QString projectName)
+{
+    qreal weight;
+    QSqlQuery query;
+    query.exec("SELECT sc.weight FROM project pr, spacecraft sc WHERE pr.name LIKE '" + projectName + "%' AND pr.unit_id = sc.id");
+    while (query.next())
+    {
+        weight = query.value(0).toString().trimmed().toDouble();
+    }
+
+    return weight;
 }
 //QString database::getSpaceportsInfoByUnitId(int unitId)
 //{
