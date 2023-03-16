@@ -645,7 +645,38 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
             lastUnitYear = i;
             break;
         }
+    QVector<qreal> inflationPercents = db.getInflationPercents(2024,2040);
+    qDebug() << inflationPercents;
+    qreal inflationMatrix [inflationPercents.length()][inflationPercents.length()];
 
+    for (int i=0;i<inflationPercents.length();i++)
+            inflationMatrix[i][i] = 1;
+    QString debugMatrix = "";
+    for (int i=0;i<inflationPercents.length();i++)
+    {
+        for (int j=i+1;j<inflationPercents.length();j++)
+        {
+            inflationMatrix[i][j] = inflationMatrix[i][j-1] * inflationPercents[j];
+        }
+    }
+
+    for (int i=0;i<inflationPercents.length();i++)
+    {
+        for (int j=i-1;j>=0;j--)
+        {
+            inflationMatrix[i][j] = 1/(inflationMatrix[i][j+1] * inflationPercents[j+1]);
+        }
+    }
+
+    for (int i=0;i<inflationPercents.length();i++)
+    {
+        for (int j=0;j<inflationPercents.length();j++)
+        {
+            debugMatrix += QString::number(inflationMatrix[i][j]) + " ";
+        }
+        debugMatrix += '\n' ;
+    }
+    qDebug() << debugMatrix;
 
     for (int i=0;i<okrYears.length();i++)
     {
@@ -659,7 +690,7 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
                     for (int j=currentProject.getPrePrices().length()-1;j>-1;j--)
                     {
                         if (curYear-difPreFirstUnit>=0 && curYear-difPostLastUnit<okrYears.length())
-                            unitPrices[curYear-difPreFirstUnit]+=currentProject.getPrePrices()[j];
+                            unitPrices[curYear-difPreFirstUnit]+=currentProject.getPrePrices()[j]*inflationMatrix[currentProject.getPrePricesStartYear()-2024][curYear-difPreFirstUnit-j];
                         curYear--;
                     }
                 }
@@ -669,7 +700,7 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
                     for (int j=currentProject.getPostPrices().length()-1;j>-1;j--)
                     {
                         if (curYear-difPostLastUnit>=0 && curYear-difPostLastUnit<okrYears.length())
-                            unitPrices[curYear-difPostLastUnit]+=currentProject.getPostPrices()[j];
+                            unitPrices[curYear-difPostLastUnit]+=currentProject.getPostPrices()[j]*inflationMatrix[currentProject.getPostPricesStartYear()-currentProject.getPostPrices().length()-2024][curYear-difPostLastUnit-j];
                         curYear--;
                     }
                 }
@@ -677,7 +708,7 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
                 for (int j=currentProject.getFirstUnitPrices().length()-1;j>-1;j--)
                 {
                     if (curYear>=0&& curYear<okrYears.length())
-                        unitPrices[curYear]+=currentProject.getFirstUnitPrices()[j]*okrYears[i];
+                        unitPrices[curYear]+=currentProject.getFirstUnitPrices()[j]*okrYears[i] *inflationMatrix[currentProject.getFirstUnitStartYear()-2024][curYear-j];
                     curYear--;
                 }
 
@@ -688,7 +719,7 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
                 for (int j=currentProject.getFirstUnitPrices().length()-1;j>-1;j--)
                 {
                     if (curYear>=0&& curYear<okrYears.length())
-                        unitPrices[curYear]+=currentProject.getSerialPrices()[j]*serialYears[i];
+                        unitPrices[curYear]+=currentProject.getSerialPrices()[j]*serialYears[i]*inflationMatrix[currentProject.getSerialPricesStartYear()-2024][curYear-j];
                     curYear--;
                 }
             }
@@ -702,16 +733,20 @@ QVector<QVector<QPair<QString,QString>>> MainModel::predictPrices(QString projec
             QString upperBlockName = boosterRocketValues[i].mid(fInd+3,sInd-(fInd+4));
             QString spaceportName = boosterRocketValues[i].mid(sInd+1, boosterRocketValues[i].length()-(sInd+2));
             DBlaunch currentLaunch = db.getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName);
+            qreal launchPrice = currentLaunch.launch_price();
+            qreal deliveryPrice = currentLaunch.delivery_price();
+            int launchDeliveryStartYear = currentLaunch.price_year();
             QPair<QVector<qreal>,int> boosterRocketPricesYear = pricesTextToVector(currentLaunch.prices());
             QVector<qreal> boosterRocketPricestmp = boosterRocketPricesYear.first;
             int boosterRocketStartYear = boosterRocketPricesYear.second;
             curYear = i;
             if (currentLaunch.max_payload() >= spacecraftWeigth){
+                boosterRocketPrices[curYear]+=(launchPrice+deliveryPrice)*inflationMatrix[launchDeliveryStartYear -2024][curYear];
                 if ((blockValues[i]==0)|| (brChanged && column == i)) blockValues[i] = currentLaunch.max_payload() / spacecraftWeigth;
                 for (int j=boosterRocketPricestmp.length()-1;j>-1;j--)
                 {
                     if (curYear>=0 && curYear<okrYears.length())
-                        boosterRocketPrices[curYear]+=boosterRocketPricestmp[j]*int(((okrYears[i]+serialYears[i])+blockValues[i]-1)/blockValues[i]);
+                        boosterRocketPrices[curYear]+=boosterRocketPricestmp[j]*int(((okrYears[i]+serialYears[i])+blockValues[i]-1)/blockValues[i])*inflationMatrix[boosterRocketStartYear-2024][curYear-j];
                     curYear--;
                 }
 

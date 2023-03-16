@@ -603,6 +603,19 @@ qreal database::getSpacecraftWeightByProjectName(QString projectName)
 
     return weight;
 }
+
+QVector<qreal> database::getInflationPercents(int startYear, int endYear)
+{
+    QVector<qreal> inflationPercents;
+    QSqlQuery query;
+    query.exec("SELECT percent FROM inflation WHERE year >= " + QString::number(startYear) + " AND year <= " + QString::number(endYear) + " ORDER BY year");
+    while (query.next())
+    {
+        inflationPercents.append(query.value(0).toString().trimmed().toDouble());
+    }
+
+    return inflationPercents;
+}
 //QString database::getSpaceportsInfoByUnitId(int unitId)
 //{
 //    QSqlQuery query;

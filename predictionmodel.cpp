@@ -116,3 +116,13 @@ int PredictionModel::getUnitLifetime(QString projectName)
             return projects[i].getActiveLifetime();
     }
 }
+
+const QVector<qreal> &PredictionModel::getInflationPercents() const
+{
+    return inflationPercents;
+}
+
+void PredictionModel::setInflationPercents(const QVector<qreal> &newInflationPercents)
+{
+    inflationPercents = newInflationPercents;
+}

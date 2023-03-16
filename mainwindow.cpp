@@ -703,7 +703,7 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
             ui->tableWidget_8->setItem(2 + index, 0,  new QTableWidgetItem("Запуск серийных аппаратов"));
             ui->tableWidget_8->setItem(3 + index, 0,  new QTableWidgetItem("Блок КА"));
             ui->tableWidget_8->setItem(4 + index, 0,  new QTableWidgetItem("Ракета-носитель"));
-            ui->tableWidget_8->setItem(5 + index, 0,  new QTableWidgetItem("Цены 1"));
+            ui->tableWidget_8->setItem(5 + index, 0,  new QTableWidgetItem("Цены КА ОКР+Серия"));
             ui->tableWidget_8->setItem(6 + index, 0,  new QTableWidgetItem("Цены РН"));
             ui->tableWidget_8->item(1 + index, 0)->setFlags(Qt::ItemIsEnabled);
             ui->tableWidget_8->item(2 + index, 0)->setFlags(Qt::ItemIsEnabled);

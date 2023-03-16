@@ -13,6 +13,7 @@ public:
     const QVector<ProjectSet> &getProjects() const;
     void setProjects(const QVector<ProjectSet> &newProjects);
 
+
     void removeProject(QString projectName);
 
     bool projectInModel(QString projectName);
@@ -23,6 +24,9 @@ public:
     QString getProjectType(QString projectName);
     ProjectSet getProjectSetByName(QString projectName);
     int getUnitLifetime(QString projectName);
+    const QVector<qreal> &getInflationPercents() const;
+    void setInflationPercents(const QVector<qreal> &newInflationPercents);
+
 protected:
     QVector <ProjectSet> projects;
     QVector <qreal> inflationPercents;

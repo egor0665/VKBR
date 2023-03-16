@@ -65,6 +65,7 @@ public:
     QVector<QVector<int>> getValidLaunchesIds();
     QString getNameFromTableById(QString tableName, int id);
     qreal getSpacecraftWeightByProjectName(QString projectName);
+    QVector<qreal> getInflationPercents(int startYear, int endYear);
 };
 
 #endif // DATABASE_H
