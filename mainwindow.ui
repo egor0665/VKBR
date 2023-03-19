@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>822</width>
-    <height>600</height>
+    <width>1266</width>
+    <height>797</height>
    </rect>
   </property>
   <property name="palette">
@@ -502,7 +502,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>6</number>
+         <number>3</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -515,7 +515,7 @@
         </property>
         <widget class="QWidget" name="tab_7">
          <attribute name="title">
-          <string>Страница</string>
+          <string>Расчет</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_18">
           <item>
@@ -543,7 +543,7 @@
         </widget>
         <widget class="QWidget" name="tab">
          <attribute name="title">
-          <string>Tab 1</string>
+          <string>Каталог</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
@@ -556,8 +556,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>756</width>
-               <height>482</height>
+               <width>1200</width>
+               <height>679</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -589,7 +589,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>274</width>
-                     <height>460</height>
+                     <height>657</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout">
@@ -839,7 +839,7 @@
         </widget>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
-          <string>Tab 2</string>
+          <string>Сравнение</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
@@ -851,8 +851,8 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-452</y>
-               <width>739</width>
+               <y>0</y>
+               <width>1183</width>
                <height>934</height>
               </rect>
              </property>
@@ -1177,7 +1177,7 @@
         </widget>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
-          <string>Tab 3</string>
+          <string>Доб. Ап.</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_11">
           <item>
@@ -1189,287 +1189,293 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-205</y>
-               <width>739</width>
-               <height>656</height>
+               <y>0</y>
+               <width>1183</width>
+               <height>680</height>
               </rect>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_10">
+             <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_9">
+               <layout class="QHBoxLayout" name="horizontalLayout_10">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_10">
-                  <item>
-                   <widget class="QLabel" name="label_12">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>200</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>300</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
+                 <widget class="QLabel" name="label_12">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>200</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>300</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>dfs</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QFormLayout" name="formLayout">
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_30">
                     <property name="text">
-                     <string/>
+                     <string>Название</string>
                     </property>
                    </widget>
                   </item>
-                  <item>
-                   <layout class="QFormLayout" name="formLayout">
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_30">
-                      <property name="text">
-                       <string>Название</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QLineEdit" name="lineEditUnitName"/>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_33">
-                      <property name="text">
-                       <string>Класс</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QComboBox" name="comboBoxUnitClass">
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(249, 249, 249)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_31">
-                      <property name="text">
-                       <string>Назначение</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QTextEdit" name="textEditUnitPurpose"/>
-                    </item>
-                    <item row="5" column="0">
-                     <widget class="QLabel" name="label_32">
-                      <property name="text">
-                       <string>Проектный</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="1">
-                     <widget class="QComboBox" name="comboBoxUnitProject">
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(249, 249, 249)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="0">
-                     <widget class="QLabel" name="label_18">
-                      <property name="text">
-                       <string>Цель</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="1">
-                     <widget class="QTextEdit" name="textEditUnitObjective"/>
-                    </item>
-                    <item row="7" column="0">
-                     <widget class="QLabel" name="label_19">
-                      <property name="text">
-                       <string>Состояние работ</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="1">
-                     <widget class="QLineEdit" name="lineEditUnitWorkStatus"/>
-                    </item>
-                    <item row="8" column="0">
-                     <widget class="QLabel" name="label_20">
-                      <property name="text">
-                       <string>Разработчик 1</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="8" column="1">
-                     <widget class="QComboBox" name="comboBoxUnitDeveloperId">
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(249, 249, 249)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="0">
-                     <widget class="QLabel" name="label_21">
-                      <property name="text">
-                       <string>Разработчик 2</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="1">
-                     <widget class="QComboBox" name="comboBoxUnitExtraDeveloperId">
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(249, 249, 249)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="10" column="0">
-                     <widget class="QLabel" name="label_22">
-                      <property name="text">
-                       <string>Производитель</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="10" column="1">
-                     <widget class="QComboBox" name="comboBoxUnitManufacturerId">
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(249, 249, 249)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="11" column="0">
-                     <widget class="QLabel" name="label_23">
-                      <property name="text">
-                       <string>Запусков</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="11" column="1">
-                     <widget class="QSpinBox" name="spinBoxUnitLaunches"/>
-                    </item>
-                    <item row="12" column="0">
-                     <widget class="QLabel" name="label_24">
-                      <property name="text">
-                       <string>Успешных запусков</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="12" column="1">
-                     <widget class="QSpinBox" name="spinBoxUnitSuccessfulLaunches"/>
-                    </item>
-                    <item row="13" column="0">
-                     <widget class="QLabel" name="label_25">
-                      <property name="text">
-                       <string>Заказчик</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="13" column="1">
-                     <widget class="QComboBox" name="comboBoxUnitCustomer">
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(249, 249, 249)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="14" column="0">
-                     <widget class="QLabel" name="label_26">
-                      <property name="text">
-                       <string>Первый запуск</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="14" column="1">
-                     <widget class="QDateTimeEdit" name="dateTimeEditFirstLaunch">
-                      <property name="displayFormat">
-                       <string>yyyy-mm-dd HH:mm:ss</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="15" column="0">
-                     <widget class="QLabel" name="label_27">
-                      <property name="text">
-                       <string>Космодром первого запуска</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="15" column="1">
-                     <widget class="QComboBox" name="comboBoxUnitFirstLaunchSpaceport">
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(249, 249, 249)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="16" column="0">
-                     <widget class="QLabel" name="label_28">
-                      <property name="text">
-                       <string>Тип финансирования</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="16" column="1">
-                     <widget class="QLineEdit" name="lineEditFinancingType"/>
-                    </item>
-                    <item row="17" column="0">
-                     <widget class="QLabel" name="label_29">
-                      <property name="text">
-                       <string>Система контроля</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="17" column="1">
-                     <widget class="QLineEdit" name="lineEditControlSystem"/>
-                    </item>
-                    <item row="20" column="0">
-                     <widget class="QLabel" name="label_13">
-                      <property name="text">
-                       <string>Изображение</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="20" column="1">
-                     <widget class="QPushButton" name="pushButton_4">
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(249, 249, 249)</string>
-                      </property>
-                      <property name="text">
-                       <string>PushButton</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="21" column="1">
-                     <widget class="QLabel" name="labelUnitImageURL">
-                      <property name="text">
-                       <string>TextLabel</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="18" column="1">
-                     <widget class="QDoubleSpinBox" name="doubleSpinBoxUnitPrice"/>
-                    </item>
-                    <item row="19" column="1">
-                     <widget class="QSpinBox" name="spinBoxUnitPriceYear"/>
-                    </item>
-                    <item row="18" column="0">
-                     <widget class="QLabel" name="label_14">
-                      <property name="text">
-                       <string>Цена</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="19" column="0">
-                     <widget class="QLabel" name="label_17">
-                      <property name="text">
-                       <string>Год цены</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+                  <item row="3" column="1">
+                   <widget class="QLineEdit" name="lineEditUnitName"/>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_33">
+                    <property name="text">
+                     <string>Класс</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QComboBox" name="comboBoxUnitClass">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(249, 249, 249)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_31">
+                    <property name="text">
+                     <string>Назначение</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QTextEdit" name="textEditUnitPurpose"/>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="label_32">
+                    <property name="text">
+                     <string>Проектный</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="QComboBox" name="comboBoxUnitProject">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(249, 249, 249)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="label_18">
+                    <property name="text">
+                     <string>Цель</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="QTextEdit" name="textEditUnitObjective"/>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="label_19">
+                    <property name="text">
+                     <string>Состояние работ</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="1">
+                   <widget class="QLineEdit" name="lineEditUnitWorkStatus"/>
+                  </item>
+                  <item row="9" column="0">
+                   <widget class="QLabel" name="label_20">
+                    <property name="text">
+                     <string>Разработчик 1</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="1">
+                   <widget class="QComboBox" name="comboBoxUnitDeveloperId">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(249, 249, 249)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="0">
+                   <widget class="QLabel" name="label_21">
+                    <property name="text">
+                     <string>Разработчик 2</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="1">
+                   <widget class="QComboBox" name="comboBoxUnitExtraDeveloperId">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(249, 249, 249)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="0">
+                   <widget class="QLabel" name="label_22">
+                    <property name="text">
+                     <string>Производитель</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="1">
+                   <widget class="QComboBox" name="comboBoxUnitManufacturerId">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(249, 249, 249)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="0">
+                   <widget class="QLabel" name="label_23">
+                    <property name="text">
+                     <string>Запусков</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="1">
+                   <widget class="QSpinBox" name="spinBoxUnitLaunches"/>
+                  </item>
+                  <item row="13" column="0">
+                   <widget class="QLabel" name="label_24">
+                    <property name="text">
+                     <string>Успешных запусков</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="1">
+                   <widget class="QSpinBox" name="spinBoxUnitSuccessfulLaunches"/>
+                  </item>
+                  <item row="14" column="0">
+                   <widget class="QLabel" name="label_25">
+                    <property name="text">
+                     <string>Заказчик</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="14" column="1">
+                   <widget class="QComboBox" name="comboBoxUnitCustomer">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(249, 249, 249)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="15" column="0">
+                   <widget class="QLabel" name="label_26">
+                    <property name="text">
+                     <string>Первый запуск</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="15" column="1">
+                   <widget class="QDateTimeEdit" name="dateTimeEditFirstLaunch">
+                    <property name="displayFormat">
+                     <string>yyyy-MM-dd HH:mm:ss</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="16" column="0">
+                   <widget class="QLabel" name="label_27">
+                    <property name="text">
+                     <string>Космодром первого запуска</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="16" column="1">
+                   <widget class="QComboBox" name="comboBoxUnitFirstLaunchSpaceport">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(249, 249, 249)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="17" column="0">
+                   <widget class="QLabel" name="label_28">
+                    <property name="text">
+                     <string>Тип финансирования</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="17" column="1">
+                   <widget class="QLineEdit" name="lineEditFinancingType"/>
+                  </item>
+                  <item row="18" column="0">
+                   <widget class="QLabel" name="label_29">
+                    <property name="text">
+                     <string>Система контроля</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="18" column="1">
+                   <widget class="QLineEdit" name="lineEditControlSystem"/>
+                  </item>
+                  <item row="19" column="0">
+                   <widget class="QLabel" name="label_14">
+                    <property name="text">
+                     <string>Цена</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="19" column="1">
+                   <widget class="QDoubleSpinBox" name="doubleSpinBoxUnitPrice"/>
+                  </item>
+                  <item row="20" column="0">
+                   <widget class="QLabel" name="label_17">
+                    <property name="text">
+                     <string>Год цены</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="20" column="1">
+                   <widget class="QSpinBox" name="spinBoxUnitPriceYear"/>
+                  </item>
+                  <item row="21" column="0">
+                   <widget class="QLabel" name="label_13">
+                    <property name="text">
+                     <string>Изображение</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="21" column="1">
+                   <widget class="QPushButton" name="pushButton_4">
+                    <property name="styleSheet">
+                     <string notr="true">background-color: rgb(249, 249, 249)</string>
+                    </property>
+                    <property name="text">
+                     <string>PushButton</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="22" column="1">
+                   <widget class="QLabel" name="labelUnitImageURL">
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QComboBox" name="comboBox_10"/>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_52">
+                    <property name="text">
+                     <string>Аппарат / Добавить новый</string>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </item>
-                <item>
-                 <layout class="QFormLayout" name="formLayout_3"/>
-                </item>
                </layout>
+              </item>
+              <item>
+               <layout class="QFormLayout" name="formLayout_3"/>
               </item>
              </layout>
             </widget>
@@ -1516,7 +1522,7 @@
         </widget>
         <widget class="QWidget" name="tab_4">
          <attribute name="title">
-          <string>Страница</string>
+          <string>Доб. Орг., Косм., Пуски</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
@@ -1529,8 +1535,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>756</width>
-               <height>482</height>
+               <width>1200</width>
+               <height>679</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_20">
@@ -1858,7 +1864,7 @@
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
-          <string>Страница</string>
+          <string>Ред. БД</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_15">
           <item>
@@ -1933,7 +1939,7 @@
         </widget>
         <widget class="QWidget" name="tab_6">
          <attribute name="title">
-          <string>Страница</string>
+          <string>Доб. пр.</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_17">
           <item>
@@ -2083,7 +2089,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>822</width>
+     <width>1266</width>
      <height>21</height>
     </rect>
    </property>

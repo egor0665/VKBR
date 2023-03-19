@@ -12,11 +12,19 @@
 #include <QtCharts/qpolarchart.h>
 #include <QtCharts/QtCharts>
 
+#include <tabPredictionModel.h>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    tabPredictionModel = TabPredictionModel(&model);
+    tabNewProjectModel = TabNewProjectModel(&model);
+    tabEditDBModel = TabEditDBModel(&model);
+    tabNewExtrasModel = TabNewExtrasModel(&model);
+    tabNewCraftModel = TabNewCraftModel(&model);
+    tabCatalogAndComparisonModel = TabCatalogAndComparisonModel(&model);
     rebuildTabs();
     //loginWindow = userLoginWindow(this);
 }
@@ -52,7 +60,7 @@ void MainWindow::buildDisplayTab()
 {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->treeWidget);
     ui->treeWidget->setColumnCount(1);
-    model.createNavigationTree(treeItem);
+    tabCatalogAndComparisonModel.createNavigationTree(treeItem);
     ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
 }
 
@@ -70,8 +78,8 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
     int rowCount = ui->tableWidget->rowCount();
 
-    int unitId = model.getUnitIdByName(item->text(0));
-    QVector<QPair<QString,QString>> values = model.getUnitData(unitId);
+    int unitId = tabCatalogAndComparisonModel.getUnitIdByName(item->text(0));
+    QVector<QPair<QString,QString>> values = tabCatalogAndComparisonModel.getUnitData(unitId);
     for (int i=0;i<values.length(); i++){
         ui->tableWidget->insertRow(rowCount);
         ui->tableWidget->setItem(rowCount,1, new QTableWidgetItem(values[i].first));
@@ -79,7 +87,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
         rowCount++;
     }
     //---------------------
-    QImage picture = QImage(model.getUnitImageFromId(unitId));
+    QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId));
     ui->label->setPixmap(QPixmap::fromImage(picture));
     picture = QImage("C:\\Catalog\\Scheme");
     ui->label_6->setPixmap(QPixmap::fromImage(picture));
@@ -128,11 +136,11 @@ void MainWindow::rebuildCompareTable(QString unitName1, QString unitName2)
     ui->tableWidget_4->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_4->setEditTriggers(QTableWidget::NoEditTriggers);
 
-    int unitId_1 = model.getUnitIdByName(unitName1);
-    int unitId_2 = model.getUnitIdByName(unitName2);
-    QVector<QPair<QString,QString>> values_1 = model.getUnitData(unitId_1);
-    QVector<QPair<QString,QString>> values_2 = model.getUnitData(unitId_2);
-    QVector<QPair<QString,QStringList>> compareVector = model.formCompareTable(values_1, values_2);
+    int unitId_1 = tabCatalogAndComparisonModel.getUnitIdByName(unitName1);
+    int unitId_2 = tabCatalogAndComparisonModel.getUnitIdByName(unitName2);
+    QVector<QPair<QString,QString>> values_1 = tabCatalogAndComparisonModel.getUnitData(unitId_1);
+    QVector<QPair<QString,QString>> values_2 = tabCatalogAndComparisonModel.getUnitData(unitId_2);
+    QVector<QPair<QString,QStringList>> compareVector = tabCatalogAndComparisonModel.formCompareTable(values_1, values_2);
     int rowCount = 0;
     for (int i=0;i<compareVector.length(); i++){
             ui->tableWidget_4->insertRow(rowCount);
@@ -142,9 +150,9 @@ void MainWindow::rebuildCompareTable(QString unitName1, QString unitName2)
             rowCount++;
     }
 
-    QImage picture = QImage(model.getUnitImageFromId(unitId_1));
+    QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1));
     ui->label_7->setPixmap(QPixmap::fromImage(picture).scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
-    picture = QImage(model.getUnitImageFromId(unitId_2));
+    picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2));
     ui->label_8->setPixmap(QPixmap::fromImage(picture).scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
 
     ui->tableWidget_4->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -167,7 +175,7 @@ void MainWindow::on_tableWidget_4_cellDoubleClicked(int row, int column)
         comparator.removeValuesFromComparison(ui->tableWidget_4->item(row,0)->text());
         QVector <qreal> tmpValues;
         for (int i = 1;i<ui->tableWidget_4->columnCount();i++)
-            tmpValues.append(1/model.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0));
+            tmpValues.append(1/tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0));
 
         comparator.addValuesToComparison(ui->tableWidget_4->item(row,0)->text(), tmpValues);
         color = Qt::yellow;
@@ -176,7 +184,7 @@ void MainWindow::on_tableWidget_4_cellDoubleClicked(int row, int column)
     {
         QVector <qreal> tmpValues;
         for (int i = 1;i<ui->tableWidget_4->columnCount();i++)
-            tmpValues.append(model.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0));
+            tmpValues.append(tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0));
         comparator.addValuesToComparison(ui->tableWidget_4->item(row,0)->text(), tmpValues);
 
         color = Qt::green;
@@ -185,7 +193,7 @@ void MainWindow::on_tableWidget_4_cellDoubleClicked(int row, int column)
     for(int i=0;i<ui->tableWidget_4->columnCount();i++){
         ui->tableWidget_4->item(row,i)->setBackgroundColor(color);
     }
-    model.getNumberFromString(ui->tableWidget_4->item(row,column)->text());
+    tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,column)->text());
     buildChart();
     buildChartTable();
 }
@@ -213,6 +221,9 @@ void MainWindow::buildChartTable()
         }
     }
 }
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+// ПЕРЕНЕСТИ В МОДЕЛЬ
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 void MainWindow::buildChart()
 {
     if (comparator.isEmpty()) return ;
@@ -276,6 +287,8 @@ void MainWindow::buildAddUnitTab()
     QStringList spaceportNames = model.getNamesFromTableStringList("spaceport");
 
     ui->comboBoxUnitFirstLaunchSpaceport->addItems(spaceportNames);
+
+    ui->comboBox_10->addItems(model.QVectorToQStringList(model.getNamesFromTable("unit")));
 }
 
 void MainWindow::on_comboBoxUnitClass_currentIndexChanged(const QString &arg1)
@@ -360,7 +373,7 @@ void MainWindow::on_pushButton_2_clicked()
         physInfo = physInfoField->toPlainText();
     }
 
-    model.addUnitToDB(
+    tabNewCraftModel.addUnitToDB(
                 ui->comboBoxUnitClass->currentText(),
                 ui->lineEditUnitName->text(),
                 ui->textEditUnitPurpose->toPlainText(),
@@ -397,13 +410,6 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::buildAddExtrasTab()
 {
-    ui->comboBox_4->addItems({"Связь", "ДЗЗ", "ФКИ", "Другое"});
-    ui->comboBox_9->addItems(model.getNamesFromTableStringList("unit"));
-    ui->comboBox_6->addItems(model.getUnitNamesByTypeStringList("РН"));
-    ui->comboBox_7->addItems(model.getUnitNamesByTypeStringList("РБ"));
-    ui->comboBox_8->addItems(model.getNamesFromTableStringList("spaceport"));
-
-
     ui->tableWidget_9->clearContents();
     ui->tableWidget_9->setRowCount(0);
     ui->tableWidget_9->setColumnCount(18); // Указываем число колонок
@@ -413,18 +419,21 @@ void MainWindow::buildAddExtrasTab()
     ui->tableWidget_9->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_9->insertRow(0);
     ui->tableWidget_9->setItem(0, 0,  new QTableWidgetItem("Цены"));
-
-
+    ui->comboBox_4->addItems({"Связь", "ДЗЗ", "ФКИ", "Другое"});
+    ui->comboBox_9->addItems(model.getNamesFromTableStringList("unit"));
+    ui->comboBox_6->addItems(tabNewExtrasModel.getUnitNamesByTypeStringList("РН"));
+    ui->comboBox_7->addItems(tabNewExtrasModel.getUnitNamesByTypeStringList("РБ"));
+    ui->comboBox_8->addItems(model.getNamesFromTableStringList("spaceport"));
 }
 
 void MainWindow::on_pushButton_5_clicked()
 {
-    model.addOrganizationToDB(ui->lineEdit_6->text());
+    tabNewExtrasModel.addOrganizationToDB(ui->lineEdit_6->text());
 }
 
 void MainWindow::on_pushButton_6_clicked()
 {
-     model.addSpaceportToDB(ui->lineEdit_7->text());
+     tabNewExtrasModel.addSpaceportToDB(ui->lineEdit_7->text());
 }
 
 void MainWindow::on_comboBox_6_currentIndexChanged(const QString &arg1)
@@ -448,14 +457,14 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
 {
     if (boosterRocket != "" && upperBlock != "" && spaceport != "")
     {
-        DBlaunch currentLaunch = model.getLaunchFromParamIds(boosterRocket,upperBlock, spaceport);
+        DBlaunch currentLaunch = tabNewExtrasModel.getLaunchFromParamIds(boosterRocket,upperBlock, spaceport);
 
         ui->doubleSpinBox->setValue(currentLaunch.delivery_price());
         ui->doubleSpinBox_2->setValue(currentLaunch.launch_price());
         ui->doubleSpinBox_3->setValue(currentLaunch.min_payload());
         ui->doubleSpinBox_4->setValue(currentLaunch.max_payload());
         ui->spinBox_2->setValue(currentLaunch.price_year());
-        QVector<qreal> prices = model.pricesToVector(currentLaunch.prices());
+        QVector<qreal> prices = tabNewExtrasModel.pricesToVector(currentLaunch.prices());
         for (int i=1;i<ui->tableWidget_9->columnCount();i++)
         {
             ui->tableWidget_9->setItem(0, i,  new QTableWidgetItem(QString::number(prices[i])));
@@ -475,7 +484,7 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
 
 void MainWindow::buildEditDBTab()
 {
-    ui->comboBox_3->addItems(model.getTableDescriptionsStringList());
+    ui->comboBox_3->addItems(tabEditDBModel.getTableDescriptionsStringList());
     dbValuesToChange.clear();
 }
 
@@ -485,14 +494,14 @@ void MainWindow::on_comboBox_3_currentIndexChanged(const QString &arg1)
     ui->tableWidget_6->clearContents();
     ui->tableWidget_6->setRowCount(0);
 
-    ui->tableWidget_6->setColumnCount(model.getTableColumnCount(arg1)); // Указываем число колонок
+    ui->tableWidget_6->setColumnCount(tabEditDBModel.getTableColumnCount(arg1)); // Указываем число колонок
     ui->tableWidget_6->setShowGrid(true); // Включаем сетку
     ui->tableWidget_6->setSelectionMode(QAbstractItemView::NoSelection);
-    ui->tableWidget_6->setHorizontalHeaderLabels(model.getTableColumnNamesStringList(arg1));
+    ui->tableWidget_6->setHorizontalHeaderLabels(tabEditDBModel.getTableColumnNamesStringList(arg1));
     ui->tableWidget_6->horizontalHeader()->setStretchLastSection(true);
     //ui->tableWidget_6->setEditTriggers(QTableWidget::NoEditTriggers);
 
-    QVector <QVector<QString>> values = model.getValuesFromTable(ui->comboBox_3->currentText(), ui->tableWidget_6->columnCount());
+    QVector <QVector<QString>> values = tabEditDBModel.getValuesFromTable(ui->comboBox_3->currentText(), ui->tableWidget_6->columnCount());
     for (int i=0;i<values.length(); i++){
         int rowCount = ui->tableWidget_6->rowCount();
         ui->tableWidget_6->insertRow(rowCount);
@@ -518,7 +527,7 @@ void MainWindow::on_tableWidget_6_itemChanged(QTableWidgetItem *item)
 
 void MainWindow::on_pushButton_8_clicked()
 {
-    qDebug() << model.updateDataInTable(ui->comboBox_3->currentText(), dbValuesToChange);
+    qDebug() << tabEditDBModel.updateDataInTable(ui->comboBox_3->currentText(), dbValuesToChange);
     rebuildTabs();
 }
 
@@ -534,7 +543,7 @@ void MainWindow::on_pushButton_8_clicked()
 
 void MainWindow::buildEditProjectTab()
 {
-    ui->comboBox_5->addItems(model.getNamesFromTableStringList("project"));
+
     ui->tableWidget_7->clearContents();
     ui->tableWidget_7->setRowCount(0);
 
@@ -556,17 +565,18 @@ void MainWindow::buildEditProjectTab()
     ui->tableWidget_7->setItem(rowCount+2, 0,  new QTableWidgetItem("Создание последнего ОКР КА"));
     ui->tableWidget_7->setItem(rowCount+3, 0,  new QTableWidgetItem("НЭО, документация"));
     ui->tableWidget_7->setItem(rowCount+4, 0,  new QTableWidgetItem("Создание серийного образца"));
+    ui->comboBox_5->addItems(model.getNamesFromTableStringList("project"));
 }
 
 void MainWindow::on_pushButton_9_clicked()
 {
-    model.addProjectToDB(ui->lineEdit_2->text(),ui->comboBox_4->currentText(), ui->comboBox_9->currentText());
+    tabNewProjectModel.addProjectToDB(ui->lineEdit_2->text(),ui->comboBox_4->currentText(), ui->comboBox_9->currentText());
     buildEditProjectTab();
 }
 
 void MainWindow::on_comboBox_5_currentIndexChanged(const QString &arg1)
 {
-    QVector<QVector<qreal>> prices = model.getProjectPricesFromName(arg1);
+    QVector<QVector<qreal>> prices = tabNewProjectModel.getProjectPricesFromName(arg1);
     for (int i=0;i<5; i++){
         for (int j=1;j<prices[i].length();j++){
             ui->tableWidget_7->setItem(i, j, new QTableWidgetItem(QString::number(prices[i][j-1])));
@@ -587,7 +597,7 @@ void MainWindow::on_pushButton_11_clicked()
     }
 
     qDebug()<<pre_prices<<first_unit_prices<<last_unit_prices<<post_prices<<serial_prices;
-    model.updateProjectInfo(ui->comboBox_5->currentText(), pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices);
+    tabNewProjectModel.updateProjectInfo(ui->comboBox_5->currentText(), pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices);
 }
 
 //===============================================================================================================================================
@@ -677,7 +687,7 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
         if (item->checkState()==Qt::Checked)
         {
 
-            int index = model.projectModelAddProject(item->text());
+            int index = tabPredictionModel.projectModelAddProject(item->text());
             //int unitLifetime = model.projectModelGetUnitLifetime(item->text());
 
             for (int i=0;i<7;i++)
@@ -714,7 +724,7 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
             setTableWidgetRowColor(ui->tableWidget_8, index, 0, QColor(255,245,224));
             setTableWidgetRowColor(ui->tableWidget_8, index + 5, 0, QColor(244,244,255));
             setTableWidgetRowColor(ui->tableWidget_8, index + 6, 0, QColor(244,244,255));
-            QStringList launches = model.getValidLaunchesNamesStringList();
+            QStringList launches = tabPredictionModel.getValidLaunchesNamesStringList();
             for (int i=1;i<ui->tableWidget_8->columnCount();i++)
             {
                 QComboBox *a = new QComboBox();
@@ -734,11 +744,11 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
         }
         else
         {
-            int projectNumber = model.projectModelGetProjectNumber(item->text());
+            int projectNumber = tabPredictionModel.projectModelGetProjectNumber(item->text());
             qDebug() << projectNumber;
             for (int i=0;i<7; i++)
                  ui->tableWidget_8->removeRow(projectNumber);
-            model.projectModelRemoveProject(item->text());
+            tabPredictionModel.projectModelRemoveProject(item->text());
             for (int i=0;i<7;i++){
                  ui->tableWidget_8->removeRow(rowCount-3);
             }
@@ -804,7 +814,7 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column)
             for (int i=1;i<ui->tableWidget_8->columnCount();i++)
                 boosterRocketValues.append(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(startRow+3,i))->currentText());
             QString projectName = ui->tableWidget_8->item(startRow-1,0)->text();
-            QVector<QVector<QPair<QString,QString>>> valuesVector = model.predictPrices(projectName,yearsValues,boosterRocketValues, brChanged, column-1);
+            QVector<QVector<QPair<QString,QString>>> valuesVector = tabPredictionModel.predictPrices(projectName,yearsValues,boosterRocketValues, brChanged, column-1);
             predictionTableEditedByUser = false;
             for (int i=0;i<valuesVector.length()-2;i++)
                 for(int j=1;j<ui->tableWidget_8->columnCount();j++)

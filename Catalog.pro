@@ -4,29 +4,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
-
-#INCLUDEPATH += "C:/Program Files (x86)/PostgreSQL/9.6/lib"
-#INCLUDEPATH += "C:/Program Files (x86)/PostgreSQL/9.6/lib/libpq.dll"
-#INCLUDEPATH += "C:/Program Files (x86)/PostgreSQL/9.6/"
-
 INCLUDEPATH += libpq.dll
-#INCLUDEPATH += libpq.lib
-#INCLUDEPATH += qsqlpsql.dll
-#INCLUDEPATH += qsqlpsqld.dll
-
-#LIBS += libpq.dll
-#LIBS += libpq.lib
-#LIBS += qsqlpsql.dll
-#LIBS += qsqlpsqld.dll
-
-#INCLUDEPATH += "C:/Program Files (x86)/PostgreSQL/9.6/include"
-#INCLUDEPATH += "sqldrivers"
-#INCLUDEPATH += "lib"
-
-#LIBS += "C:/Program Files (x86)/PostgreSQL/9.6/lib/libpq.dll"
 
 QTPLUGIN += QPSQL
-
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -51,6 +31,12 @@ SOURCES += \
     menu.cpp \
     predictionmodel.cpp \
     projectset.cpp \
+    tabcatalogandcomparisonmodel.cpp \
+    tabeditdbmodel.cpp \
+    tabnewcraftmodel.cpp \
+    tabnewextrasmodel.cpp \
+    tabnewprojectmodel.cpp \
+    tabpredictionmodel.cpp \
     unitcomparator.cpp \
     userloginwindow.cpp
 
@@ -74,6 +60,12 @@ HEADERS += \
     menu.h \
     predictionmodel.h \
     projectset.h \
+    tabcatalogandcomparisonmodel.h \
+    tabeditdbmodel.h \
+    tabnewcraftmodel.h \
+    tabnewextrasmodel.h \
+    tabnewprojectmodel.h \
+    tabpredictionmodel.h \
     unitcomparator.h \
     userloginwindow.h
 

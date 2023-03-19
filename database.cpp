@@ -503,7 +503,7 @@ void database::addLaunchInformation(DBlaunch launch)
                 QString::number(launch.delivery_price()) + ", " +
                 QString::number(launch.min_payload()) + ", " +
                 QString::number(launch.max_payload()) + ", " +
-                QString::number(0) + ")");
+                " false)");
     qDebug() << query.lastError();
     return;
 }

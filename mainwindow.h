@@ -4,10 +4,18 @@
 #include <QMainWindow>
 #include <QTreeWidgetItem>
 #include <QVector>
+#include <TabCatalogAndComparisonModel.h>
+#include <TabCatalogModel.h>
+#include <TabComparisonModel.h>
+#include <TabEditDBModel.h>
+#include <TabNewCraftModel.h>
+#include <TabNewExtrasModel.h>
+#include <TabNewProjectModel.h>
 #include <UnitComparator.h>
 #include <dbChangeValue.h>
 #include <mainmodel.h>
 #include <predictionModel.h>
+#include <tabPredictionModel.h>
 #include <userLoginWindow.h>
 #include "database.h"
 
@@ -25,6 +33,15 @@ public:
 
     database db;
     MainModel model;
+
+    TabPredictionModel tabPredictionModel;
+    TabNewProjectModel tabNewProjectModel;
+    TabEditDBModel tabEditDBModel;
+    TabNewExtrasModel tabNewExtrasModel;
+    TabNewCraftModel tabNewCraftModel;
+    TabCatalogAndComparisonModel tabCatalogAndComparisonModel;
+
+
     UnitComparator comparator;
     bool predictionTableEditedByUser;
     bool listWidgetEditedByUser;
