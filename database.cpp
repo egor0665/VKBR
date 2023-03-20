@@ -616,6 +616,20 @@ QVector<qreal> database::getInflationPercents(int startYear, int endYear)
 
     return inflationPercents;
 }
+
+DBSpacecraft database::getSpacecraftInfoFromId(int spacecraftId)
+{
+    QSqlQuery query;
+    query.exec("SELECT id, weight, phys_info, econ_info FROM spacecraft WHERE id=" + QString::number(spacecraftId));
+    query.next();
+    qDebug() <<query.value(0)<<query.value(1)<<query.value(2);
+    DBSpacecraft tmpSpacecraft = DBSpacecraft(query.value(0).toInt(),
+                                              query.value(1).toDouble(),
+                                              query.value(2).toDouble(),
+                                              query.value(3).toString().trimmed(),
+                                              query.value(4).toString().trimmed());
+    return tmpSpacecraft;
+}
 //QString database::getSpaceportsInfoByUnitId(int unitId)
 //{
 //    QSqlQuery query;

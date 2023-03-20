@@ -5,8 +5,6 @@
 #include <qdatetime.h>
 #include <qstring.h>
 
-
-
 class TabNewCraftModel
 {
 public:
@@ -39,6 +37,12 @@ public:
             QString econInfo = ""
             );
 
+    DBUnit getUnitDataByName(QString unitName);
+    DBOrganization getOrganizationById(int organizationId);
+    DBSpaceport getSpaceportById(int spaceportId);
+    DBBooster_rocket getBoosterRocketById(int boosterRocketId);
+    DBUpper_block getUpperBlockById(int upperBlockId);
+    DBSpacecraft getSpacecraftById(int spacecraftId);
 private:
     MainModel* mainModel;
 };

@@ -38,7 +38,7 @@ QString TabNewCraftModel::addUnitToDB(QString unit_class,
                                )
 {
     bool proj;
-    if (project == "Да") proj = true;
+    if (project == "Проектный") proj = true;
     else proj = false;
     int devId = mainModel->db.getOrganizationIdFromName(developer);
     int extrDevId = mainModel->db.getOrganizationIdFromName(extra_developer);
@@ -82,14 +82,40 @@ QString TabNewCraftModel::addUnitToDB(QString unit_class,
                 mainModel->db.addLaunchInformation(tmpLaunch);
             }
     }
-    else if (unit_class == "ПТК")
-    {
-
-    }
     else if (unit_class == "КА")
     {
-        DBSpacecraft newSpacecraft = DBSpacecraft(newUnitId, weight, physInfo, econInfo);
+        DBSpacecraft newSpacecraft = DBSpacecraft(newUnitId, weight, 0, physInfo, econInfo);
         mainModel->db.addSpacecraftToDB(newSpacecraft);
     }
     return "db.addUnitToDBRetId(newUnit);";
+}
+
+DBUnit TabNewCraftModel::getUnitDataByName(QString unitName)
+{
+    return mainModel->db.getUnitInfoFromName(unitName);
+}
+
+DBOrganization TabNewCraftModel::getOrganizationById(int organizationId)
+{
+    return mainModel->db.getOrganizationInfoFromId(organizationId);
+}
+
+DBSpaceport TabNewCraftModel::getSpaceportById(int spaceportId)
+{
+    return mainModel->db.getSpaceportInfoFromId(spaceportId);
+}
+
+DBBooster_rocket TabNewCraftModel::getBoosterRocketById(int boosterRocketId)
+{
+    return mainModel->db.getBooster_rocketInfoFromId(boosterRocketId);
+}
+
+DBUpper_block TabNewCraftModel::getUpperBlockById(int upperBlockId)
+{
+    return mainModel->db.getUpper_blockInfoFromId(upperBlockId);
+}
+
+DBSpacecraft TabNewCraftModel::getSpacecraftById(int spacecraftId)
+{
+    return mainModel->db.getSpacecraftInfoFromId(spacecraftId);
 }

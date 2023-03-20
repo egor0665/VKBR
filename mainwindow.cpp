@@ -275,7 +275,7 @@ void MainWindow::buildChart()
 void MainWindow::buildAddUnitTab()
 {
     QStringList names = model.getNamesFromTableStringList("unit");
-    ui->comboBoxUnitClass->addItems({"РН", "РБ", "ПТК", "КА"});
+    ui->comboBoxUnitClass->addItems({"РН", "РБ", "КА"});
     ui->comboBoxUnitProject->addItems({"Проектный", "Не проектный"});
 
     QStringList organizationNames = model.getNamesFromTableStringList("organization");
@@ -287,8 +287,68 @@ void MainWindow::buildAddUnitTab()
     QStringList spaceportNames = model.getNamesFromTableStringList("spaceport");
 
     ui->comboBoxUnitFirstLaunchSpaceport->addItems(spaceportNames);
-
+    ui->comboBox_10->addItem("Добавить новый аппарат");
     ui->comboBox_10->addItems(model.QVectorToQStringList(model.getNamesFromTable("unit")));
+}
+
+void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
+{
+    if (arg1 == "Добавить новый аппарат" && ui->comboBox_10->currentIndex()==0){
+        addUnitTabUpdateValues();
+    }
+    else
+    {
+        DBUnit currentUnit = tabNewCraftModel.getUnitDataByName(arg1);
+        ui->comboBoxUnitClass->setCurrentIndex(ui->comboBoxUnitClass->findText(currentUnit.unit_class()));
+        ui->lineEditUnitName->setText(currentUnit.name());
+        ui->textEditUnitPurpose->setPlainText(currentUnit.purpose());
+        if (currentUnit.project() == 1)
+            ui->comboBoxUnitProject->setCurrentIndex(ui->comboBoxUnitProject->findText("Проектный"));
+        else
+            ui->comboBoxUnitProject->setCurrentIndex(ui->comboBoxUnitProject->findText("Не проектный"));
+        ui->textEditUnitObjective->setPlainText(currentUnit.objective());
+        ui->lineEditUnitWorkStatus->setText(currentUnit.work_status());
+        ui->comboBoxUnitDeveloperId->setCurrentIndex(ui->comboBoxUnitDeveloperId->findText(tabNewCraftModel.getOrganizationById(currentUnit.developer_id()).name()));
+        ui->comboBoxUnitExtraDeveloperId->setCurrentIndex(ui->comboBoxUnitExtraDeveloperId->findText(tabNewCraftModel.getOrganizationById(currentUnit.extra_developer_id()).name()));
+        ui->comboBoxUnitManufacturerId->setCurrentIndex(ui->comboBoxUnitManufacturerId->findText(tabNewCraftModel.getOrganizationById(currentUnit.manufacturer_id()).name()));
+        ui->spinBoxUnitLaunches->setValue(currentUnit.launches());
+        ui->comboBoxUnitCustomer->setCurrentIndex(ui->comboBoxUnitCustomer->findText(tabNewCraftModel.getOrganizationById(currentUnit.customer_id()).name()));
+        ui->spinBoxUnitSuccessfulLaunches->setValue(currentUnit.successful());
+        ui->dateTimeEditFirstLaunch->setDateTime(currentUnit.first_launch());
+        ui->comboBoxUnitFirstLaunchSpaceport->setCurrentIndex(ui->comboBoxUnitFirstLaunchSpaceport->findText(tabNewCraftModel.getSpaceportById(currentUnit.first_launch_spaceport_id()).name()));
+        ui->lineEditFinancingType->setText(currentUnit.financing_type());
+        ui->lineEditControlSystem->setText(currentUnit.control_system_type());
+        ui->labelUnitImageURL->setText(currentUnit.image_url());
+        ui->doubleSpinBoxUnitPrice->setValue(currentUnit.price());
+        ui->spinBoxUnitPriceYear->setValue(currentUnit.price_year());
+        QString unitClass = ui->comboBoxUnitClass->currentText();
+        if (unitClass == "РН")
+        {
+            DBBooster_rocket currentBR = tabNewCraftModel.getBoosterRocketById(currentUnit.id());
+            maxPayloadField->setValue(currentBR.max_payload());
+            minPayloadField->setValue(currentBR.min_payload());
+            econInfoField->setText(currentBR.econ_info());
+            physInfoField->setText(currentBR.phys_info());
+        }
+        else if (unitClass == "РБ")
+        {
+            DBUpper_block currentUB = tabNewCraftModel.getUpperBlockById(currentUnit.id());
+            econInfoField->setText(currentUB.econ_info());
+            physInfoField->setText(currentUB.phys_info());
+        }
+        else if (unitClass == "КА")
+        {
+            DBSpacecraft currentSC = tabNewCraftModel.getSpacecraftById(currentUnit.id());
+            econInfoField->setText(currentSC.econ_info());
+            physInfoField->setText(currentSC.phys_info());
+            weightField->setValue(currentSC.weight());
+        }
+    }
+}
+
+void MainWindow::addUnitTabUpdateValues()
+{
+
 }
 
 void MainWindow::on_comboBoxUnitClass_currentIndexChanged(const QString &arg1)
@@ -309,13 +369,6 @@ void MainWindow::on_comboBoxUnitClass_currentIndexChanged(const QString &arg1)
         ui->formLayout_3->addRow(new QLabel("Экономические характеристики"), econInfoField);
     }
     else if(arg1 == "РБ")
-    {
-        physInfoField = new QTextEdit();
-        econInfoField = new QTextEdit();
-        ui->formLayout_3->addRow(new QLabel("Физические характеристики"), physInfoField);
-        ui->formLayout_3->addRow(new QLabel("Экономические характеристики"), econInfoField);
-    }
-    else if(arg1 == "ПТК")
     {
         physInfoField = new QTextEdit();
         econInfoField = new QTextEdit();
@@ -357,11 +410,6 @@ void MainWindow::on_pushButton_2_clicked()
         physInfo = physInfoField->toPlainText();
     }
     else if (unitClass == "РБ")
-    {
-        econInfo = econInfoField->toPlainText();
-        physInfo = physInfoField->toPlainText();
-    }
-    else if (unitClass == "ПТК")
     {
         econInfo = econInfoField->toPlainText();
         physInfo = physInfoField->toPlainText();
@@ -875,4 +923,7 @@ void MainWindow::on_pushButton_12_clicked()
     qreal maxPayload = ui->doubleSpinBox_4->value();
     model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload);
 }
+
+
+
 

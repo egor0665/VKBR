@@ -47,6 +47,7 @@ public:
     bool listWidgetEditedByUser;
     userLoginWindow loginWindow ;
     QTreeWidgetItem *addTreeRoot(QString name);
+    void addUnitTabUpdateValues();
 protected:
     QDoubleSpinBox *maxPayloadField;
     QDoubleSpinBox *minPayloadField;
@@ -120,6 +121,8 @@ private slots:
     void on_tableWidget_8_cellChanged(int row, int column);
 
     void on_pushButton_12_clicked();
+
+    void on_comboBox_10_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
