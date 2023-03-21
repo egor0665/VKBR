@@ -93,9 +93,11 @@ DBUnit database::getUnitInfoFromName(QString name)
      * */
 
     QSqlQuery query;
-    query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.name LIKE '" + name + "%'");
+    query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.name LIKE '" + name + "%'");
     query.next();
-    qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
+    //qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
+    qDebug() << "IMGSSS" << query.value(17);
+
     DBUnit tmpUnit = DBUnit(query.value(0).toInt(),
                         query.value(1).toString().trimmed(),
                         query.value(2).toString().trimmed(),
@@ -113,11 +115,11 @@ DBUnit database::getUnitInfoFromName(QString name)
                         query.value(14).toInt(),
                         query.value(15).toString().trimmed(),
                         query.value(16).toString().trimmed(),
-                        query.value(17).toString().trimmed(),
+                        query.value(17).toString(),
                         query.value(18).toReal(),
                         query.value(19).toInt());
+
     return tmpUnit;
-    qDebug() << query.value(0);
 }
 
 DBUnit database::getUnitInfoFromId(int unitId)
@@ -369,7 +371,7 @@ int database::addUnitToDBRetId(DBUnit unit)
                QString::number(unit.launches()) + ", " +
                QString::number(unit.customer_id()) + ", " +
                QString::number(unit.successful()) + ", '" +
-               unit.first_launch().toString("yyyy-mm-dd HH:mm:ss") + "', " +
+               unit.first_launch().toString("yyyy-MM-dd HH:mm:ss") + "', " +
                QString::number(unit.first_launch_spaceport_id()) + ", '" +
                unit.financing_type() + "', '" +
                unit.control_system_type() + "', '" +

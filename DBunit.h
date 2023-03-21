@@ -28,26 +28,8 @@ public:
                                      "Тип финансирования",
                                      "Система контроля"};
     DBUnit();
-    DBUnit(int id,
-         const QString &unit_class,
-         const QString &name,
-         const QString &purpose,
-         bool project,
-         const QString &objective,
-         const QString &work_status,
-         int developer_id,
-         int extra_developer_id,
-         int manufacturer_id,
-         int launches,
-         int customer_id,
-         int successful,
-         const QDateTime &first_launch,
-         int first_launch_spaceport_id,
-         const QString &financing_type,
-         const QString &control_system_type,
-         const QString &image_url,
-         qreal price,
-         int price_year);
+    DBUnit(int id, const QString &unit_class, const QString &name, const QString &purpose, bool project, const QString &objective, const QString &work_status, int developer_id, int extra_developer_id, int manufacturer_id, int launches, int customer_id, int successful, const QDateTime &first_launch, int first_launch_spaceport_id, const QString &financing_type, const QString &control_system_type, const QString &image_url, qreal price, int price_year);
+
 
     int id() const;
 
@@ -95,9 +77,6 @@ public:
     const QString &control_system_type() const;
     void setControl_system_type(const QString &newControl_system_type);
 
-    const QString &image_url() const;
-    void setImage_url(const QString &newImage_url);
-
     qreal price() const;
     void setPrice(qreal newPrice);
 
@@ -109,9 +88,11 @@ public:
 
     QStringList getValues();
 
-
     int extra_developer_id() const;
     void setExtra_developer_id(int newExtra_developer_id);
+
+    const QString &image_url() const;
+    void setImage_url(const QString &newImage_url);
 
 private:
     int _id;

@@ -5,29 +5,6 @@ DBUnit::DBUnit()
 
 }
 
-DBUnit::DBUnit(int id, const QString &unit_class, const QString &name, const QString &purpose, bool project, const QString &objective, const QString &work_status, int developer_id, int extra_developer_id, int manufacturer_id, int launches, int customer_id, int successful, const QDateTime &first_launch, int first_launch_spaceport_id, const QString &financing_type, const QString &control_system_type, const QString &image_url, qreal price, int price_year) : _id(id),
-    _unit_class(unit_class),
-    _name(name),
-    _purpose(purpose),
-    _project(project),
-    _objective(objective),
-    _work_status(work_status),
-    _developer_id(developer_id),
-    _extra_developer_id(extra_developer_id),
-    _manufacturer_id(manufacturer_id),
-    _launches(launches),
-    _customer_id(customer_id),
-    _successful(successful),
-    _first_launch(first_launch),
-    _first_launch_spaceport_id(first_launch_spaceport_id),
-    _financing_type(financing_type),
-    _control_system_type(control_system_type),
-    _image_url(image_url),
-    _price(std::move(price)),
-    _price_year(price_year)
-{}
-
-
 int DBUnit::id() const
 {
     return _id;
@@ -168,16 +145,6 @@ void DBUnit::setControl_system_type(const QString &newControl_system_type)
     _control_system_type = newControl_system_type;
 }
 
-const QString &DBUnit::image_url() const
-{
-    return _image_url;
-}
-
-void DBUnit::setImage_url(const QString &newImage_url)
-{
-    _image_url = newImage_url;
-}
-
 qreal DBUnit::price() const
 {
     return _price;
@@ -218,9 +185,6 @@ void DBUnit::setUnit_class(const QString &newUnit_class)
     _unit_class = newUnit_class;
 }
 
-
-
-
 QStringList DBUnit::getValues()
 {
     QStringList values;
@@ -255,12 +219,34 @@ void DBUnit::setExtra_developer_id(int newExtra_developer_id)
     _extra_developer_id = newExtra_developer_id;
 }
 
-//int Unit::getExtra_developer_id() const
-//{
-//    return _extra_developer_id;
-//}
+const QString &DBUnit::image_url() const
+{
+    return _image_url;
+}
 
-//void Unit::setExtra_developer_id(int newExtra_developer_id)
-//{
-//    _extra_developer_id = newExtra_developer_id;
-//}
+void DBUnit::setImage_url(const QString &newImage_url)
+{
+    _image_url = newImage_url;
+}
+
+DBUnit::DBUnit(int id, const QString &unit_class, const QString &name, const QString &purpose, bool project, const QString &objective, const QString &work_status, int developer_id, int extra_developer_id, int manufacturer_id, int launches, int customer_id, int successful, const QDateTime &first_launch, int first_launch_spaceport_id, const QString &financing_type, const QString &control_system_type, const QString &image_url, qreal price, int price_year) : _id(id),
+    _unit_class(unit_class),
+    _name(name),
+    _purpose(purpose),
+    _project(project),
+    _objective(objective),
+    _work_status(work_status),
+    _developer_id(developer_id),
+    _extra_developer_id(extra_developer_id),
+    _manufacturer_id(manufacturer_id),
+    _launches(launches),
+    _customer_id(customer_id),
+    _successful(successful),
+    _first_launch(first_launch),
+    _first_launch_spaceport_id(first_launch_spaceport_id),
+    _financing_type(financing_type),
+    _control_system_type(control_system_type),
+    _image_url(image_url),
+    _price(std::move(price)),
+    _price_year(price_year)
+{}

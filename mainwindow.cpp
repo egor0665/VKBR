@@ -343,6 +343,11 @@ void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
             physInfoField->setText(currentSC.phys_info());
             weightField->setValue(currentSC.weight());
         }
+        QPixmap image;
+        qDebug() << currentUnit.image_url();
+        qDebug() << QByteArray::fromBase64(currentUnit.image_url().toUtf8());
+        image.loadFromData(QByteArray::fromBase64(currentUnit.image_url().toUtf8()), "PNG");
+        ui->label_12->setPixmap(image);
     }
 }
 
@@ -420,7 +425,10 @@ void MainWindow::on_pushButton_2_clicked()
         econInfo = econInfoField->toPlainText();
         physInfo = physInfoField->toPlainText();
     }
-
+    QByteArray image;
+    QBuffer buffer(&image);
+    buffer.open(QBuffer::WriteOnly);
+    QImage(ui->labelUnitImageURL->text()).save(&buffer, "PNG");
     tabNewCraftModel.addUnitToDB(
                 ui->comboBoxUnitClass->currentText(),
                 ui->lineEditUnitName->text(),
@@ -438,7 +446,7 @@ void MainWindow::on_pushButton_2_clicked()
                 ui->comboBoxUnitFirstLaunchSpaceport->currentText(),
                 ui->lineEditFinancingType->text(),
                 ui->lineEditControlSystem->text(),
-                ui->labelUnitImageURL->text(),
+                image.toBase64(),
                 ui->doubleSpinBoxUnitPrice->value(),
                 ui->spinBoxUnitPriceYear->value(),
                 maxPayload,
