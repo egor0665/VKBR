@@ -118,7 +118,7 @@ private slots:
 
     void on_tableWidget_8_comboBox_index_changed(const QString &arg1);
 
-    void on_tableWidget_8_cellChanged(int row, int column);
+    void on_tableWidget_8_cellChanged(int row, int column, QString spaceCraft = "");
 
     void on_pushButton_12_clicked();
 

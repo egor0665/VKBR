@@ -87,10 +87,12 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
         rowCount++;
     }
     //---------------------
-    QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId));
-    ui->label->setPixmap(QPixmap::fromImage(picture));
-    picture = QImage("C:\\Catalog\\Scheme");
-    ui->label_6->setPixmap(QPixmap::fromImage(picture));
+    QPixmap image;
+    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId).toUtf8()), "PNG");
+    //QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1));
+    ui->label->setPixmap(image);
+    //picture = QImage("C:\\Catalog\\Scheme");
+    //ui->label_6->setPixmap(QPixmap::fromImage(picture));
     //---------------------
 }
 //===============================================================================================================================================
@@ -150,10 +152,13 @@ void MainWindow::rebuildCompareTable(QString unitName1, QString unitName2)
             rowCount++;
     }
 
-    QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1));
-    ui->label_7->setPixmap(QPixmap::fromImage(picture).scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
-    picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2));
-    ui->label_8->setPixmap(QPixmap::fromImage(picture).scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
+    QPixmap image;
+    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1).toUtf8()), "PNG");
+    //QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1));
+    ui->label_7->setPixmap(image.scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
+    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2).toUtf8()), "PNG");
+    //picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2));
+    ui->label_8->setPixmap(image.scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
 
     ui->tableWidget_4->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableWidget_4->setColumnWidth(1,ui->tableWidget_4->width()/2);
@@ -344,8 +349,6 @@ void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
             weightField->setValue(currentSC.weight());
         }
         QPixmap image;
-        qDebug() << currentUnit.image_url();
-        qDebug() << QByteArray::fromBase64(currentUnit.image_url().toUtf8());
         image.loadFromData(QByteArray::fromBase64(currentUnit.image_url().toUtf8()), "PNG");
         ui->label_12->setPixmap(image);
     }
@@ -770,7 +773,7 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
             ui->tableWidget_8->setItem(3 + index, 0,  new QTableWidgetItem("Блок КА"));
             ui->tableWidget_8->setItem(4 + index, 0,  new QTableWidgetItem("Ракета-носитель"));
             ui->tableWidget_8->setItem(5 + index, 0,  new QTableWidgetItem("Цены КА ОКР+Серия"));
-            ui->tableWidget_8->setItem(6 + index, 0,  new QTableWidgetItem("Цены РН"));
+            ui->tableWidget_8->setItem(6 + index, 0,  new QTableWidgetItem("Цены РН проекта"));
             ui->tableWidget_8->item(1 + index, 0)->setFlags(Qt::ItemIsEnabled);
             ui->tableWidget_8->item(2 + index, 0)->setFlags(Qt::ItemIsEnabled);
             ui->tableWidget_8->item(3 + index, 0)->setFlags(Qt::ItemIsEnabled);
@@ -785,8 +788,8 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
             {
                 QComboBox *a = new QComboBox();
                 a->addItems(launches);
-                a->setProperty("row", 4 + index);
-                a->setProperty("column", i);
+                a->setProperty("spaceCraft", item->text());
+
                 QObject::connect(a,SIGNAL(currentIndexChanged(const QString &)),this,SLOT(on_tableWidget_8_comboBox_index_changed(const QString &)));
                 ui->tableWidget_8->setCellWidget(4 + index,i,a);
             }
@@ -831,16 +834,28 @@ void MainWindow::setTableWidgetRowColor(QTableWidget *tableWidget, int row, int 
 void MainWindow::on_tableWidget_8_comboBox_index_changed(const QString &)
 {
     QComboBox *cb = qobject_cast<QComboBox*>(sender());
-    emit on_tableWidget_8_cellChanged(cb->property("row").toInt(),cb->property("column").toInt());
+    emit on_tableWidget_8_cellChanged(-1,-1, cb->property("spaceCraft").toString());
 }
 
-void MainWindow::on_tableWidget_8_cellChanged(int row, int column)
+void MainWindow::on_tableWidget_8_cellChanged(int row, int column, QString spaceCraft)
 {
     if (predictionTableEditedByUser)
     {
         qDebug() << "adss";
         QRegExp number("\\d*");
-        if ((ui->tableWidget_8->item(row,0)->text()== "Ракета-носитель")||(number.exactMatch(ui->tableWidget_8->item(row,column)->text()))) // is number
+        if ((row==-1) && (column==-1))
+        {
+            for (int i=0; i<ui->tableWidget_8->rowCount();i++)
+            {
+                if (ui->tableWidget_8->item(i,0)->text() == spaceCraft)
+                {
+                    row = i+1;
+                    column = 1;
+                    break;
+                }
+            }
+        }
+        if (number.exactMatch(ui->tableWidget_8->item(row,column)->text())) // is number
         {
             QVector<QVector<int>> yearsValues;
             QVector<QString> boosterRocketValues;
@@ -885,27 +900,51 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column)
                     if (valuesVector[i][j-1].second == "expected")
                         ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,244,244));
                 }
-//            for(int i=1;i<ui->tableWidget_8->rowCount()-2;i++)
-//            {
-//                QComboBox(ui->tableWidget_8->cellWidget(startRow+3,i)).setCurrentText(valuesVector[3][i-1].first);
-//            }
             for (int i=valuesVector.length()-3;i<valuesVector.length();i++)
                 for(int j=1;j<ui->tableWidget_8->columnCount();j++)
                 {
                     if (valuesVector[i][j-1].first!="0") ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
                     else ui->tableWidget_8->item(startRow+i,j)->setText("");
-//                    if (valuesVector[i][j-1].second == "normal")
-//                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,255,255));
-//                    if (valuesVector[i][j-1].second == "current")
-//                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(244,255,244));
-//                    if (valuesVector[i][j-1].second == "expected")
-//                        ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,244,244));
                 }
+
+
+            QVector<qreal> spaceCraftTotal, boosterRocketTotal, total;
+            for (int i=0;i<ui->tableWidget_8->columnCount();i++)
+            {
+                spaceCraftTotal.append(0);
+                boosterRocketTotal.append(0);
+                total.append(0);
+            }
+            for (int i=0; i<ui->tableWidget_8->rowCount();i++)
+            {
+                if (ui->tableWidget_8->item(i,0)->text()=="Цены КА ОКР+Серия")
+                    for (int j=1;j<ui->tableWidget_8->columnCount();j++)
+                        spaceCraftTotal[j-1] += ui->tableWidget_8->item(i,j)->text().toDouble();
+                if (ui->tableWidget_8->item(i,0)->text()=="Цены РН проекта")
+                    for (int j=1;j<ui->tableWidget_8->columnCount();j++)
+                        boosterRocketTotal[j-1] += ui->tableWidget_8->item(i,j)->text().toDouble();
+            }
+            for (int i=1;i<spaceCraftTotal.length();i++)
+            {
+                if (spaceCraftTotal[i-1] == 0)
+                    ui->tableWidget_8->item(ui->tableWidget_8->rowCount()-3,i)->setText("");
+                else
+                    ui->tableWidget_8->item(ui->tableWidget_8->rowCount()-3,i)->setText(QString::number(spaceCraftTotal[i-1]));
+                if (boosterRocketTotal[i-1] == 0)
+                    ui->tableWidget_8->item(ui->tableWidget_8->rowCount()-2,i)->setText("");
+                else
+                    ui->tableWidget_8->item(ui->tableWidget_8->rowCount()-2,i)->setText(QString::number(boosterRocketTotal[i-1]));
+                total[i-1] += (spaceCraftTotal[i-1]+boosterRocketTotal[i-1]);
+                if (total[i-1] == 0)
+                    ui->tableWidget_8->item(ui->tableWidget_8->rowCount()-1,i)->setText("");
+                else
+                    ui->tableWidget_8->item(ui->tableWidget_8->rowCount()-1,i)->setText(QString::number(total[i-1]));
+            }
+
             predictionTableEditedByUser = true;
 
             qDebug() << yearsValues << boosterRocketValues;
         }
-        //else if ()
         else
         {
             ui->tableWidget_8->item(row,column)->setText("");
