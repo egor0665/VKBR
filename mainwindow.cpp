@@ -294,12 +294,15 @@ void MainWindow::buildAddUnitTab()
     ui->comboBoxUnitFirstLaunchSpaceport->addItems(spaceportNames);
     ui->comboBox_10->addItem("Добавить новый аппарат");
     ui->comboBox_10->addItems(model.QVectorToQStringList(model.getNamesFromTable("unit")));
+    ui->label_53->setVisible(false);
 }
 
 void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
 {
     if (arg1 == "Добавить новый аппарат" && ui->comboBox_10->currentIndex()==0){
         addUnitTabUpdateValues();
+        ui->label_53->setText(QString::number(-1));
+        ui->pushButton_2->setText("Добавить");
     }
     else
     {
@@ -323,7 +326,7 @@ void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
         ui->comboBoxUnitFirstLaunchSpaceport->setCurrentIndex(ui->comboBoxUnitFirstLaunchSpaceport->findText(tabNewCraftModel.getSpaceportById(currentUnit.first_launch_spaceport_id()).name()));
         ui->lineEditFinancingType->setText(currentUnit.financing_type());
         ui->lineEditControlSystem->setText(currentUnit.control_system_type());
-        ui->labelUnitImageURL->setText(currentUnit.image_url());
+        //ui->labelUnitImageURL->setText(currentUnit.image_url());
         ui->doubleSpinBoxUnitPrice->setValue(currentUnit.price());
         ui->spinBoxUnitPriceYear->setValue(currentUnit.price_year());
         QString unitClass = ui->comboBoxUnitClass->currentText();
@@ -347,10 +350,13 @@ void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
             econInfoField->setText(currentSC.econ_info());
             physInfoField->setText(currentSC.phys_info());
             weightField->setValue(currentSC.weight());
+            activeLifetimeField->setValue(currentSC.active_lifetime());
         }
         QPixmap image;
         image.loadFromData(QByteArray::fromBase64(currentUnit.image_url().toUtf8()), "PNG");
         ui->label_12->setPixmap(image);
+        ui->label_53->setText(QString::number(currentUnit.id()));
+        ui->pushButton_2->setText("Сохранить");
     }
 }
 
@@ -386,9 +392,11 @@ void MainWindow::on_comboBoxUnitClass_currentIndexChanged(const QString &arg1)
     else if(arg1 == "КА")
     {
         weightField = new QDoubleSpinBox();
+        activeLifetimeField = new QDoubleSpinBox();
         physInfoField = new QTextEdit();
         econInfoField = new QTextEdit();
         ui->formLayout_3->addRow(new QLabel("Вес"), weightField);
+        ui->formLayout_3->addRow(new QLabel("САС"), activeLifetimeField);
         ui->formLayout_3->addRow(new QLabel("Физические характеристики"), physInfoField);
         ui->formLayout_3->addRow(new QLabel("Экономические характеристики"), econInfoField);
     }
@@ -396,7 +404,7 @@ void MainWindow::on_comboBoxUnitClass_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_pushButton_4_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Выберите изображение", "C://", "*.png *.jpg");
+    QString filePath = QFileDialog::getOpenFileName(this, "Выберите изображение", "C://", "*.png *.jpg *.gif");
     QImage picture = QImage(filePath);
     ui->label_12->setPixmap(QPixmap::fromImage(picture));
     ui->labelUnitImageURL->setText(filePath);
@@ -406,7 +414,8 @@ void MainWindow::on_pushButton_2_clicked()
 {
     int maxPayload = 0;
     int minPayload = 0;
-    int weight =0;
+    qreal weight = 0;
+    qreal activeLifetime = 0;
     QString physInfo = "";
     QString econInfo = "";
     QString unitClass = ui->comboBoxUnitClass->currentText();
@@ -425,6 +434,7 @@ void MainWindow::on_pushButton_2_clicked()
     else if (unitClass == "КА")
     {
         weight = weightField->value();
+        activeLifetime = activeLifetimeField->value();
         econInfo = econInfoField->toPlainText();
         physInfo = physInfoField->toPlainText();
     }
@@ -432,32 +442,67 @@ void MainWindow::on_pushButton_2_clicked()
     QBuffer buffer(&image);
     buffer.open(QBuffer::WriteOnly);
     QImage(ui->labelUnitImageURL->text()).save(&buffer, "PNG");
-    tabNewCraftModel.addUnitToDB(
-                ui->comboBoxUnitClass->currentText(),
-                ui->lineEditUnitName->text(),
-                ui->textEditUnitPurpose->toPlainText(),
-                ui->comboBoxUnitProject->currentText(),
-                ui->textEditUnitObjective->toPlainText(),
-                ui->lineEditUnitWorkStatus->text(),
-                ui->comboBoxUnitDeveloperId->currentText(),
-                ui->comboBoxUnitExtraDeveloperId->currentText(),
-                ui->comboBoxUnitManufacturerId->currentText(),
-                ui->spinBoxUnitLaunches->value(),
-                ui->comboBoxUnitCustomer->currentText(),
-                ui->spinBoxUnitSuccessfulLaunches->value(),
-                ui->dateTimeEditFirstLaunch->dateTime(),
-                ui->comboBoxUnitFirstLaunchSpaceport->currentText(),
-                ui->lineEditFinancingType->text(),
-                ui->lineEditControlSystem->text(),
-                image.toBase64(),
-                ui->doubleSpinBoxUnitPrice->value(),
-                ui->spinBoxUnitPriceYear->value(),
-                maxPayload,
-                minPayload,
-                weight,
-                econInfo,
-                physInfo);
-    rebuildTabs();
+    if (ui->label_53->text().toInt() == -1)
+    {
+        tabNewCraftModel.addUnitToDB(
+                    ui->comboBoxUnitClass->currentText(),
+                    ui->lineEditUnitName->text(),
+                    ui->textEditUnitPurpose->toPlainText(),
+                    ui->comboBoxUnitProject->currentText(),
+                    ui->textEditUnitObjective->toPlainText(),
+                    ui->lineEditUnitWorkStatus->text(),
+                    ui->comboBoxUnitDeveloperId->currentText(),
+                    ui->comboBoxUnitExtraDeveloperId->currentText(),
+                    ui->comboBoxUnitManufacturerId->currentText(),
+                    ui->spinBoxUnitLaunches->value(),
+                    ui->comboBoxUnitCustomer->currentText(),
+                    ui->spinBoxUnitSuccessfulLaunches->value(),
+                    ui->dateTimeEditFirstLaunch->dateTime(),
+                    ui->comboBoxUnitFirstLaunchSpaceport->currentText(),
+                    ui->lineEditFinancingType->text(),
+                    ui->lineEditControlSystem->text(),
+                    image.toBase64(),
+                    ui->doubleSpinBoxUnitPrice->value(),
+                    ui->spinBoxUnitPriceYear->value(),
+                    maxPayload,
+                    minPayload,
+                    weight,
+                    activeLifetime,
+                    econInfo,
+                    physInfo);
+        rebuildTabs();
+    }
+    else
+    {
+        tabNewCraftModel.updateUnitDB(
+                    ui->label_53->text().toInt(),
+                    ui->comboBoxUnitClass->currentText(),
+                    ui->lineEditUnitName->text(),
+                    ui->textEditUnitPurpose->toPlainText(),
+                    ui->comboBoxUnitProject->currentText(),
+                    ui->textEditUnitObjective->toPlainText(),
+                    ui->lineEditUnitWorkStatus->text(),
+                    ui->comboBoxUnitDeveloperId->currentText(),
+                    ui->comboBoxUnitExtraDeveloperId->currentText(),
+                    ui->comboBoxUnitManufacturerId->currentText(),
+                    ui->spinBoxUnitLaunches->value(),
+                    ui->comboBoxUnitCustomer->currentText(),
+                    ui->spinBoxUnitSuccessfulLaunches->value(),
+                    ui->dateTimeEditFirstLaunch->dateTime(),
+                    ui->comboBoxUnitFirstLaunchSpaceport->currentText(),
+                    ui->lineEditFinancingType->text(),
+                    ui->lineEditControlSystem->text(),
+                    image.toBase64(),
+                    ui->doubleSpinBoxUnitPrice->value(),
+                    ui->spinBoxUnitPriceYear->value(),
+                    maxPayload,
+                    minPayload,
+                    weight,
+                    activeLifetime,
+                    econInfo,
+                    physInfo);
+    }
+
 }
 
 //===============================================================================================================================================

@@ -67,6 +67,10 @@ public:
     qreal getSpacecraftWeightByProjectName(QString projectName);
     QVector<qreal> getInflationPercents(int startYear, int endYear);
     DBSpacecraft getSpacecraftInfoFromId(int spacecraftId);
+    int updateUnitDBRetId(DBUnit unit);
+    void updateSpacecraftDB(DBSpacecraft spacecraft);
+    void updateUpperBlockDB(DBUpper_block upperBlock);
+    void updateBoosterRocketDB(DBBooster_rocket boosterRocket);
 };
 
 #endif // DATABASE_H

@@ -52,6 +52,7 @@ protected:
     QDoubleSpinBox *maxPayloadField;
     QDoubleSpinBox *minPayloadField;
     QDoubleSpinBox *weightField;
+    QDoubleSpinBox *activeLifetimeField;
     QTextEdit *physInfoField;
     QTextEdit *econInfoField;
 

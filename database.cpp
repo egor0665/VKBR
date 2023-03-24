@@ -383,6 +383,34 @@ int database::addUnitToDBRetId(DBUnit unit)
     return query.value(0).toString().trimmed().toInt();
 
 }
+int database::updateUnitDBRetId(DBUnit unit)
+{
+    QSqlQuery query;
+    query.exec("UPDATE public.unit SET unit_class = '" + unit.unit_class() +
+               "', name = '" + unit.name() +
+               "', purpose = '" + unit.purpose() +
+               "', project = " + QString::number(unit.project()) +
+               ", objective = '" + unit.objective() +
+               "', work_status = '" + unit.work_status() +
+               "', developer_id = " + QString::number(unit.developer_id()) +
+               ", extra_developer_id = " + QString::number(unit.extra_developer_id()) +
+               ", manufacturer_id = " + QString::number(unit.manufacturer_id()) +
+               ", launches = " + QString::number(unit.launches()) +
+               ", successful = " + QString::number(unit.successful()) +
+               ", first_launch = '" + unit.first_launch().toString("yyyy-MM-dd HH:mm:ss") +
+               "', first_launch_spaceport_id = " + QString::number(unit.first_launch_spaceport_id()) +
+               ", financing_type = '" + unit.financing_type() +
+               "', control_system_type = '" + unit.control_system_type() +
+               "', image_url = '" + unit.image_url() +
+               "', price = " + QString::number(unit.price()) +
+               ", price_year = " + QString::number(unit.price_year()) +
+               " WHERE id = " + QString::number(unit.id())+ " RETURNING id");
+    qDebug() << query.lastError();
+    query.next();
+    return query.value(0).toString().trimmed().toInt();
+
+}
+
 
 void database::addBoosterRocketToDB(DBBooster_rocket boosterRocket)
 {
@@ -397,6 +425,18 @@ void database::addBoosterRocketToDB(DBBooster_rocket boosterRocket)
     return;
 }
 
+void database::updateBoosterRocketDB(DBBooster_rocket boosterRocket)
+{
+    QSqlQuery query;
+    query.exec("UPDATE public.booster_rocket SET  max_payload = " + QString::number(boosterRocket.max_payload()) +
+               ", min_payload = " + QString::number(boosterRocket.min_payload()) +
+               ", phys_info = '" + boosterRocket.phys_info() +
+               "', econ_info = '" + boosterRocket.econ_info() +
+               "' WHERE id = " + QString::number(boosterRocket.id()));
+    qDebug() << query.lastError();
+    return;
+}
+
 void database::addUpperBlockToDB(DBUpper_block upperBlock)
 {
     QSqlQuery query;
@@ -404,6 +444,38 @@ void database::addUpperBlockToDB(DBUpper_block upperBlock)
                QString::number(upperBlock.id()) + ", '" +
                upperBlock.phys_info() + "', '" +
                upperBlock.econ_info()+"')");
+    qDebug() << query.lastError();
+    return;
+}
+void database::updateUpperBlockDB(DBUpper_block upperBlock)
+{
+    QSqlQuery query;
+    query.exec("UPDATE public.upper_block SET phys_info = '" + upperBlock.phys_info() +
+               "', econ_info = '" + upperBlock.econ_info() +
+               "' WHERE id = " + QString::number(upperBlock.id()));
+    qDebug() << query.lastError();
+    return;
+}
+void database::addSpacecraftToDB(DBSpacecraft spacecraft)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO spacecraft ( id, weight, active_lifetime, phys_info, econ_info ) VALUES (" +
+               QString::number(spacecraft.id()) + ", " +
+               QString::number(spacecraft.weight()) + ", '" +
+               QString::number(spacecraft.active_lifetime()) + ", '" +
+               spacecraft.phys_info() + "', '" +
+               spacecraft.econ_info()+"')");
+    qDebug() << query.lastError();
+    return;
+}
+void database::updateSpacecraftDB(DBSpacecraft spacecraft)
+{
+    QSqlQuery query;
+    query.exec("UPDATE public.spacecraft SET weight = " + QString::number(spacecraft.weight()) +
+               ", active_lifetime = " + QString::number(spacecraft.active_lifetime()) +
+               ", phys_info = '" + spacecraft.phys_info() +
+               "', econ_info = '" + spacecraft.econ_info() +
+               "' WHERE id = " + QString::number(spacecraft.id()));
     qDebug() << query.lastError();
     return;
 }
@@ -442,17 +514,7 @@ void database::addProjectToDB(DBProject newProject)
     return;
 }
 
-void database::addSpacecraftToDB(DBSpacecraft newSpacecraft)
-{
-    QSqlQuery query;
-    query.exec("INSERT INTO spacecraft ( id, weight, phys_info, econ_info ) VALUES (" +
-               QString::number(newSpacecraft.id()) + ", " +
-               QString::number(newSpacecraft.weight()) + ", '" +
-               newSpacecraft.phys_info() + "', '" +
-               newSpacecraft.econ_info()+"')");
-    qDebug() << query.lastError();
-    return;
-}
+
 
 DBProject database::getProjectInfoFromName(QString projectName)
 {
@@ -622,7 +684,7 @@ QVector<qreal> database::getInflationPercents(int startYear, int endYear)
 DBSpacecraft database::getSpacecraftInfoFromId(int spacecraftId)
 {
     QSqlQuery query;
-    query.exec("SELECT id, weight, phys_info, econ_info FROM spacecraft WHERE id=" + QString::number(spacecraftId));
+    query.exec("SELECT id, weight, active_lifetime, phys_info, econ_info FROM spacecraft WHERE id=" + QString::number(spacecraftId));
     query.next();
     qDebug() <<query.value(0)<<query.value(1)<<query.value(2);
     DBSpacecraft tmpSpacecraft = DBSpacecraft(query.value(0).toInt(),

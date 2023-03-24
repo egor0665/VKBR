@@ -10,7 +10,33 @@ class TabNewCraftModel
 public:
     TabNewCraftModel();
     TabNewCraftModel(MainModel* _mainModel);
-    QString addUnitToDB(
+    QString addUnitToDB(QString unit_class,
+            QString name,
+            QString purpose,
+            QString project,
+            QString objective,
+            QString work_status,
+            QString developer,
+            QString extra_developer,
+            QString manufacturer,
+            int launches,
+            QString customer,
+            int successful,
+            QDateTime first_launch,
+            QString first_launch_spaceport_id,
+            QString financing_type,
+            QString control_system_type,
+            QString image_url,
+            qreal price,
+            int price_year,
+            qreal maxPayload = 0,
+            qreal minPayload = 0,
+            qreal weight = 0,
+            qreal activeLifetime = 0,
+            QString physInfo = "",
+            QString econInfo = ""
+            );
+    QString updateUnitDB(int id,
             QString unit_class,
             QString name,
             QString purpose,
@@ -33,10 +59,10 @@ public:
             qreal maxPayload = 0,
             qreal minPayload = 0,
             qreal weight = 0,
+            qreal activeLifetime = 0,
             QString physInfo = "",
             QString econInfo = ""
             );
-
     DBUnit getUnitDataByName(QString unitName);
     DBOrganization getOrganizationById(int organizationId);
     DBSpaceport getSpaceportById(int spaceportId);
