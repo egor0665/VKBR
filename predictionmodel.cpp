@@ -126,3 +126,12 @@ void PredictionModel::setInflationPercents(const QVector<qreal> &newInflationPer
 {
     inflationPercents = newInflationPercents;
 }
+
+int PredictionModel::getProjectIdByName(QString projectName)
+{
+    for(int i=0;i<projects.length();i++)
+    {
+        if (projects[i].getProjectName() == projectName)
+            return projects[i].;
+    }
+}

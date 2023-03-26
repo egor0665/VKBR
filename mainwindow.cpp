@@ -226,6 +226,7 @@ void MainWindow::buildChartTable()
         }
     }
 }
+
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 // ПЕРЕНЕСТИ В МОДЕЛЬ
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -862,7 +863,26 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
 
 }
 
-
+void MainWindow::on_pushButton_15_clicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
+    QVector<QString> projectNames;
+    for (int i=0;i<ui->tableWidget_8->rowCount();i++)
+    {
+        if (ui->tableWidget_8->item(i,0)->backgroundColor() == QColor(255,239,214))
+            projectNames.append(ui->tableWidget_8->item(i,0)->text());
+    }
+//    for (int i=0;i<ui->listWidget->model()->rowCount();i++)
+//    {
+//        if (ui->listWidget->item(i)->checkState() == true)
+//            projects.append(
+//    }
+    for (int i=0;i<ui->tableWidget_8.)
+    tabPredictionModel.saveToFile(filePath, )
+//    QImage picture = QImage(filePath);
+//    ui->label_12->setPixmap(QPixmap::fromImage(picture));
+//    ui->labelUnitImageURL->setText(filePath);
+}
 //===============================================================================================================================================
 //
 //===============================================================================================================================================
@@ -1015,7 +1035,6 @@ void MainWindow::on_pushButton_12_clicked()
     qreal maxPayload = ui->doubleSpinBox_4->value();
     model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload);
 }
-
 
 
 

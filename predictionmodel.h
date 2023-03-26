@@ -26,6 +26,7 @@ public:
     int getUnitLifetime(QString projectName);
     const QVector<qreal> &getInflationPercents() const;
     void setInflationPercents(const QVector<qreal> &newInflationPercents);
+    int getProjectIdByName(QString projectName);
 
 protected:
     QVector <ProjectSet> projects;

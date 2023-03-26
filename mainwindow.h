@@ -56,6 +56,8 @@ protected:
     QTextEdit *physInfoField;
     QTextEdit *econInfoField;
 
+    //QVector<QString> comparisonTableFields;
+
     void buildDisplayTab();
     void buildCompareTab();
     void buildAddUnitTab();
@@ -124,6 +126,8 @@ private slots:
     void on_pushButton_12_clicked();
 
     void on_comboBox_10_currentIndexChanged(const QString &arg1);
+
+    void on_pushButton_15_clicked();
 
 private:
     Ui::MainWindow *ui;
