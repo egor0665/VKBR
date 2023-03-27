@@ -1042,12 +1042,9 @@ void MainWindow::saveToPdf(QVector<QString> values, int startYear, int endYear)
     this->setEnabled(true);
 }
 
-
 //===============================================================================================================================================
 //
 //===============================================================================================================================================
-
-
 
 void MainWindow::setTableWidgetRowColor(QTableWidget *tableWidget, int row, int startColumn, QColor color)
 {
