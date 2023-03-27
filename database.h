@@ -71,6 +71,8 @@ public:
     void updateSpacecraftDB(DBSpacecraft spacecraft);
     void updateUpperBlockDB(DBUpper_block upperBlock);
     void updateBoosterRocketDB(DBBooster_rocket boosterRocket);
+    DBProject getProjectInfoFromId(int projectId);
+    DBlaunch getLaunchById(int id);
 };
 
 #endif // DATABASE_H

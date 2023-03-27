@@ -564,9 +564,16 @@
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="pushButton_17">
+                <property name="text">
+                 <string>Сохранить как</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="pushButton_14">
                 <property name="text">
-                 <string>Загрузить</string>
+                 <string>Открыть</string>
                 </property>
                </widget>
               </item>

@@ -534,6 +534,24 @@ DBProject database::getProjectInfoFromName(QString projectName)
     return tmpProject;
 }
 
+DBProject database::getProjectInfoFromId (int projectId)
+{
+    QSqlQuery query;
+    query.exec("SELECT id, name, type, unit_id, pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices FROM project WHERE project.id =" + QString::number(projectId));
+    query.next();
+    //qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
+    DBProject tmpProject = DBProject(query.value(0).toInt(),
+                        query.value(1).toString().trimmed(),
+                        query.value(2).toString().trimmed(),
+                        query.value(3).toInt(),
+                        query.value(4).toString().trimmed(),
+                        query.value(5).toString().trimmed(),
+                        query.value(6).toString().trimmed(),
+                        query.value(7).toString().trimmed(),
+                        query.value(8).toString().trimmed());
+    return tmpProject;
+}
+
 void database::updateProjectPricesByName(QString projectName, QString new_pre_prices, QString new_first_unit_prices, QString new_last_unit_prices, QString new_post_prices, QString new_serial_prices)
 {
     QSqlQuery query;
@@ -592,6 +610,29 @@ DBlaunch database::getLaunchFromParamIds(QString boosterRocket, QString upperBlo
                "WHERE unt1.name LIKE '" + boosterRocket + "%' AND lnch.booster_rocket_id = unt1.id "
                "AND unt2.name LIKE '" + upperBlock + "%' AND lnch.upper_block_id = unt2.id "
                "AND spcprt.name LIKE '" + spaceport + "%' AND lnch.spaceport_id = spcprt.id");
+    while (query.next()) {
+        launch = DBlaunch(query.value(0).toString().trimmed().toInt(),
+                          query.value(1).toString().trimmed().toInt(),
+                          query.value(2).toString().trimmed().toInt(),
+                          query.value(3).toString().trimmed().toInt(),
+                          query.value(4).toString().trimmed().toInt(),
+                          query.value(5).toString().trimmed(),
+                          query.value(6).toString().trimmed().toDouble(),
+                          query.value(7).toString().trimmed().toDouble(),
+                          query.value(8).toString().trimmed().toDouble(),
+                          query.value(9).toString().trimmed().toDouble());
+    }
+    qDebug() << query.lastError();
+    return launch;
+}
+
+DBlaunch database::getLaunchById(int id)
+{
+    DBlaunch launch;
+    QSqlQuery query;
+    query.exec("SELECT id, booster_rocket_id, upper_block_id, spaceport_id, price_year, prices, launch_price, delivery_price, min_payload, max_payload "
+               "FROM launch "
+               "WHERE id =" + QString::number(id));
     while (query.next()) {
         launch = DBlaunch(query.value(0).toString().trimmed().toInt(),
                           query.value(1).toString().trimmed().toInt(),

@@ -132,6 +132,11 @@ int PredictionModel::getProjectIdByName(QString projectName)
     for(int i=0;i<projects.length();i++)
     {
         if (projects[i].getProjectName() == projectName)
-            return projects[i].;
+            return projects[i].getProjectId();
     }
+}
+
+void PredictionModel::clear()
+{
+    projects.clear();
 }

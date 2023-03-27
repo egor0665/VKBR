@@ -28,6 +28,7 @@ public:
     void setInflationPercents(const QVector<qreal> &newInflationPercents);
     int getProjectIdByName(QString projectName);
 
+    void clear();
 protected:
     QVector <ProjectSet> projects;
     QVector <qreal> inflationPercents;

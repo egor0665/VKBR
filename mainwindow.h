@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTreeWidgetItem>
 #include <QVector>
+#include <SaveToPdfDialog.h>
 #include <TabCatalogAndComparisonModel.h>
 #include <TabCatalogModel.h>
 #include <TabComparisonModel.h>
@@ -45,9 +46,18 @@ public:
     UnitComparator comparator;
     bool predictionTableEditedByUser;
     bool listWidgetEditedByUser;
-    userLoginWindow loginWindow ;
+
+    userLoginWindow loginWindow;
+    SaveToPdfDialog saveToPdfDialog;
+
+    QString saveFilePath;
+    bool predictionTableChanged;
+
     QTreeWidgetItem *addTreeRoot(QString name);
     void addUnitTabUpdateValues();
+    void saveToFile(QString filePath);
+public slots:
+    void saveToPdf(QVector<QString> values, int startYear, int endYear);
 protected:
     QDoubleSpinBox *maxPayloadField;
     QDoubleSpinBox *minPayloadField;
@@ -128,6 +138,14 @@ private slots:
     void on_comboBox_10_currentIndexChanged(const QString &arg1);
 
     void on_pushButton_15_clicked();
+
+    void on_pushButton_14_clicked();
+
+    void on_pushButton_17_clicked();
+
+    void on_pushButton_13_clicked();
+
+    void on_pushButton_16_clicked();
 
 private:
     Ui::MainWindow *ui;

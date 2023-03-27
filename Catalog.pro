@@ -1,4 +1,4 @@
-QT       += core gui sql charts
+QT       += core gui sql charts printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,6 +24,7 @@ SOURCES += \
     database.cpp \
     dbproject.cpp \
     dbspacecraft.cpp \
+    fileprojectvalue.cpp \
     launchdata.cpp \
     main.cpp \
     mainmodel.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
     menu.cpp \
     predictionmodel.cpp \
     projectset.cpp \
+    savetopdfdialog.cpp \
     tabcatalogandcomparisonmodel.cpp \
     tabeditdbmodel.cpp \
     tabnewcraftmodel.cpp \
@@ -54,12 +56,14 @@ HEADERS += \
     database.h \
     dbChangeValue.h \
     dbproject.h \
+    fileprojectvalue.h \
     launchdata.h \
     mainmodel.h \
     mainwindow.h \
     menu.h \
     predictionmodel.h \
     projectset.h \
+    savetopdfdialog.h \
     tabcatalogandcomparisonmodel.h \
     tabeditdbmodel.h \
     tabnewcraftmodel.h \
@@ -72,6 +76,7 @@ HEADERS += \
 FORMS += \
     chartdialog.ui \
     mainwindow.ui \
+    savetopdfdialog.ui \
     userloginwindow.ui
 
 # Default rules for deployment.

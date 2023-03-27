@@ -2,6 +2,8 @@
 
 #include <qstringlist.h>
 #include <QDebug>
+#include <FileProjectValue.h>
+#include <QFile>
 
 TabPredictionModel::TabPredictionModel()
 {
@@ -342,4 +344,99 @@ QPair<QVector<qreal>,int> TabPredictionModel::pricesTextToVector(QString pricesS
         if (foundFirstPrice) break;
     }
     return QPair<QVector<qreal>,int>(pricesVector, pricesStartYear);
+}
+
+QVector<int> TabPredictionModel::fileRowTextToVector(QString rowString)
+{
+    QVector <int> rowVector;
+    QStringList prices = rowString.split(";");
+    for (int i=0;i<prices.length();i++)
+    {
+        rowVector.append(prices[i].toDouble());
+    }
+
+    return rowVector;
+}
+
+void TabPredictionModel::saveToFile(QVector<FileProjectValue> saveValues, QString filePath)
+{
+    QString resultString;
+    for (int i=0;i<saveValues.length();i++)
+    {
+        QVector <QString> launchValueVector = saveValues[i].getLaunchValues();
+        QString okrYears = "", serialYears = "", unitBlock = "", launchIds = "";
+
+        for (int j=0;j<launchValueVector.length();j++)
+        {
+            okrYears += (QString::number(saveValues[i].getOkrYears()[j]) + ";");
+            serialYears += (QString::number(saveValues[i].getSerialYears()[j]) + ";");
+            unitBlock += (QString::number(saveValues[i].getUnitBlocks()[j]) + ";");
+
+            int fInd;
+            int sInd;
+            fInd = launchValueVector[j].indexOf(" ");
+            QString boosterRocketName = launchValueVector[j].mid(0,fInd);
+            sInd = launchValueVector[j].indexOf("(");
+            QString upperBlockName = launchValueVector[j].mid(fInd+3,sInd-(fInd+4));
+            QString spaceportName = launchValueVector[j].mid(sInd+1, launchValueVector[j].length()-(sInd+2));
+
+            launchIds += (QString::number(mainModel->db.getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName).id()) + ";");
+        }
+        okrYears.remove(okrYears.length()-1,1);
+        serialYears.remove(serialYears.length()-1,1);
+        unitBlock.remove(unitBlock.length()-1,1);
+        launchIds.remove(launchIds.length()-1,1);
+        resultString += QString::number(mainModel->db.getProjectInfoFromName(saveValues[i].getProjectName()).id()) + "," + okrYears + "," + serialYears + "," + unitBlock + "," + launchIds + "\n";
+    }
+    QFile out(filePath);
+    if( out.open( QIODevice::WriteOnly ) ) {
+        QTextStream stream( &out );
+        stream << resultString;
+        out.close();
+    }
+//    QFile in( FILE_NAME );
+//    if( in.open( QIODevice::ReadOnly ) ) {
+//        QTextStream stream( &in );
+//        qDebug() << stream.readAll();
+//        in.close();
+//    }
+}
+QVector<FileProjectValue> TabPredictionModel::loadFromFile(QString filePath)
+{
+    QString values;
+    QFile in(filePath);
+    if( in.open( QIODevice::ReadOnly ) ) {
+        QTextStream stream( &in );
+        values = stream.readAll();
+        in.close();
+    }
+    QVector<FileProjectValue> resultVector;
+    QStringList projectValues = values.split("\n");
+    projectValues.removeLast();
+    for (int i=0;i<projectValues.length();i++)
+    {
+        QStringList rows = projectValues[i].split(",");
+        QString projectName = mainModel->db.getProjectInfoFromId(rows[0].toInt()).name();
+        QVector<int> okrYears = fileRowTextToVector(rows[1]);
+        QVector<int> serialYears = fileRowTextToVector(rows[2]);
+        QVector<int> unitBlocks = fileRowTextToVector(rows[3]);
+        QVector<int> launchIds = fileRowTextToVector(rows[4]);
+        QVector<QString> launchValues;
+
+        for (int j=0;j<launchIds.length();j++)
+        {
+            DBlaunch a = mainModel->db.getLaunchById(launchIds[i]);
+            QString boosterRocketName = mainModel->db.getNameFromTableById("unit",a.booster_rocket_id());
+            QString upperBlockName = mainModel->db.getNameFromTableById("unit",a.upper_block_id());
+            QString spaceportName = mainModel->db.getNameFromTableById("spaceport",a.spaceport_id());
+            launchValues.append(boosterRocketName + " с " + upperBlockName + " (" + spaceportName+ ")");
+        }
+        resultVector.append(FileProjectValue(projectName, okrYears, serialYears, unitBlocks, launchValues));
+    }
+    return resultVector;
+}
+
+void TabPredictionModel::projectModelClear()
+{
+    predictionModel.clear();
 }
