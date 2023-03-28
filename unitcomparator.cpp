@@ -32,26 +32,6 @@ const QVector<CompareValue> &UnitComparator::compareValues() const
     return _compareValues;
 }
 
-QVector <QLineSeries*> UnitComparator::CreateChart(int unitNum)
-{
-    QVector <QLineSeries*> seriesSummary;
-
-    int compNum = _compareValues.length();
-    for (int i=0;i<unitNum;i++){
-        QLineSeries *series = new QLineSeries();
-        series->setName(_unitNames[i]);
-        for (int j=0;j<compNum;j++){
-            series->append(j, _compareValues[j]._values[i]);
-            qDebug() << j<< _compareValues[j]._values[i];
-        }
-        series->append(compNum+1,_compareValues[0]._values[i]);
-        qDebug() << 0<< _compareValues[0]._values[i];
-        seriesSummary.append(series);
-    }
-
-    return seriesSummary;
-}
-
 bool UnitComparator::isEmpty()
 {
     return _compareValues.length() < 1;

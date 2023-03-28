@@ -16,6 +16,8 @@
 #include <fileProjectValue.h>
 #include <tabPredictionModel.h>
 
+#include <PALETTE.h>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -30,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     rebuildTabs();
     //loginWindow = userLoginWindow(this);
 
-    QObject::connect(&saveToPdfDialog,SIGNAL(startSave(QVector<QString>, int, int)),this,SLOT(saveToPdf(QVector<QString>, int, int)));
+    QObject::connect(&saveToPdfDialog,SIGNAL(startSave(QString, QVector<QString>, int, int)),this,SLOT(saveToPdf(QString, QVector<QString>, int, int)));
 }
 
 MainWindow::~MainWindow()
@@ -114,6 +116,12 @@ void MainWindow::buildCompareTab()
     ui->comboBox_2->addItems(names);
     ui->tableWidget_4->verticalHeader()->hide();
     ui->scrollArea_3->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
+    ui->listWidget_2->addItems(names);
+    for(int i=0;i<ui->listWidget_2->count();i++)
+    {
+        ui->listWidget_2->item(i)->setFlags(ui->listWidget_2->item(i)->flags() | Qt::ItemIsUserCheckable);
+        ui->listWidget_2->item(i)->setCheckState(Qt::Unchecked);
+    }
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
@@ -236,45 +244,59 @@ void MainWindow::buildChartTable()
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 void MainWindow::buildChart()
 {
-    if (comparator.isEmpty()) return ;
-    //model.
-    QPair<qreal,qreal> minMax = comparator.getMinMax();
-    const qreal angularMin = 0;
-    const qreal angularMax = 10;
+    if (!comparator.isEmpty())
+    {
+        QPair<qreal,qreal> minMax = comparator.getMinMax();
+        const qreal angularMin = 1;
+        const qreal angularMax = 10;
 
-    const qreal radialMin = minMax.first;
-    const qreal radialMax = minMax.second;
+        const qreal radialMin = 0;
+        const qreal radialMax = minMax.second;
 
-    //qDebug()<<radialMin<<radialMax;
-    QPolarChart *chart = new QPolarChart();
-    QVector <QLineSeries*> seriesSummary = comparator.CreateChart();
-    for (int i=0;i<seriesSummary.length();i++){
-        qDebug() << seriesSummary[i];
-        chart->addSeries(seriesSummary[i]);
+        QPolarChart *chart = new QPolarChart();
+        QVector <QLineSeries*> seriesSummary = tabCatalogAndComparisonModel.createChart(comparator.unitNames().length(), comparator.compareValues(), comparator.unitNames());
+
+        chart->setTitle("Сравнение аппаратов");
+
+        QValueAxis *angularAxis = new QValueAxis();
+        angularAxis->setTickCount(0);
+        angularAxis->setLabelFormat("%d");
+        angularAxis->setShadesVisible(true);
+        angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
+        angularAxis->setMax(comparator.getValues().length()+1);
+        angularAxis->setMin(1);
+        angularAxis->setTickCount(comparator.compareValues().length());
+        chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
+
+        QValueAxis *radialAxis = new QValueAxis();
+        radialAxis->setTickCount(0);
+        radialAxis->setLabelFormat("%.2f");
+        radialAxis->setMax(radialMax);
+        radialAxis->setMin(radialMin);
+        chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
+        chart->setAnimationOptions(QChart::SeriesAnimations);
+        for (int i=0;i<seriesSummary.length();i++)
+        {
+            qDebug() << seriesSummary[i];
+            chart->addSeries(seriesSummary[i]);
+        }
+
+        ui->widget->setChart(chart);
+
+//        QBarSeries *series = new QBarSeries();
+//        QBarSet *set0 = new QBarSet("daa");
+//        QBarSet *set1 = new QBarSet("daa");
+//        QBarSet *set2 = new QBarSet("daa");
+//        set0->append({1,2,3,4,5});
+//        set1->append({5,4,3,2,4});
+//        set2->append({1,2,3,1,2});
+//        series->append({set0,set1,set2});
+//        QChart *chart = new QChart();
+//        chart->addSeries(series);
+//        chart->setTitle("title");
+//        chart->setAnimationOptions(QChart::SeriesAnimations);
+//        ui->widget->setChart(chart);
     }
-
-    chart->setTitle("Сравнение аппаратов");
-
-    QValueAxis *angularAxis = new QValueAxis();
-    angularAxis->setTickCount(0);
-    angularAxis->setLabelFormat("%.1f");
-    angularAxis->setShadesVisible(true);
-    angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
-    angularAxis->setMax(angularMax);
-    angularAxis->setMin(angularMin);
-    chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
-
-    QValueAxis *radialAxis = new QValueAxis();
-    radialAxis->setTickCount(0);
-    radialAxis->setLabelFormat("%d");
-    radialAxis->setMax(angularMax);
-    radialAxis->setMin(angularMin);
-    chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
-    //chartDialog *chartdialog = new chartDialog(this, chart);
-    //chartdialog->show();
-    ui->widget->setChart(chart);
-    qDebug()<<"";
-    qDebug()<<"MinMax"<<radialMin<<radialMax;
 }
 //===============================================================================================================================================
 //
@@ -717,7 +739,6 @@ void MainWindow::on_pushButton_11_clicked()
 //                                                          Prediction tab
 //===============================================================================================================================================
 
-
 void MainWindow::buildPredictionTab()
 {
     ui->listWidget->clear();
@@ -777,13 +798,13 @@ void MainWindow::buildPredictionTab()
     ui->tableWidget_8->item(rowCount+4, 0)->setText("Цены КА");
     ui->tableWidget_8->item(rowCount+5, 0)->setText("Цены РН");
     ui->tableWidget_8->item(rowCount+6, 0)->setText("Итого");
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount,0,QColor(255,239,214));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+1,0,QColor(255,239,214));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+2,0,QColor(255,239,214));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+3,0,QColor(255,239,214));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+4,0,QColor(244,244,255));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+5,0,QColor(244,244,255));
-    setTableWidgetRowColor(ui->tableWidget_8, rowCount+6,0,QColor(244,244,255));
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount,0,LINECOLOR);
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+1,0,LINECOLOR);
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+2,0,LINECOLOR);
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+3,0,LINECOLOR);
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+4,0,SPACECRAFTPRICECOLOR);
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+5,0,BOOSTERROCKETPRICECOLOR);
+    setTableWidgetRowColor(ui->tableWidget_8, rowCount+6,0,TOTALPRICECOLOR);
 
     listWidgetEditedByUser = true;
     predictionTableEditedByUser = true;
@@ -798,9 +819,7 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
         int rowCount = ui->tableWidget_8->rowCount();
         if (item->checkState()==Qt::Checked)
         {
-
-            int index = tabPredictionModel.projectModelAddProject(item->text());
-            //int unitLifetime = model.projectModelGetUnitLifetime(item->text());
+            int index = tabPredictionModel.projectModelAddProject(item->text());;
 
             for (int i=0;i<7;i++)
             {
@@ -833,9 +852,18 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
             ui->tableWidget_8->item(4 + index, 0)->setFlags(Qt::ItemIsEnabled);
             ui->tableWidget_8->item(5 + index, 0)->setFlags(Qt::ItemIsEnabled);
             ui->tableWidget_8->item(6 + index, 0)->setFlags(Qt::ItemIsEnabled);
-            setTableWidgetRowColor(ui->tableWidget_8, index, 0, QColor(255,245,224));
-            setTableWidgetRowColor(ui->tableWidget_8, index + 5, 0, QColor(244,244,255));
-            setTableWidgetRowColor(ui->tableWidget_8, index + 6, 0, QColor(244,244,255));
+            setTableWidgetRowColor(ui->tableWidget_8, index, 0, PROJECTNAMECOLOR);
+            ui->tableWidget_8->item(index+1,0)->setBackgroundColor(UNITLAUNCHCOLOR);
+            //setTableWidgetRowColor(ui->tableWidget_8, index + 1, 0, UNITLAUNCHCOLOR);
+            ui->tableWidget_8->item(index+2,0)->setBackgroundColor(SERIALLAUNCHCOLOR);
+            //setTableWidgetRowColor(ui->tableWidget_8, index + 2, 0, SERIALLAUNCHCOLOR);
+            ui->tableWidget_8->item(index+3,0)->setBackgroundColor(UNITBLOCKCOLOR);
+            //setTableWidgetRowColor(ui->tableWidget_8, index + 3, 0, UNITBLOCKCOLOR);
+            ui->tableWidget_8->item(index+4,0)->setBackgroundColor(BOOSTERROCKETCOLOR);
+            //setTableWidgetRowColor(ui->tableWidget_8, index + 4, 0, BOOSTERROCKETCOLOR);
+
+            setTableWidgetRowColor(ui->tableWidget_8, index + 5, 0, SPACECRAFTPRICECOLOR);
+            setTableWidgetRowColor(ui->tableWidget_8, index + 6, 0, BOOSTERROCKETPRICECOLOR);
             QStringList launches = tabPredictionModel.getValidLaunchesNamesStringList();
             for (int i=1;i<ui->tableWidget_8->columnCount();i++)
             {
@@ -862,197 +890,6 @@ void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
     }
 
 }
-
-void MainWindow::on_pushButton_17_clicked()
-{
-    QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
-    if (filePath != "")
-    {
-        saveToFile(filePath);
-    }
-}
-
-void MainWindow::on_pushButton_15_clicked()
-{
-    if (saveFilePath == "")
-    {
-        QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
-        if (filePath != "")
-        {
-            saveToFile(filePath);
-        }
-    }
-    else
-    {
-        saveToFile(saveFilePath);
-    }
-}
-
-void MainWindow::saveToFile(QString filePath)
-{
-    QString projectName;
-    QVector<QString> launchValues;
-    QVector<int> okrYears, serialYears, unitBlock;
-    QVector<FileProjectValue> saveValues;
-    for (int i=0;i<ui->tableWidget_8->rowCount();i++)
-    {
-        if (ui->tableWidget_8->item(i,0)->backgroundColor() == QColor(255,245,224))
-        {
-            projectName = ui->tableWidget_8->item(i,0)->text();
-            for (int j=1;j<ui->tableWidget_8->columnCount();j++)
-            {
-                okrYears.append(ui->tableWidget_8->item(i+1,j)->text().toInt());
-                serialYears.append(ui->tableWidget_8->item(i+2,j)->text().toInt());
-                unitBlock.append(ui->tableWidget_8->item(i+3,j)->text().toInt());
-                launchValues.append(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(i+4,j))->currentText());
-            }
-            FileProjectValue tmpVal = FileProjectValue(projectName,okrYears,serialYears,unitBlock,launchValues);
-            saveValues.append(tmpVal);
-            okrYears.clear();
-            serialYears.clear();
-            unitBlock.clear();
-            launchValues.clear();
-        }
-    }
-    tabPredictionModel.saveToFile(saveValues, filePath);
-    saveFilePath = filePath;
-}
-
-void MainWindow::on_pushButton_14_clicked()
-{
-    QString filePath = QFileDialog::getOpenFileName(this, "Открыть", "C://", "*.scn");
-    if (filePath != "")
-    {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "Сохранить", "Сохранить файл?", QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
-        if (reply == QMessageBox::Yes)
-        {
-            if (saveFilePath != "")
-            {
-                saveToFile(saveFilePath);
-            }
-            else
-            {
-                QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
-                if (filePath != "")
-                {
-                    saveToFile(filePath);
-                }
-                else return;
-            }
-        }
-        else if (reply == QMessageBox::No)
-        {
-
-        }
-        else if (reply == QMessageBox::Cancel)
-        {
-            return;
-        }
-        //Спросить сохранить или нет
-
-
-        buildPredictionTab();
-        QVector<FileProjectValue> values = tabPredictionModel.loadFromFile(filePath);
-        QVector<QString> checkedProjects;
-        for (int i=0;i<values.length();i++)
-        {
-            checkedProjects.append(values[i].getProjectName());
-        }
-        for (int i=0;i<ui->listWidget->count();i++)
-        {
-            if (checkedProjects.contains(ui->listWidget->item(i)->text()))
-                ui->listWidget->item(i)->setCheckState(Qt::Checked);
-        }
-        for (int i=0;i<values.length();i++)
-        {
-            for (int j=0;j<ui->tableWidget_8->rowCount();j++)
-            {
-                if (ui->tableWidget_8->item(j,0)->text()==values[i].getProjectName())
-                {
-                    for (int k=1;k<ui->tableWidget_8->columnCount();k++)
-                    {
-                        if (values[i].getOkrYears()[k-1]!=0)
-                            ui->tableWidget_8->item(j+1,k)->setText(QString::number(values[i].getOkrYears()[k-1]));
-                        if (values[i].getSerialYears()[k-1]!=0)
-                            ui->tableWidget_8->item(j+2,k)->setText(QString::number(values[i].getSerialYears()[k-1]));
-                        if (values[i].getUnitBlocks()[k-1]!=0)
-                            ui->tableWidget_8->item(j+3,k)->setText(QString::number(values[i].getUnitBlocks()[k-1]));
-                        qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(j+4,k))->setCurrentIndex(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(j+4,k))->findText(values[i].getLaunchValues()[k-1]));
-                    }
-                }
-            }
-        }
-        saveFilePath = filePath;
-    }
-}
-
-void MainWindow::on_pushButton_16_clicked()
-{
-    saveToPdfDialog.show();
-    this->setEnabled(false);
-}
-
-void MainWindow::saveToPdf(QVector<QString> values, int startYear, int endYear)
-{
-    const int columns = ui->tableWidget_8->columnCount();
-    const int rows = ui->tableWidget_8->rowCount();
-    QTextDocument doc;
-    QTextCursor cursor(&doc);
-    QTextTableFormat tableFormat;
-    tableFormat.setHeaderRowCount(1);
-    tableFormat.setAlignment(Qt::AlignHCenter);
-    tableFormat.setCellPadding(0);
-    tableFormat.setCellSpacing(0);
-    tableFormat.setBorder(1);
-    tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
-    tableFormat.clearColumnWidthConstraints();
-    QTextTable *textTable = cursor.insertTable(rows + 1, columns, tableFormat);
-    QTextCharFormat tableHeaderFormat;
-    tableHeaderFormat.setBackground(QColor("#DADADA"));
-    for (int i = 0; i < columns; i++) {
-        QTextTableCell cell = textTable->cellAt(0, i);
-        cell.setFormat(tableHeaderFormat);
-        QTextCursor cellCursor = cell.firstCursorPosition();
-        cellCursor.insertText(ui->tableWidget_8->horizontalHeaderItem(i)->data(Qt::DisplayRole).toString());
-    }
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            QTableWidgetItem *item = ui->tableWidget_8->item(i, j);
-//            if (!item || item->text().isEmpty()) {
-//                ui->tableWidget_8->setItem(i, j, new QTableWidgetItem("0"));
-//            }
-
-            QTextTableCell cell = textTable->cellAt(i, j);
-            QTextCursor cellCursor = cell.firstCursorPosition();
-            cellCursor.insertText("asda");
-            //ui->tableWidget_8->item(i, j)->text()
-        }
-    }
-    cursor.movePosition(QTextCursor::End);
-    QPrinter printer(QPrinter::PrinterResolution);
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setPaperSize(QPrinter::A4);
-    printer.setOrientation(QPrinter::Landscape);
-    printer.setOutputFileName("testpdf.pdf");
-    doc.setDocumentMargin(0);
-    doc.setTextWidth(5);
-    doc.print(&printer);
-    saveToPdfDialog.hide();
-    this->setEnabled(true);
-}
-
-//===============================================================================================================================================
-//
-//===============================================================================================================================================
-
-void MainWindow::setTableWidgetRowColor(QTableWidget *tableWidget, int row, int startColumn, QColor color)
-{
-    for (int i=startColumn;i<tableWidget->columnCount();i++){
-        tableWidget->item(row,i)->setBackground(color);
-    }
-}
-
 void MainWindow::on_tableWidget_8_comboBox_index_changed(const QString &)
 {
     QComboBox *cb = qobject_cast<QComboBox*>(sender());
@@ -1173,6 +1010,179 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column, QString space
         }
     }
 }
+
+void MainWindow::on_pushButton_17_clicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
+    if (filePath != "")
+    {
+        saveToFile(filePath);
+    }
+}
+
+void MainWindow::on_pushButton_15_clicked()
+{
+    if (saveFilePath == "")
+    {
+        QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
+        if (filePath != "")
+        {
+            saveToFile(filePath);
+        }
+    }
+    else
+    {
+        saveToFile(saveFilePath);
+    }
+}
+
+void MainWindow::saveToFile(QString filePath)
+{
+    QString projectName;
+    QVector<QString> launchValues;
+    QVector<int> okrYears, serialYears, unitBlock;
+    QVector<FileProjectValue> saveValues;
+    for (int i=0;i<ui->tableWidget_8->rowCount();i++)
+    {
+        if (ui->tableWidget_8->item(i,0)->backgroundColor() == PROJECTNAMECOLOR)
+        {
+            projectName = ui->tableWidget_8->item(i,0)->text();
+            for (int j=1;j<ui->tableWidget_8->columnCount();j++)
+            {
+                okrYears.append(ui->tableWidget_8->item(i+1,j)->text().toInt());
+                serialYears.append(ui->tableWidget_8->item(i+2,j)->text().toInt());
+                unitBlock.append(ui->tableWidget_8->item(i+3,j)->text().toInt());
+                launchValues.append(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(i+4,j))->currentText());
+            }
+            FileProjectValue tmpVal = FileProjectValue(projectName,okrYears,serialYears,unitBlock,launchValues);
+            saveValues.append(tmpVal);
+            okrYears.clear();
+            serialYears.clear();
+            unitBlock.clear();
+            launchValues.clear();
+        }
+    }
+    tabPredictionModel.saveToFile(saveValues, filePath);
+    saveFilePath = filePath;
+}
+
+void MainWindow::on_pushButton_14_clicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Открыть", "C://", "*.scn");
+    if (filePath != "")
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Сохранить", "Сохранить файл?", QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+        if (reply == QMessageBox::Yes)
+        {
+            if (saveFilePath != "")
+            {
+                saveToFile(saveFilePath);
+            }
+            else
+            {
+                QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
+                if (filePath != "")
+                {
+                    saveToFile(filePath);
+                }
+                else return;
+            }
+        }
+        else if (reply == QMessageBox::No)
+        {
+
+        }
+        else if (reply == QMessageBox::Cancel)
+        {
+            return;
+        }
+        //Спросить сохранить или нет
+
+
+        buildPredictionTab();
+        QVector<FileProjectValue> values = tabPredictionModel.loadFromFile(filePath);
+        QVector<QString> checkedProjects;
+        for (int i=0;i<values.length();i++)
+        {
+            checkedProjects.append(values[i].getProjectName());
+        }
+        for (int i=0;i<ui->listWidget->count();i++)
+        {
+            if (checkedProjects.contains(ui->listWidget->item(i)->text()))
+                ui->listWidget->item(i)->setCheckState(Qt::Checked);
+        }
+        for (int i=0;i<values.length();i++)
+        {
+            for (int j=0;j<ui->tableWidget_8->rowCount();j++)
+            {
+                if (ui->tableWidget_8->item(j,0)->text()==values[i].getProjectName())
+                {
+                    for (int k=1;k<ui->tableWidget_8->columnCount();k++)
+                    {
+                        if (values[i].getOkrYears()[k-1]!=0)
+                            ui->tableWidget_8->item(j+1,k)->setText(QString::number(values[i].getOkrYears()[k-1]));
+                        if (values[i].getSerialYears()[k-1]!=0)
+                            ui->tableWidget_8->item(j+2,k)->setText(QString::number(values[i].getSerialYears()[k-1]));
+                        if (values[i].getUnitBlocks()[k-1]!=0)
+                            ui->tableWidget_8->item(j+3,k)->setText(QString::number(values[i].getUnitBlocks()[k-1]));
+                        qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(j+4,k))->setCurrentIndex(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(j+4,k))->findText(values[i].getLaunchValues()[k-1]));
+                    }
+                }
+            }
+        }
+        saveFilePath = filePath;
+    }
+}
+
+void MainWindow::on_pushButton_16_clicked()
+{
+    saveToPdfDialog.show();
+    this->setEnabled(false);
+}
+
+void MainWindow::saveToPdf(QString name, QVector<QString> values, int startYear, int endYear)
+{
+    QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.pdf");
+    if (filePath != "")
+    {
+        QVector<QVector<QString>> data;
+        for (int i=0;i<ui->tableWidget_8->rowCount();i++)
+        {
+            QVector<QString> tmpData = {};
+            if (ui->tableWidget_8->item(i,0)->backgroundColor() != BOOSTERROCKETCOLOR)
+                for (int j=0;j<ui->tableWidget_8->columnCount();j++)
+                {
+                    tmpData.append(ui->tableWidget_8->item(i,j)->text());
+                }
+            else
+            {
+                tmpData.append(ui->tableWidget_8->item(i,0)->text());
+                for (int j=1;j<ui->tableWidget_8->columnCount();j++)
+                {
+                    tmpData.append(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(i,j))->currentText());
+                }
+            }
+            data.append(tmpData);
+        }
+        tabPredictionModel.saveToPdf(name, data, values, startYear, endYear, filePath);
+        saveToPdfDialog.hide();
+        this->setEnabled(true);
+    }
+}
+
+//===============================================================================================================================================
+//
+//===============================================================================================================================================
+
+void MainWindow::setTableWidgetRowColor(QTableWidget *tableWidget, int row, int startColumn, QColor color)
+{
+    for (int i=startColumn;i<tableWidget->columnCount();i++){
+        tableWidget->item(row,i)->setBackground(color);
+    }
+}
+
+
 
 
 void MainWindow::on_pushButton_12_clicked()

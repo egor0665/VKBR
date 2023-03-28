@@ -28,6 +28,7 @@ public:
     QVector <QPair<QString,QString>> vectorUnitData(int unitId);
     QVector <QPair<QString,QString>> vectorBoosterRocketData(int unitId);
     QVector <QPair<QString,QString>> vectorUpperBlockData(int unitId);
+    QVector <QLineSeries*> createChart(int unitNum, QVector <CompareValue> compareValues, QStringList unitNames);
 private:
     MainModel* mainModel;
 };

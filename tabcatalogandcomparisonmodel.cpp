@@ -199,6 +199,11 @@ QVector<QPair<QString,QStringList>> TabCatalogAndComparisonModel::formCompareTab
     return compareVector;
 }
 
+QVector <QLineSeries*> TabCatalogAndComparisonModel::createChart(int unitNum, QVector<CompareValue> compareValues, QStringList unitNames)
+{
+    return mainModel->chartManager.CreateChart(unitNum, compareValues, unitNames);
+}
+
 qreal TabCatalogAndComparisonModel::getNumberFromString(QString line, int param)
 {
     //param

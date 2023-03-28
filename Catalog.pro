@@ -20,10 +20,12 @@ SOURCES += \
     DBunit.cpp \
     DBupper_block.cpp \
     chartdialog.cpp \
+    chartmanager.cpp \
     chartview.cpp \
     database.cpp \
     dbproject.cpp \
     dbspacecraft.cpp \
+    filemanager.cpp \
     fileprojectvalue.cpp \
     launchdata.cpp \
     main.cpp \
@@ -50,12 +52,15 @@ HEADERS += \
     DBspaceport.h \
     DBunit.h \
     DBupper_block.h \
+    PALETTE.h \
     chartdialog.h \
+    chartmanager.h \
     chartview.h \
     comparevalue.h \
     database.h \
     dbChangeValue.h \
     dbproject.h \
+    filemanager.h \
     fileprojectvalue.h \
     launchdata.h \
     mainmodel.h \

@@ -17,7 +17,7 @@ public:
     ~SaveToPdfDialog();
 
 Q_SIGNALS:
-    void startSave(QVector<QString> values, int startYear, int endYear);
+    void startSave(QString name, QVector<QString> values, int startYear, int endYear);
 
 private slots:
     void on_listWidget_itemChanged(QListWidgetItem *item);

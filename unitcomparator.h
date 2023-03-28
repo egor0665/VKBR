@@ -19,7 +19,6 @@ public:
     void removeValuesFromComparison(QString parameter);
     void clearValues();
     const QVector<CompareValue> &compareValues() const;
-    QVector <QLineSeries*> CreateChart(int unitNum=2);
     void addUnitName(QString name);
     QVector<CompareValue> getValues();
 

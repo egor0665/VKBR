@@ -1,6 +1,7 @@
 #ifndef TABPREDICTIONMODEL_H
 #define TABPREDICTIONMODEL_H
 
+#include <FileManager.h>
 #include <FileProjectValue.h>
 #include <MainModel.h>
 #include <qstringlist.h>
@@ -21,9 +22,11 @@ public:
     QVector<int> fileRowTextToVector(QString rowString);
     QVector<FileProjectValue> loadFromFile(QString filePath);
     void projectModelClear();
+    void saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values, int startYear, int endYear, QString filePath);
 private:
     MainModel* mainModel;
     PredictionModel predictionModel;
+    FileManager fileManager;
     QPair<QVector<qreal>,int> pricesTextToVector(QString pricesString);
 };
 

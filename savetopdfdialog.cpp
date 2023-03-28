@@ -6,20 +6,20 @@ SaveToPdfDialog::SaveToPdfDialog(QWidget *parent) :
     ui(new Ui::SaveToPdfDialog)
 {
     ui->setupUi(this);
-    ui->listWidget->addItems({"Строка Направление",
-                              "Аппараты Связь",
-                              "Аппараты ДЗЗ",
-                              "Аппараты ФКИ",
-                              "Аппараты Другое",
-                              "Строка Запуск ОКР аппаратов",
-                              "Строка Запуск серийных аппаратов",
-                              "Строка Блок КА",
-                              "Строка Ракета-носитель",
-                              "Строка Цены КА ОКР+Серия",
-                              "Строка Цены РН проекта",
-                              "Строка Цены КА",
-                              "Строка Цены РН",
-                              "Строка Итого",
+    ui->listWidget->addItems({"Направление",
+                              "Связь",
+                              "ДЗЗ",
+                              "ФКИ",
+                              "Другое",
+                              "Запуск ОКР аппаратов",
+                              "Запуск серийных аппаратов",
+                              "Блок КА",
+                              "Ракета-носитель",
+                              "Цены КА ОКР+Серия",
+                              "Цены РН проекта",
+                              "Цены КА",
+                              "Цены РН",
+                              "Итого",
                               });
     for(int i=0;i<ui->listWidget->count();i++)
     {
@@ -75,93 +75,93 @@ SaveToPdfDialog::~SaveToPdfDialog()
 void SaveToPdfDialog::on_listWidget_itemChanged(QListWidgetItem *item)
 {
     int rowCount=0;
-    if (item->text()=="Строка Направление")
+    if (item->text()=="Направление")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount);
         else
             ui->tableWidget->hideRow(rowCount);
     }
-    else if (item->text()=="Аппараты Связь")
+    else if (item->text()=="Связь")
     {
 
     }
-    else if (item->text()=="Аппараты ДЗЗ")
+    else if (item->text()=="ДЗЗ")
     {
 
     }
-    else if (item->text()=="Аппараты ФКИ")
+    else if (item->text()=="ФКИ")
     {
 
     }
-    else if (item->text()=="Аппараты Другое")
+    else if (item->text()=="Другое")
     {
 
     }
-    else if (item->text()=="Строка Название")
+    else if (item->text()=="Название")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+1);
         else
             ui->tableWidget->hideRow(rowCount+1);
     }
-    else if (item->text()=="Строка Запуск ОКР аппаратов")
+    else if (item->text()=="Запуск ОКР аппаратов")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+2);
         else
             ui->tableWidget->hideRow(rowCount+2);
     }
-    else if (item->text()=="Строка Запуск серийных аппаратов")
+    else if (item->text()=="Запуск серийных аппаратов")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+3);
         else
             ui->tableWidget->hideRow(rowCount+3);
     }
-    else if (item->text()=="Строка Блок КА")
+    else if (item->text()=="Блок КА")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+4);
         else
             ui->tableWidget->hideRow(rowCount+4);
     }
-    else if (item->text()=="Строка Ракета-носитель")
+    else if (item->text()=="Ракета-носитель")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+5);
         else
             ui->tableWidget->hideRow(rowCount+5);
     }
-    else if (item->text()=="Строка Цены КА ОКР+Серия")
+    else if (item->text()=="Цены КА ОКР+Серия")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+6);
         else
             ui->tableWidget->hideRow(rowCount+6);
     }
-    else if (item->text()=="Строка Цены РН проекта")
+    else if (item->text()=="Цены РН проекта")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+7);
         else
             ui->tableWidget->hideRow(rowCount+7);
     }
-    else if (item->text()=="Строка Цены КА")
+    else if (item->text()=="Цены КА")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+8);
         else
             ui->tableWidget->hideRow(rowCount+8);
     }
-    else if (item->text()=="Строка Цены РН")
+    else if (item->text()=="Цены РН")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+9);
         else
             ui->tableWidget->hideRow(rowCount+9);
     }
-    else if (item->text()=="Строка Итого")
+    else if (item->text()=="Итого")
     {
         if(item->checkState()==Qt::Checked)
             ui->tableWidget->showRow(rowCount+10);
@@ -174,12 +174,13 @@ void SaveToPdfDialog::on_listWidget_itemChanged(QListWidgetItem *item)
 void SaveToPdfDialog::on_pushButton_clicked()
 {
     QVector<QString> values;
+    QString name = ui->lineEdit->text();
     for(int i=0;i<ui->listWidget->count();i++)
     {
         if (ui->listWidget->item(i)->checkState()==Qt::Checked)
             values.append(ui->listWidget->item(i)->text());
     }
-    emit startSave(values, ui->spinBox->value(), ui->spinBox_2->value());
+    emit startSave(name, values, ui->spinBox->value(), ui->spinBox_2->value());
 }
 
 //void SaveToPdfDialog::startSave(QVector<QString> values, int startYear, int endYear)

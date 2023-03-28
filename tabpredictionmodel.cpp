@@ -4,6 +4,13 @@
 #include <QDebug>
 #include <FileProjectValue.h>
 #include <QFile>
+#include <QTextDocument>
+#include <QTextTableFormat>
+#include <QTextCursor>
+#include <QTextTableCell>
+#include <QTableWidgetItem>
+#include <QPrinter>
+#include <PALETTE.h>
 
 TabPredictionModel::TabPredictionModel()
 {
@@ -388,28 +395,11 @@ void TabPredictionModel::saveToFile(QVector<FileProjectValue> saveValues, QStrin
         launchIds.remove(launchIds.length()-1,1);
         resultString += QString::number(mainModel->db.getProjectInfoFromName(saveValues[i].getProjectName()).id()) + "," + okrYears + "," + serialYears + "," + unitBlock + "," + launchIds + "\n";
     }
-    QFile out(filePath);
-    if( out.open( QIODevice::WriteOnly ) ) {
-        QTextStream stream( &out );
-        stream << resultString;
-        out.close();
-    }
-//    QFile in( FILE_NAME );
-//    if( in.open( QIODevice::ReadOnly ) ) {
-//        QTextStream stream( &in );
-//        qDebug() << stream.readAll();
-//        in.close();
-//    }
+    fileManager.saveToFile(filePath, resultString);
 }
 QVector<FileProjectValue> TabPredictionModel::loadFromFile(QString filePath)
 {
-    QString values;
-    QFile in(filePath);
-    if( in.open( QIODevice::ReadOnly ) ) {
-        QTextStream stream( &in );
-        values = stream.readAll();
-        in.close();
-    }
+    QString values = fileManager.readFile(filePath);
     QVector<FileProjectValue> resultVector;
     QStringList projectValues = values.split("\n");
     projectValues.removeLast();
@@ -439,4 +429,78 @@ QVector<FileProjectValue> TabPredictionModel::loadFromFile(QString filePath)
 void TabPredictionModel::projectModelClear()
 {
     predictionModel.clear();
+}
+
+void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values, int startYear, int endYear, QString filePath)
+{
+    const int columns = endYear-startYear + 2; // ui->tableWidget_8->columnCount();
+    const int rows = data.length();
+    QTextDocument doc;
+    QTextCursor cursor(&doc);
+    QTextTableFormat tableFormat;
+    tableFormat.setHeaderRowCount(1);
+    tableFormat.setAlignment(Qt::AlignHCenter);
+    tableFormat.setCellPadding(0.5);
+    tableFormat.setCellSpacing(0);
+    tableFormat.setBorder(1);
+    tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
+    tableFormat.clearColumnWidthConstraints();
+    QTextTable *textTable = cursor.insertTable(rows + 1, columns, tableFormat);
+    QTextCharFormat tableHeaderFormat;
+    tableHeaderFormat.setBackground(LINECOLOR);
+    cursor.insertText(name);
+    cursor.insertText(name);
+    cursor.insertText(name);
+    cursor.insertText(name);
+    QTextBlockFormat centerAlignment;
+    centerAlignment.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+
+    for (int i = 0; i < columns; i++) {
+        QTextTableCell cell = textTable->cellAt(0, i);
+        cell.setFormat(tableHeaderFormat);
+        QTextCursor cellCursor = cell.firstCursorPosition();
+                cellCursor.setBlockFormat(centerAlignment);
+        if (i==0)
+            cellCursor.insertText("");
+        else
+            cellCursor.insertText(QString::number(i+startYear-1));
+    }
+    bool includeLine = true;
+    QVector<QString> linesNames = {"Связь", "ДЗЗ", "ФКИ", "Другое", "Цены КА", "Цены РН", "Итого"};
+    QVector<QString> rowsNames = {"Запуск ОКР аппаратов", "Запуск серийных аппаратов", "Блок КА", "Ракета-носитель", "Цены КА ОКР+Серия", "Цены РН проекта", "Итого"};
+    QVector<int> removeRows;
+    for (int i = 0; i < rows; i++) {
+        bool includeRow = true;
+        if (linesNames.contains(data[i][0])) //Строка является разделом
+        {
+            if (!values.contains(data[i][0])) //Раздел надо включить
+                includeLine = false;
+            else
+                includeLine = true;
+        }
+        if (rowsNames.contains(data[i][0])) //Строка не название аппарата
+        {
+            if (!values.contains(data[i][0])) //Строку надо включить
+                includeRow = false;
+        }
+        if (includeLine & includeRow)
+            for (int j = 0; j < columns; j++) {
+                QTextTableCell cell = textTable->cellAt(i+1, j);
+                QTextCursor cellCursor = cell.firstCursorPosition();
+                cellCursor.setBlockFormat(centerAlignment);
+                cellCursor.insertText(data[i][j]);
+            }
+        else
+            removeRows.append(i+1);
+    }
+    for(int i=rows;i>=0;i--)
+    {
+        if (removeRows.contains(i))
+        {
+            textTable->removeRows(i,1);
+        }
+    }
+    doc.setDocumentMargin(0);
+    doc.setTextWidth(4);
+    fileManager.printPDF(&doc, filePath);
 }
