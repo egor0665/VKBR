@@ -487,6 +487,7 @@ void MainWindow::on_pushButton_2_clicked()
     QByteArray image;
     QBuffer buffer(&image);
     buffer.open(QBuffer::WriteOnly);
+    if (ui->labelUnitImageURL->text() != "")
     QImage(ui->labelUnitImageURL->text()).save(&buffer, "PNG");
     if (ui->label_53->text().toInt() == -1)
     {
