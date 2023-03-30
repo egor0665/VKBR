@@ -112,8 +112,6 @@ void MainWindow::buildCompareTab()
 {
 
     QStringList names = model.getNamesFromTableStringList("unit");
-    ui->comboBox->addItems(names);
-    ui->comboBox_2->addItems(names);
     ui->tableWidget_4->verticalHeader()->hide();
     ui->scrollArea_3->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
     ui->listWidget_2->addItems(names);
@@ -124,59 +122,87 @@ void MainWindow::buildCompareTab()
     }
 }
 
-void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
+void MainWindow::on_listWidget_2_itemChanged(QListWidgetItem *item)
 {
-    rebuildCompareTable(arg1, ui->comboBox_2->currentText());
+    QVector<QString> selectedUnits;
+    for (int i=0;i<ui->listWidget_2->count();i++)
+        if (ui->listWidget_2->item(i)->checkState() == Qt::Checked)
+            selectedUnits.append(ui->listWidget_2->item(i)->text());
+    rebuildCompareTable(selectedUnits);
 }
 
-void MainWindow::on_comboBox_2_currentIndexChanged(const QString &arg1)
+void MainWindow::rebuildCompareTable(QVector<QString> selectedUnits)
 {
-    rebuildCompareTable(ui->comboBox->currentText(), arg1);
-}
-
-void MainWindow::rebuildCompareTable(QString unitName1, QString unitName2)
-{
-    qDebug() << unitName1 << " " << unitName2;
-
-    ui->label_7->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    ui->label_8->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
     ui->tableWidget_4->clearContents();
     ui->tableWidget_4->setRowCount(0);
-    ui->tableWidget_4->setColumnCount(3); // Указываем число колонок
+    ui->tableWidget_4->setColumnCount(selectedUnits.length()+1); // Указываем число колонок
     ui->tableWidget_4->setShowGrid(false); // Включаем сетку
     ui->tableWidget_4->setSelectionMode(QAbstractItemView::NoSelection);
-    //ui->tableWidget_4->setHorizontalHeaderLabels({"Номер показателя", "Параметр", "Значение"});
+    QStringList headers = {""};
+    headers.append(model.QVectorToQStringList(selectedUnits));
+    ui->tableWidget_4->setHorizontalHeaderLabels(headers);
     ui->tableWidget_4->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_4->setEditTriggers(QTableWidget::NoEditTriggers);
 
-    int unitId_1 = tabCatalogAndComparisonModel.getUnitIdByName(unitName1);
-    int unitId_2 = tabCatalogAndComparisonModel.getUnitIdByName(unitName2);
-    QVector<QPair<QString,QString>> values_1 = tabCatalogAndComparisonModel.getUnitData(unitId_1);
-    QVector<QPair<QString,QString>> values_2 = tabCatalogAndComparisonModel.getUnitData(unitId_2);
-    QVector<QPair<QString,QStringList>> compareVector = tabCatalogAndComparisonModel.formCompareTable(values_1, values_2);
-    int rowCount = 0;
+    QVector<QVector<QPair<QString,QString>>> values;
+    for (int i=0;i<selectedUnits.length();i++)
+        values.append(tabCatalogAndComparisonModel.getUnitData(tabCatalogAndComparisonModel.getUnitIdByName(selectedUnits[i])));
+    QVector<QPair<QString,QStringList>> compareVector = tabCatalogAndComparisonModel.formCompareTable(values);
+
+    if (selectedUnits.length()>0)
+    {
+        ui->tableWidget_4->insertRow(0);
+        for(int i=1;i<ui->tableWidget_4->columnCount();i++)
+        {
+            QLabel * imageLabel = new QLabel();
+            QPixmap image;
+            image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(tabCatalogAndComparisonModel.getUnitIdByName(selectedUnits[i-1])).toUtf8()), "PNG");
+            int size = ui->tableWidget_4->width()/ui->tableWidget_4->columnCount();
+            if (size > 150) size = 150;
+            imageLabel->setPixmap(image.scaled(size,size,Qt::KeepAspectRatio));
+            ui->tableWidget_4->setCellWidget(0,i,imageLabel);
+        }
+        ui->tableWidget_4->setRowHeight(0,150);
+    }
+
+    int rowCount = 1;
+    comparator.clearValues();
+    for (int i=0;i<selectedUnits.length();i++)
+        comparator.addUnitName(selectedUnits[i]);
+
     for (int i=0;i<compareVector.length(); i++){
             ui->tableWidget_4->insertRow(rowCount);
             ui->tableWidget_4->setItem(rowCount,0, new QTableWidgetItem(compareVector[i].first));
-            ui->tableWidget_4->setItem(rowCount,1, new QTableWidgetItem(compareVector[i].second[0]));
-            ui->tableWidget_4->setItem(rowCount,2, new QTableWidgetItem(compareVector[i].second[1]));
+            for (int j=0;j<compareVector[i].second.length();j++)
+                ui->tableWidget_4->setItem(rowCount,j+1, new QTableWidgetItem(compareVector[i].second[j]));
             rowCount++;
     }
+    if (ui->tableWidget_4->columnCount()!=0)
+    {
+        int newColWidth = ui->tableWidget_4->width()/ui->tableWidget_4->columnCount();
+        for (int i=0;i<ui->tableWidget_4->columnCount();i++)
+            ui->tableWidget_4->setColumnWidth(i,newColWidth);
+    }
+//    if (ui->tableWidget_4->rowCount()>0)
+//        for(int i=0;i<ui->tableWidget_4->columnCount();i++)
+//            ui->tableWidget_4->item(0,i)->setFlags(Qt::ItemIs);
 
-    QPixmap image;
-    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1).toUtf8()), "PNG");
-    //QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1));
-    ui->label_7->setPixmap(image.scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
-    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2).toUtf8()), "PNG");
-    //picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2));
-    ui->label_8->setPixmap(image.scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
+//    QPixmap image;
+//    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1).toUtf8()), "PNG");
+//    //QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1));
+//    ui->label_7->setPixmap(image.scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
+//    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2).toUtf8()), "PNG");
+//    //picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2));
+//    ui->label_8->setPixmap(image.scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
 
-    ui->tableWidget_4->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->tableWidget_4->setColumnWidth(1,ui->tableWidget_4->width()/2);
-    comparator.clearValues();
-    comparator.addUnitName(unitName1);
-    comparator.addUnitName(unitName2);
+//    ui->tableWidget_4->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//    ui->tableWidget_4->setColumnWidth(1,ui->tableWidget_4->width()/2);
+//    comparator.clearValues();
+//    for (int i=0;)
+//    comparator.addUnitName(unitName1);
+//    comparator.addUnitName(unitName2);
+
 }
 
 void MainWindow::on_tableWidget_4_cellDoubleClicked(int row, int column)
@@ -192,7 +218,13 @@ void MainWindow::on_tableWidget_4_cellDoubleClicked(int row, int column)
         comparator.removeValuesFromComparison(ui->tableWidget_4->item(row,0)->text());
         QVector <qreal> tmpValues;
         for (int i = 1;i<ui->tableWidget_4->columnCount();i++)
-            tmpValues.append(1/tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0));
+        {
+            qreal tmpVal = tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0);
+            if (tmpVal == 0)
+                tmpValues.append(0);
+            else
+                tmpValues.append(1/tmpVal);
+        }
 
         comparator.addValuesToComparison(ui->tableWidget_4->item(row,0)->text(), tmpValues);
         color = Qt::yellow;
@@ -222,14 +254,15 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::buildChartTable()
 {
+    QVector<CompareValue> tableValues = comparator.getValues();
     ui->tableWidget_5->clearContents();
     ui->tableWidget_5->setRowCount(0);
-    ui->tableWidget_5->setColumnCount(3);
+    ui->tableWidget_5->setColumnCount(tableValues[0]._values.length()+1);
     ui->tableWidget_5->setShowGrid(true);
     ui->tableWidget_5->setSelectionMode(QAbstractItemView::NoSelection);
     ui->tableWidget_5->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_5->setEditTriggers(QTableWidget::NoEditTriggers);
-    QVector<CompareValue> tableValues = comparator.getValues();
+
     for (int i=0;i<tableValues.length();i++){
         ui->tableWidget_5->insertRow(i);
         ui->tableWidget_5->setItem(i,0, new QTableWidgetItem(tableValues[i]._parameter));
@@ -282,20 +315,6 @@ void MainWindow::buildChart()
         }
 
         ui->widget->setChart(chart);
-
-//        QBarSeries *series = new QBarSeries();
-//        QBarSet *set0 = new QBarSet("daa");
-//        QBarSet *set1 = new QBarSet("daa");
-//        QBarSet *set2 = new QBarSet("daa");
-//        set0->append({1,2,3,4,5});
-//        set1->append({5,4,3,2,4});
-//        set2->append({1,2,3,1,2});
-//        series->append({set0,set1,set2});
-//        QChart *chart = new QChart();
-//        chart->addSeries(series);
-//        chart->setTitle("title");
-//        chart->setAnimationOptions(QChart::SeriesAnimations);
-//        ui->widget->setChart(chart);
     }
 }
 //===============================================================================================================================================
@@ -1207,6 +1226,9 @@ void MainWindow::on_pushButton_13_clicked()
 {
 
 }
+
+
+
 
 
 

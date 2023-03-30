@@ -1,5 +1,6 @@
 #include "tabcatalogandcomparisonmodel.h"
 #include <QDebug>
+#include <QVector>
 
 TabCatalogAndComparisonModel::TabCatalogAndComparisonModel()
 {
@@ -159,43 +160,79 @@ QString TabCatalogAndComparisonModel::classSelect(QString _class)
     return resultClass;
 }
 
-QVector<QPair<QString,QStringList>> TabCatalogAndComparisonModel::formCompareTable(QVector <QPair<QString,QString>> unitValues_1, QVector <QPair<QString,QString>> unitValues_2)
+QVector<QPair<QString,QStringList>> TabCatalogAndComparisonModel::formCompareTable(QVector<QVector<QPair<QString,QString>>> values)
 {
+    QMap<QString,bool> usedValues;
     QVector<QPair<QString,QStringList>> compareVector;
-    QVector<QPair<QString,QStringList>> singleValuesVector;
-    for (int i=0; i<unitValues_1.length();i++)
+    for (int i=0;i<values.length();i++)
     {
-        QString compVal = unitValues_1[i].first;
-        bool found = false;
-        for (int j=0;j<unitValues_2.length();j++)
+        for (int j=0;j<values[i].length();j++)
         {
-            if (unitValues_2[j].first==compVal){
-                compareVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second,unitValues_2[j].second}));
-                found=true;
-                break;
-            }
-        }
-        if (!found) {
-            singleValuesVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second, ""}));
+            usedValues[values[i][j].first] = false;
         }
     }
 
-    for (int i=0; i<unitValues_2.length();i++)
+    for (int i=0;i<values.length();i++)
     {
-        QString compVal = unitValues_2[i].first;
-        bool found = false;
-        for (int j=0;j<unitValues_1.length();j++)
+        for (int j=0;j<values[i].length();j++)
         {
-            if (unitValues_1[j].first==compVal){
-                found=true;
-                break;
+            QStringList currentValues = {};
+            if (!usedValues[values[i][j].first])
+            {
+                for (int k=0;k<values.length();k++)
+                {
+                    bool foundValuesInUnit = false;
+                    for (int y=0;y<values[k].length();y++)
+                    {
+                        if (values[k][y].first == values[i][j].first)
+                        {
+                            foundValuesInUnit = true;
+                            currentValues.append(values[k][y].second);
+                        }
+                    }
+                    if (!foundValuesInUnit)
+                        currentValues.append("");
+                }
+                usedValues[values[i][j].first] = true;
+                compareVector.append(QPair<QString,QStringList>(values[i][j].first,currentValues));
             }
         }
-        if (!found) {
-            singleValuesVector.append(QPair<QString,QStringList>(compVal, { "", unitValues_2[i].second}));
-        }
     }
-    compareVector.append(singleValuesVector);
+
+//    QVector<QPair<QString,QStringList>> singleValuesVector;
+//    for (int i=0; i<unitValues_1.length();i++)
+//    {
+//        QString compVal = unitValues_1[i].first;
+//        bool found = false;
+//        for (int j=0;j<unitValues_2.length();j++)
+//        {
+//            if (unitValues_2[j].first==compVal){
+//                compareVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second,unitValues_2[j].second}));
+//                found=true;
+//                break;
+//            }
+//        }
+//        if (!found) {
+//            singleValuesVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second, ""}));
+//        }
+//    }
+
+//    for (int i=0; i<unitValues_2.length();i++)
+//    {
+//        QString compVal = unitValues_2[i].first;
+//        bool found = false;
+//        for (int j=0;j<unitValues_1.length();j++)
+//        {
+//            if (unitValues_1[j].first==compVal){
+//                found=true;
+//                break;
+//            }
+//        }
+//        if (!found) {
+//            singleValuesVector.append(QPair<QString,QStringList>(compVal, { "", unitValues_2[i].second}));
+//        }
+//    }
+//    compareVector.append(singleValuesVector);
     return compareVector;
 }
 

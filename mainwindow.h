@@ -71,7 +71,7 @@ protected:
     void buildDisplayTab();
     void buildCompareTab();
     void buildAddUnitTab();
-    void rebuildCompareTable(QString unitName1, QString unitName2);
+    void rebuildCompareTable(QVector<QString> selectedUnits);
     void addTreeChild2(QTreeWidgetItem *parent, QString name);
     void addTreeChild(QTreeWidgetItem *parent, QString name, QVector <QString> child_array);
     QString classSelect(QString _class);
@@ -90,10 +90,6 @@ protected:
     QString startAuth();
 private slots:
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
-
-    void on_comboBox_2_currentIndexChanged(const QString &arg1);
-
-    void on_comboBox_currentIndexChanged(const QString &arg1);
 
     void on_tableWidget_4_cellDoubleClicked(int row, int column);
 
@@ -146,6 +142,8 @@ private slots:
     void on_pushButton_13_clicked();
 
     void on_pushButton_16_clicked();
+
+    void on_listWidget_2_itemChanged(QListWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;

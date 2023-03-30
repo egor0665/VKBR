@@ -22,7 +22,7 @@ public:
     void addTreeChild2(QTreeWidgetItem *parent, QString name);
     QTreeWidgetItem *addTreeRoot(QString name, QTreeWidget *treeWidget);
     QString classSelect(QString _class);
-    QVector<QPair<QString,QStringList>> formCompareTable(QVector <QPair<QString,QString>> unitValues_1, QVector <QPair<QString,QString>> unitValues_2);
+    QVector<QPair<QString,QStringList>> formCompareTable(QVector<QVector<QPair<QString,QString>>> values);
     qreal getNumberFromString(QString line, int param = 0);
 
     QVector <QPair<QString,QString>> vectorUnitData(int unitId);

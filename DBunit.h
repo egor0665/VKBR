@@ -10,7 +10,7 @@ class DBUnit
 {
 public:
 
-    const int UNIT_ROW_NUM = 15;
+    const int UNIT_ROW_NUM = 18;
     const QStringList UNIT_VALUES = {"Класс",
                                      "Название",
                                      "Назначение",
@@ -26,7 +26,9 @@ public:
                                      "Первый запуск",
                                      "Космодром первого запуска",
                                      "Тип финансирования",
-                                     "Система контроля"};
+                                     "Система контроля",
+                                     "Цена",
+                                     "Год цены"};
     DBUnit();
     DBUnit(int id, const QString &unit_class, const QString &name, const QString &purpose, bool project, const QString &objective, const QString &work_status, int developer_id, int extra_developer_id, int manufacturer_id, int launches, int customer_id, int successful, const QDateTime &first_launch, int first_launch_spaceport_id, const QString &financing_type, const QString &control_system_type, const QString &image_url, qreal price, int price_year);
 

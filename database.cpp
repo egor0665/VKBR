@@ -18,6 +18,7 @@
 #include <DBbooster_rocket.h>
 #include <dbChangeValue.h>
 #include <DBlaunch.h>
+#include <QDateTime>
 
 database::database()
 {
@@ -111,12 +112,12 @@ DBUnit database::getUnitInfoFromName(QString name)
                         query.value(10).toInt(),
                         query.value(11).toInt(),
                         query.value(12).toInt(),
-                        QDateTime(),
+                        QDateTime::fromString(query.value(13).toString().trimmed(), "yyyy-MM-dd hh:mm:ss"),
                         query.value(14).toInt(),
                         query.value(15).toString().trimmed(),
                         query.value(16).toString().trimmed(),
                         query.value(17).toString(),
-                        query.value(18).toReal(),
+                        query.value(18).toDouble(),
                         query.value(19).toInt());
 
     return tmpUnit;
@@ -125,7 +126,7 @@ DBUnit database::getUnitInfoFromName(QString name)
 DBUnit database::getUnitInfoFromId(int unitId)
 {
     QSqlQuery query;
-    query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.id = " + QString::number(unitId));
+    query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.id = " + QString::number(unitId));
     query.next();
     qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
     DBUnit tmpUnit = DBUnit(query.value(0).toInt(),
@@ -141,12 +142,12 @@ DBUnit database::getUnitInfoFromId(int unitId)
                         query.value(10).toInt(),
                         query.value(11).toInt(),
                         query.value(12).toInt(),
-                        QDateTime(),
+                        QDateTime::fromString(query.value(13).toString().trimmed(), "yyyy-MM-dd hh:mm:ss"),
                         query.value(14).toInt(),
                         query.value(15).toString().trimmed(),
                         query.value(16).toString().trimmed(),
                         query.value(17).toString().trimmed(),
-                        query.value(18).toReal(),
+                        query.value(18).toDouble(),
                         query.value(19).toInt());
     return tmpUnit;
     qDebug() << query.value(0);

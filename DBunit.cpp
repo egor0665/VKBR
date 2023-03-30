@@ -205,6 +205,8 @@ QStringList DBUnit::getValues()
     values.append(QString::number(this->first_launch_spaceport_id()));
     values.append(this->financing_type());
     values.append(this->control_system_type());
+    values.append(QString::number(this->price()));
+    values.append(QString::number(this->price_year()));
 
     return values;
 }
