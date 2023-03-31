@@ -94,7 +94,7 @@ DBUnit database::getUnitInfoFromName(QString name)
      * */
 
     QSqlQuery query;
-    query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.name LIKE '" + name + "%'");
+    query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.name LIKE '" + name + " %'");
     query.next();
     //qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
     qDebug() << "IMGSSS" << query.value(17);
@@ -156,7 +156,7 @@ DBUnit database::getUnitInfoFromId(int unitId)
 int database::getUnitIdByName(QString name)
 {
     QSqlQuery query;
-    query.exec("SELECT id FROM unit WHERE unit.name LIKE '" + name + "%'");
+    query.exec("SELECT id FROM unit WHERE unit.name LIKE '" + name + " %'");
     query.next();
     qDebug() <<query.value(0);
     return query.value(0).toInt();
@@ -338,7 +338,7 @@ int database::getOrganizationIdFromName(QString organizationName)
 {
     int organizationId;
     QSqlQuery query;
-    query.exec("SELECT id FROM organization WHERE name LIKE '" + organizationName+ "%'");
+    query.exec("SELECT id FROM organization WHERE name LIKE '" + organizationName+ " %'");
     while (query.next()) {
            organizationId = query.value(0).toString().trimmed().toInt();
        }
@@ -349,7 +349,7 @@ int database::getSpaceportIdFromName(QString spaceportName)
 {
     int spaceportId;
     QSqlQuery query;
-    query.exec("SELECT id FROM spaceport WHERE name LIKE '" + spaceportName + "%'");
+    query.exec("SELECT id FROM spaceport WHERE name LIKE '" + spaceportName + " %'");
     while (query.next()) {
            spaceportId = query.value(0).toString().trimmed().toInt();
        }
@@ -520,7 +520,7 @@ void database::addProjectToDB(DBProject newProject)
 DBProject database::getProjectInfoFromName(QString projectName)
 {
     QSqlQuery query;
-    query.exec("SELECT id, name, type, unit_id, pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices FROM project WHERE project.name LIKE '" + projectName + "%'");
+    query.exec("SELECT id, name, type, unit_id, pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices FROM project WHERE project.name LIKE '" + projectName + " %'");
     query.next();
     //qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
     DBProject tmpProject = DBProject(query.value(0).toInt(),
@@ -556,7 +556,7 @@ DBProject database::getProjectInfoFromId (int projectId)
 void database::updateProjectPricesByName(QString projectName, QString new_pre_prices, QString new_first_unit_prices, QString new_last_unit_prices, QString new_post_prices, QString new_serial_prices)
 {
     QSqlQuery query;
-    QString queryString = "UPDATE public.project SET pre_prices = '" + new_pre_prices + "', first_unit_prices = '" + new_first_unit_prices + "',last_unit_prices = '" + new_last_unit_prices + "', post_prices = '" + new_post_prices + "', serial_prices = '" + new_serial_prices + "' WHERE name LIKE '" + projectName + "%'";
+    QString queryString = "UPDATE public.project SET pre_prices = '" + new_pre_prices + "', first_unit_prices = '" + new_first_unit_prices + "',last_unit_prices = '" + new_last_unit_prices + "', post_prices = '" + new_post_prices + "', serial_prices = '" + new_serial_prices + "' WHERE name LIKE '" + projectName + " %'";
     qDebug() <<queryString;
     query.exec(queryString);
     qDebug() << query.lastError().text();
@@ -595,7 +595,7 @@ QVector <QString> database::getUnitNamesByType(QString type)
 {
     QVector <QString>  names;
     QSqlQuery query;
-    query.exec("SELECT name FROM unit WHERE unit_class LIKE '" + type + "%'");
+    query.exec("SELECT name FROM unit WHERE unit_class LIKE '" + type + " %'");
     while (query.next()) {
            names.append(query.value(0).toString().trimmed());
        }
@@ -608,9 +608,9 @@ DBlaunch database::getLaunchFromParamIds(QString boosterRocket, QString upperBlo
     QSqlQuery query;
     query.exec("SELECT lnch.id, lnch.booster_rocket_id, lnch.upper_block_id, lnch.spaceport_id, lnch.price_year, lnch.prices, lnch.launch_price, lnch.delivery_price, lnch.min_payload, lnch.max_payload "
                "FROM launch lnch, unit unt1, unit unt2, spaceport spcprt "
-               "WHERE unt1.name LIKE '" + boosterRocket + "%' AND lnch.booster_rocket_id = unt1.id "
-               "AND unt2.name LIKE '" + upperBlock + "%' AND lnch.upper_block_id = unt2.id "
-               "AND spcprt.name LIKE '" + spaceport + "%' AND lnch.spaceport_id = spcprt.id");
+               "WHERE unt1.name LIKE '" + boosterRocket + " %' AND lnch.booster_rocket_id = unt1.id "
+               "AND unt2.name LIKE '" + upperBlock + " %' AND lnch.upper_block_id = unt2.id "
+               "AND spcprt.name LIKE '" + spaceport + " %' AND lnch.spaceport_id = spcprt.id");
     while (query.next()) {
         launch = DBlaunch(query.value(0).toString().trimmed().toInt(),
                           query.value(1).toString().trimmed().toInt(),
@@ -701,7 +701,7 @@ qreal database::getSpacecraftWeightByProjectName(QString projectName)
 {
     qreal weight;
     QSqlQuery query;
-    query.exec("SELECT sc.weight FROM project pr, spacecraft sc WHERE pr.name LIKE '" + projectName + "%' AND pr.unit_id = sc.id");
+    query.exec("SELECT sc.weight FROM project pr, spacecraft sc WHERE pr.name LIKE '" + projectName + " %' AND pr.unit_id = sc.id");
     while (query.next())
     {
         weight = query.value(0).toString().trimmed().toDouble();
