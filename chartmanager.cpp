@@ -7,7 +7,7 @@ ChartManager::ChartManager()
 
 }
 
-QVector <QLineSeries*> ChartManager::CreateChart(int unitNum, QVector<CompareValue> compareValues, QStringList unitNames)
+QVector <QLineSeries*> ChartManager::CreateChartLineSeries(int unitNum, QVector<CompareValue> compareValues, QStringList unitNames)
 {
     QVector <QLineSeries*> seriesSummary;
 
@@ -26,6 +26,25 @@ QVector <QLineSeries*> ChartManager::CreateChart(int unitNum, QVector<CompareVal
 
     return seriesSummary;
 }
+
+QBarSeries* ChartManager::CreateChartBarSeries(int unitNum, QVector<CompareValue> compareValues, QStringList unitNames)
+{
+    QBarSeries* seriesSummary = new QBarSeries;
+    int compNum = compareValues.length();
+    for (int i=0;i<unitNum;i++){
+        QBarSet *set = new QBarSet(unitNames[i]);
+        for (int j=0;j<compNum;j++){
+            *set <<compareValues[j]._values[i];
+            qDebug() << compareValues[j]._values[i];
+        }
+        seriesSummary->append(set);
+        qDebug() << 0 << compareValues[0]._values[i];
+    }
+
+    return seriesSummary;
+}
+
+
 
 //void ChartManager::buildChart(qreal minVal, qreal maxVal, QVector<QPair<QString,<QVector<qreal>>> values )
 //{

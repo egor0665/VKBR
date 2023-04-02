@@ -6,8 +6,11 @@
 #include <MainModel.h>
 #include <qstringlist.h>
 
+const int INFLATIONMATRIXN = 20;
+
 class TabPredictionModel
 {
+
 public:
     TabPredictionModel();
     TabPredictionModel(MainModel* _mainModel);
@@ -23,10 +26,13 @@ public:
     QVector<FileProjectValue> loadFromFile(QString filePath);
     void projectModelClear();
     void saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values, int startYear, int endYear, QString filePath);
+
+    setUpValues();
 private:
     MainModel* mainModel;
     PredictionModel predictionModel;
     FileManager fileManager;
+    qreal inflationMatrix[INFLATIONMATRIXN][INFLATIONMATRIXN];
     QPair<QVector<qreal>,int> pricesTextToVector(QString pricesString);
 };
 

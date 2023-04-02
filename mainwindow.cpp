@@ -243,8 +243,9 @@ void MainWindow::on_tableWidget_4_cellDoubleClicked(int row, int column)
         ui->tableWidget_4->item(row,i)->setBackgroundColor(color);
     }
     tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,column)->text());
-    buildChart();
     buildChartTable();
+    buildChart();
+
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -262,10 +263,15 @@ void MainWindow::buildChartTable()
     ui->tableWidget_5->setSelectionMode(QAbstractItemView::NoSelection);
     ui->tableWidget_5->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_5->setEditTriggers(QTableWidget::NoEditTriggers);
-
+    int nameColWidth = ui->tableWidget_5->width()/(tableValues[0]._values.length()+1) * 1.5;
+    int colWidth = (ui->tableWidget_5->width()-nameColWidth)/(tableValues[0]._values.length());
+    ui->tableWidget_5->setColumnWidth(0, nameColWidth);
+    for (int i=1;i<ui->tableWidget_5->columnCount();i++)
+        ui->tableWidget_5->setColumnWidth(i, colWidth);
     for (int i=0;i<tableValues.length();i++){
         ui->tableWidget_5->insertRow(i);
         ui->tableWidget_5->setItem(i,0, new QTableWidgetItem(tableValues[i]._parameter));
+
         for(int j=0;j<tableValues[0]._values.length();j++){
             ui->tableWidget_5->setItem(i,j+1, new QTableWidgetItem(QString::number(tableValues[i]._values[j])));
         }
@@ -287,7 +293,7 @@ void MainWindow::buildChart()
         const qreal radialMax = minMax.second;
 
         QPolarChart *chart = new QPolarChart();
-        QVector <QLineSeries*> seriesSummary = tabCatalogAndComparisonModel.createChart(comparator.unitNames().length(), comparator.compareValues(), comparator.unitNames());
+        QVector <QLineSeries*> seriesSummary = tabCatalogAndComparisonModel.createChartLineSeries(comparator.unitNames().length(), comparator.compareValues(), comparator.unitNames());
 
         chart->setTitle("Сравнение аппаратов");
 
@@ -314,8 +320,30 @@ void MainWindow::buildChart()
             chart->addSeries(seriesSummary[i]);
         }
 
+        // ВТОРОЙ ГРАФИК
         ui->widget->setChart(chart);
+
+        QChart *chart2 = new QChart();
+        chart2->addSeries(tabCatalogAndComparisonModel.createChartBarSeries(comparator.unitNames().length(), comparator.compareValues(), comparator.unitNames()));
+        chart2->setTitle("Сравнение аппаратов");
+        chart2->setAnimationOptions(QChart::SeriesAnimations);
+        QStringList categories;
+
+        for (int i=0;i<ui->tableWidget_5->rowCount();i++)
+            categories.append( ui->tableWidget_5->item(i,0)->text());
+        QBarCategoryAxis *axisX = new QBarCategoryAxis();
+        axisX->append(categories);
+        chart2->addAxis(axisX, Qt::AlignBottom);
+        //series->attachAxis(axisX);
+
+        QValueAxis *axisY = new QValueAxis();
+        axisY->setRange(0,minMax.second);
+        chart2->addAxis(axisY, Qt::AlignLeft);
+        //series->attachAxis(axisY);
+        ui->widget_2->setChart(chart2);
+
     }
+
 }
 //===============================================================================================================================================
 //
@@ -614,10 +642,14 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
         ui->doubleSpinBox_3->setValue(currentLaunch.min_payload());
         ui->doubleSpinBox_4->setValue(currentLaunch.max_payload());
         ui->spinBox_2->setValue(currentLaunch.price_year());
+        if (currentLaunch.valid())
+            ui->checkBox->setCheckState(Qt::Checked);
+        else
+            ui->checkBox->setCheckState(Qt::Unchecked);
         QVector<qreal> prices = tabNewExtrasModel.pricesToVector(currentLaunch.prices());
         for (int i=1;i<ui->tableWidget_9->columnCount();i++)
         {
-            ui->tableWidget_9->setItem(0, i,  new QTableWidgetItem(QString::number(prices[i])));
+            ui->tableWidget_9->setItem(0, i,  new QTableWidgetItem(QString::number(prices[i-1])));
         }
 
     }
@@ -1030,6 +1062,18 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column, QString space
     }
 }
 
+void MainWindow::on_pushButton_18_clicked()
+{
+    tabPredictionModel.setUpValues();
+    for (int i=0;i<ui->tableWidget_8->rowCount();i++)
+    {
+        if (ui->tableWidget_8->item(i,0)->backgroundColor() == PROJECTNAMECOLOR)
+        {
+            emit on_tableWidget_8_cellChanged(i+1,1);
+        }
+    }
+}
+
 void MainWindow::on_pushButton_17_clicked()
 {
     QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
@@ -1219,17 +1263,16 @@ void MainWindow::on_pushButton_12_clicked()
     qreal deliveryPrice = ui->doubleSpinBox->value();
     qreal minPayload = ui->doubleSpinBox_3->value();
     qreal maxPayload = ui->doubleSpinBox_4->value();
-    model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload);
+    bool valid;
+    if (ui->checkBox->checkState()== Qt::Checked)
+        valid = true;
+    else
+        valid = false;
+    model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
 }
 
 void MainWindow::on_pushButton_13_clicked()
 {
 
 }
-
-
-
-
-
-
 

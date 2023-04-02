@@ -66,7 +66,7 @@ QString TabNewCraftModel::addUnitToDB(
         for (int i=0;i<upperBlockIds.length();i++)
             for (int j=0;j<spaceportIds.length();j++)
             {
-                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketId, upperBlockIds[i],spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0);
+                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketId, upperBlockIds[i],spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
                 mainModel->db.addLaunchInformation(tmpLaunch);
             }
     }
@@ -80,7 +80,7 @@ QString TabNewCraftModel::addUnitToDB(
         for (int i=0;i<boosterRocketIds.length();i++)
             for (int j=0;j<spaceportIds.length();j++)
             {
-                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockId,spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0);
+                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockId,spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
                 mainModel->db.addLaunchInformation(tmpLaunch);
             }
     }
@@ -148,7 +148,7 @@ QString TabNewCraftModel::updateUnitDB(
         for (int i=0;i<upperBlockIds.length();i++)
             for (int j=0;j<spaceportIds.length();j++)
             {
-                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketId, upperBlockIds[i],spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0);
+                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketId, upperBlockIds[i],spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
                 mainModel->db.addLaunchInformation(tmpLaunch);
             }
     }
@@ -162,7 +162,7 @@ QString TabNewCraftModel::updateUnitDB(
         for (int i=0;i<boosterRocketIds.length();i++)
             for (int j=0;j<spaceportIds.length();j++)
             {
-                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockId,spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0);
+                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockId,spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
                 mainModel->db.addLaunchInformation(tmpLaunch);
             }
     }

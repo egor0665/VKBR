@@ -28,7 +28,7 @@ void TabNewExtrasModel::addSpaceportToDB(QString name)
     for (int i=0;i<boosterRocketIds.length();i++)
         for (int j=0;j<upperBlockIds.length();j++)
         {
-            DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockIds[j],spaceportId,2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0);
+            DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockIds[j],spaceportId,2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0,false);
             mainModel->db.addLaunchInformation(tmpLaunch);
         }
 }

@@ -502,7 +502,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>2</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -543,6 +543,13 @@
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_16">
+              <item>
+               <widget class="QPushButton" name="pushButton_18">
+                <property name="text">
+                 <string>Пересчитать</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <spacer name="horizontalSpacer_18">
                 <property name="orientation">
@@ -969,6 +976,22 @@
                  <layout class="QHBoxLayout" name="horizontalLayout_8">
                   <item>
                    <widget class="QChartView" name="widget" native="true">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>500</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QChartView" name="widget_2" native="true">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
                       <horstretch>0</horstretch>
@@ -1648,14 +1671,14 @@
                     <item>
                      <widget class="QLabel" name="label_48">
                       <property name="text">
-                       <string/>
+                       <string>Отображать в Расчетах</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLabel" name="label_49">
+                     <widget class="QCheckBox" name="checkBox">
                       <property name="text">
-                       <string/>
+                       <string>Отображать</string>
                       </property>
                      </widget>
                     </item>

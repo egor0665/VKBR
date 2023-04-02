@@ -22,6 +22,47 @@ TabPredictionModel::TabPredictionModel(MainModel *_mainModel)
     mainModel = _mainModel;
 }
 
+TabPredictionModel::setUpValues()
+{
+    QVector<qreal> inflationPercents = mainModel->db.getInflationPercents(2024,2040);
+    qDebug() << inflationPercents;
+
+    for (int i=0;i<inflationPercents.length();i++)
+    {
+        for (int j=i+1;j<inflationPercents.length();j++)
+        {
+            inflationMatrix[i][j] = 0;
+        }
+    }
+    for (int i=0;i<inflationPercents.length();i++)
+            inflationMatrix[i][i] = 1;
+
+    for (int i=0;i<inflationPercents.length();i++)
+    {
+        for (int j=i+1;j<inflationPercents.length();j++)
+        {
+            inflationMatrix[i][j] = inflationMatrix[i][j-1] * inflationPercents[j];
+        }
+    }
+
+    for (int i=0;i<inflationPercents.length();i++)
+    {
+        for (int j=i-1;j>=0;j--)
+        {
+            inflationMatrix[i][j] = inflationMatrix[i][j+1] * 1/inflationPercents[j+1];
+        }
+    }
+
+//    for (int i=0;i<inflationPercents.length();i++)
+//    {
+//        for (int j=0;j<inflationPercents.length();j++)
+//        {
+//            debugMatrix += QString::number(inflationMatrix[i][j]) + " ";
+//        }
+//        debugMatrix += '\n' ;
+//    }
+//    qDebug() << debugMatrix;
+}
 QStringList TabPredictionModel::getNamesFromTableStringList(QString tableName)
 {
      return mainModel->QVectorToQStringList(mainModel->getNamesFromTable(tableName));
@@ -86,6 +127,8 @@ int TabPredictionModel::projectModelAddProject(QString projectName)
     return index;
 }
 
+
+
 QStringList TabPredictionModel::getValidLaunchesNamesStringList()
 {
     QVector<QVector<int>> ids = mainModel->db.getValidLaunchesIds();
@@ -139,7 +182,6 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
     bool firstUnit = true;
     int difPreFirstUnit = currentProject.getFirstUnitStartYear() - currentProject.getPrePricesStartYear()-1;
     int difPostLastUnit = -1* (currentProject.getPostPricesStartYear() + currentProject.getPostPrices().length() - currentProject.getLastUnitStartYear() - currentProject.getLastUnitPrices().length() );
-    int difFirstLastUnit = -1* (currentProject.getFirstUnitStartYear() - currentProject.getLastUnitStartYear());
     qDebug() << difPreFirstUnit;
 
     QVector<QPair<QString,QString>> unitResultValues = {{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"},{"0","n"}};
@@ -156,38 +198,6 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
             lastUnitYear = i;
             break;
         }
-    QVector<qreal> inflationPercents = mainModel->db.getInflationPercents(2024,2040);
-    qDebug() << inflationPercents;
-    qreal inflationMatrix [inflationPercents.length()][inflationPercents.length()];
-
-    for (int i=0;i<inflationPercents.length();i++)
-            inflationMatrix[i][i] = 1;
-    QString debugMatrix = "";
-    for (int i=0;i<inflationPercents.length();i++)
-    {
-        for (int j=i+1;j<inflationPercents.length();j++)
-        {
-            inflationMatrix[i][j] = inflationMatrix[i][j-1] * inflationPercents[j];
-        }
-    }
-
-    for (int i=0;i<inflationPercents.length();i++)
-    {
-        for (int j=i-1;j>=0;j--)
-        {
-            inflationMatrix[i][j] = inflationMatrix[i][j+1] * 1/inflationPercents[j+1];
-        }
-    }
-
-    for (int i=0;i<inflationPercents.length();i++)
-    {
-        for (int j=0;j<inflationPercents.length();j++)
-        {
-            debugMatrix += QString::number(inflationMatrix[i][j]) + " ";
-        }
-        debugMatrix += '\n' ;
-    }
-    qDebug() << debugMatrix;
 
     bool serialUnits=false;
     for (int i=0;i<serialYears.length();i++)
@@ -206,10 +216,7 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
                     for (int j=currentProject.getPrePrices().length()-1;j>-1;j--)
                     {
                         if (curYear-difPreFirstUnit>=0 && curYear-difPostLastUnit<okrYears.length())
-                        //{
-                            //qDebug() << inflationMatrix[currentProject.getFirstUnitStartYear()+currentProject.getFirstUnitPrices().length() -1 - 2024][i] << currentProject.getPrePrices()[j];
                             unitPrices[curYear-difPreFirstUnit]+=currentProject.getPrePrices()[j]*inflationMatrix[currentProject.getFirstUnitStartYear()+currentProject.getFirstUnitPrices().length() -1 - 2024][i];
-                       // }
                         curYear--;
                     }
                 }
@@ -243,6 +250,7 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
                 }
             }
             qreal spacecraftWeigth = mainModel->db.getSpacecraftWeightByProjectName(projectName);
+
             firstUnit = false;
             int fInd;
             int sInd;
@@ -251,6 +259,7 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
             sInd = boosterRocketValues[i].indexOf("(");
             QString upperBlockName = boosterRocketValues[i].mid(fInd+3,sInd-(fInd+4));
             QString spaceportName = boosterRocketValues[i].mid(sInd+1, boosterRocketValues[i].length()-(sInd+2));
+
             DBlaunch currentLaunch = mainModel->db.getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName);
             qreal launchPrice = currentLaunch.launch_price();
             qreal deliveryPrice = currentLaunch.delivery_price();
@@ -258,6 +267,7 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
             QPair<QVector<qreal>,int> boosterRocketPricesYear = pricesTextToVector(currentLaunch.prices());
             QVector<qreal> boosterRocketPricestmp = boosterRocketPricesYear.first;
             int boosterRocketStartYear = boosterRocketPricesYear.second;
+
             curYear = i;
             if (currentLaunch.max_payload() >= spacecraftWeigth){
                 boosterRocketPrices[curYear]+=(launchPrice+deliveryPrice)*inflationMatrix[launchDeliveryStartYear -2024][i];
@@ -321,8 +331,6 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
     resultVector.append(boosterRocketResultValues);
     resultVector.append(unitPricesResultValues);
     resultVector.append(rocketPricesResultValues);
-    //resultVector.append(unitPrices);
-    //qDebug()<<resultVector;
     return resultVector;
 }
 

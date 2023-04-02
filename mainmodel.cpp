@@ -35,10 +35,10 @@ QStringList MainModel::QVectorToQStringList(QVector<QString> vector)
     return result;
 }
 
-void MainModel::updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload)
+void MainModel::updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload, bool valid)
 {
     int boosterRocketId = db.getUnitIdByName(boosterRocketName);
     int upperBlockId = db.getUnitIdByName(upperBlockName);
     int spaceportId = db.getSpaceportIdFromName(spaceportName);
-    db.updateLaunchPricesByIds(boosterRocketId, upperBlockId, spaceportId,priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload);
+    db.updateLaunchPricesByIds(boosterRocketId, upperBlockId, spaceportId,priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
 }

@@ -61,7 +61,7 @@ public:
     QVector <QString> getUnitNamesByType(QString type);
     DBlaunch getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport);
     int getSpacecraftLifetimeById(int unitId);
-    void updateLaunchPricesByIds(int boosterRocketId, int upperBlockId, int spaceportId, int price_year, QString prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload);
+    void updateLaunchPricesByIds(int boosterRocketId, int upperBlockId, int spaceportId, int price_year, QString prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload, bool valid);
     QVector<QVector<int>> getValidLaunchesIds();
     QString getNameFromTableById(QString tableName, int id);
     qreal getSpacecraftWeightByProjectName(QString projectName);

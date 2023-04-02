@@ -12,7 +12,8 @@ class ChartManager
 {
 public:
     ChartManager();
-    QVector <QLineSeries*> CreateChart(int unitNum, QVector<CompareValue> compareValues, QStringList unitNames);
+    QVector <QLineSeries*> CreateChartLineSeries(int unitNum, QVector<CompareValue> compareValues, QStringList unitNames);
+    QBarSeries* CreateChartBarSeries(int unitNum, QVector<CompareValue> compareValues, QStringList unitNames);
 };
 
 #endif // CHARTMANAGER_H

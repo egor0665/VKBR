@@ -19,7 +19,7 @@ public:
     QVector <QString> getNamesFromTable(QString tableName);
     QStringList getNamesFromTableStringList(QString tableName);
     QStringList QVectorToQStringList(QVector <QString> vector);
-    void updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload);
+    void updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload, bool valid);
 
 protected:
 

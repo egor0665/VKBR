@@ -145,6 +145,8 @@ private slots:
 
     void on_listWidget_2_itemChanged(QListWidgetItem *item);
 
+    void on_pushButton_18_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

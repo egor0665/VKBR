@@ -586,7 +586,7 @@ void database::addLaunchInformation(DBlaunch launch)
                 QString::number(launch.delivery_price()) + ", " +
                 QString::number(launch.min_payload()) + ", " +
                 QString::number(launch.max_payload()) + ", " +
-                " false)");
+                launch.valid() + ")");
     qDebug() << query.lastError();
     return;
 }
@@ -606,7 +606,7 @@ DBlaunch database::getLaunchFromParamIds(QString boosterRocket, QString upperBlo
 {
     DBlaunch launch;
     QSqlQuery query;
-    query.exec("SELECT lnch.id, lnch.booster_rocket_id, lnch.upper_block_id, lnch.spaceport_id, lnch.price_year, lnch.prices, lnch.launch_price, lnch.delivery_price, lnch.min_payload, lnch.max_payload "
+    query.exec("SELECT lnch.id, lnch.booster_rocket_id, lnch.upper_block_id, lnch.spaceport_id, lnch.price_year, lnch.prices, lnch.launch_price, lnch.delivery_price, lnch.min_payload, lnch.max_payload, lnch.valid "
                "FROM launch lnch, unit unt1, unit unt2, spaceport spcprt "
                "WHERE unt1.name LIKE '" + boosterRocket + " %' AND lnch.booster_rocket_id = unt1.id "
                "AND unt2.name LIKE '" + upperBlock + " %' AND lnch.upper_block_id = unt2.id "
@@ -621,7 +621,8 @@ DBlaunch database::getLaunchFromParamIds(QString boosterRocket, QString upperBlo
                           query.value(6).toString().trimmed().toDouble(),
                           query.value(7).toString().trimmed().toDouble(),
                           query.value(8).toString().trimmed().toDouble(),
-                          query.value(9).toString().trimmed().toDouble());
+                          query.value(9).toString().trimmed().toDouble(),
+                          query.value(10).toBool());
     }
     qDebug() << query.lastError();
     return launch;
@@ -631,7 +632,7 @@ DBlaunch database::getLaunchById(int id)
 {
     DBlaunch launch;
     QSqlQuery query;
-    query.exec("SELECT id, booster_rocket_id, upper_block_id, spaceport_id, price_year, prices, launch_price, delivery_price, min_payload, max_payload "
+    query.exec("SELECT id, booster_rocket_id, upper_block_id, spaceport_id, price_year, prices, launch_price, delivery_price, min_payload, max_payload, valid"
                "FROM launch "
                "WHERE id =" + QString::number(id));
     while (query.next()) {
@@ -644,7 +645,8 @@ DBlaunch database::getLaunchById(int id)
                           query.value(6).toString().trimmed().toDouble(),
                           query.value(7).toString().trimmed().toDouble(),
                           query.value(8).toString().trimmed().toDouble(),
-                          query.value(9).toString().trimmed().toDouble());
+                          query.value(9).toString().trimmed().toDouble(),
+                          query.value(10).toBool());
     }
     qDebug() << query.lastError();
     return launch;
@@ -661,10 +663,10 @@ int database::getSpacecraftLifetimeById(int unitId)
     return unitLifetime;
 }
 
-void database::updateLaunchPricesByIds(int boosterRocketId, int upperBlockId, int spaceportId, int price_year, QString prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload)
+void database::updateLaunchPricesByIds(int boosterRocketId, int upperBlockId, int spaceportId, int price_year, QString prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload, bool valid)
 {
     QSqlQuery query;
-    QString queryString = "UPDATE public.launch SET price_year = " + QString::number(price_year) + ", prices = '" + prices + "', launch_price = " + QString::number(launch_price) + ", delivery_price = " + QString::number(delivery_price) + ", min_payload = " + QString::number(min_payload) + ", max_payload = " + QString::number(max_payload) + ", valid = true WHERE booster_rocket_id = " + QString::number(boosterRocketId) + " AND upper_block_id = " + QString::number(upperBlockId) + " AND spaceport_id = " + QString::number(spaceportId);
+    QString queryString = "UPDATE public.launch SET price_year = " + QString::number(price_year) + ", prices = '" + prices + "', launch_price = " + QString::number(launch_price) + ", delivery_price = " + QString::number(delivery_price) + ", min_payload = " + QString::number(min_payload) + ", max_payload = " + QString::number(max_payload) + ", valid = '" + QString::number(valid) + "' WHERE booster_rocket_id = " + QString::number(boosterRocketId) + " AND upper_block_id = " + QString::number(upperBlockId) + " AND spaceport_id = " + QString::number(spaceportId);
     qDebug() <<queryString;
     query.exec(queryString);
     qDebug() << query.lastError().text();
@@ -674,7 +676,7 @@ QVector <QVector<int>> database::getValidLaunchesIds()
 {
     QVector <QVector<int>> resultValues;
     QSqlQuery query;
-    query.exec("SELECT booster_rocket_id, upper_block_id, spaceport_id FROM launch WHERE valid = true");
+    query.exec("SELECT booster_rocket_id, upper_block_id, spaceport_id FROM launch WHERE valid = true ORDER BY booster_rocket_id");
     while (query.next()) {
             QVector<int> ids;
            ids.append(query.value(0).toString().trimmed().toInt());
