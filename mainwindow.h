@@ -57,7 +57,7 @@ public:
     void addUnitTabUpdateValues();
     void saveToFile(QString filePath);
 public slots:
-    void saveToPdf(QString name, QVector<QString> values, int startYear, int endYear);
+    void saveToPdf(QString name, QVector<QString> values, QVector<QString> CHARTvalues, int startYear, int endYear);
 protected:
     QDoubleSpinBox *maxPayloadField;
     QDoubleSpinBox *minPayloadField;

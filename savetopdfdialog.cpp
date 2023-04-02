@@ -65,6 +65,16 @@ SaveToPdfDialog::SaveToPdfDialog(QWidget *parent) :
     ui->tableWidget->item(rowCount+8, 0)->setBackgroundColor(QColor(244,244,255));
     ui->tableWidget->item(rowCount+9, 0)->setBackgroundColor(QColor(244,244,255));
     ui->tableWidget->item(rowCount+10, 0)->setBackgroundColor(QColor(244,244,255));
+
+    ui->listWidget_2->addItems({"Цена - Год",
+                                "Направление - Год",
+                                "КА - Год",
+                                "РН - Год"});
+    for(int i=0;i<ui->listWidget_2->count();i++)
+    {
+        ui->listWidget_2->item(i)->setFlags(ui->listWidget->item(i)->flags() | Qt::ItemIsUserCheckable);
+        ui->listWidget_2->item(i)->setCheckState(Qt::Checked);
+    }
 }
 
 SaveToPdfDialog::~SaveToPdfDialog()
@@ -174,17 +184,17 @@ void SaveToPdfDialog::on_listWidget_itemChanged(QListWidgetItem *item)
 void SaveToPdfDialog::on_pushButton_clicked()
 {
     QVector<QString> values;
+    QVector<QString> chartValues;
     QString name = ui->lineEdit->text();
     for(int i=0;i<ui->listWidget->count();i++)
     {
         if (ui->listWidget->item(i)->checkState()==Qt::Checked)
             values.append(ui->listWidget->item(i)->text());
     }
-    emit startSave(name, values, ui->spinBox->value(), ui->spinBox_2->value());
+    for(int i=0;i<ui->listWidget_2->count();i++)
+    {
+        if (ui->listWidget_2->item(i)->checkState()==Qt::Checked)
+            chartValues.append(ui->listWidget_2->item(i)->text());
+    }
+    emit startSave(name, values, chartValues, ui->spinBox->value(), ui->spinBox_2->value());
 }
-
-//void SaveToPdfDialog::startSave(QVector<QString> values, int startYear, int endYear)
-//{
-
-//}
-

@@ -632,9 +632,9 @@ DBlaunch database::getLaunchById(int id)
 {
     DBlaunch launch;
     QSqlQuery query;
-    query.exec("SELECT id, booster_rocket_id, upper_block_id, spaceport_id, price_year, prices, launch_price, delivery_price, min_payload, max_payload, valid"
+    query.exec("SELECT id, booster_rocket_id, upper_block_id, spaceport_id, price_year, prices, launch_price, delivery_price, min_payload, max_payload, valid "
                "FROM launch "
-               "WHERE id =" + QString::number(id));
+               "WHERE id = " + QString::number(id));
     while (query.next()) {
         launch = DBlaunch(query.value(0).toString().trimmed().toInt(),
                           query.value(1).toString().trimmed().toInt(),

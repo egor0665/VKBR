@@ -22,7 +22,7 @@ TabPredictionModel::TabPredictionModel(MainModel *_mainModel)
     mainModel = _mainModel;
 }
 
-TabPredictionModel::setUpValues()
+void TabPredictionModel::setUpValues()
 {
     QVector<qreal> inflationPercents = mainModel->db.getInflationPercents(2024,2040);
     qDebug() << inflationPercents;
@@ -448,7 +448,7 @@ void TabPredictionModel::projectModelClear()
     predictionModel.clear();
 }
 
-void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values, int startYear, int endYear, QString filePath)
+void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values, QVector<QString> chartValues, int startYear, int endYear, QString filePath)
 {
     const int columns = endYear-startYear + 2; // ui->tableWidget_8->columnCount();
     const int rows = data.length();
@@ -465,10 +465,7 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
     QTextTable *textTable = cursor.insertTable(rows + 1, columns, tableFormat);
     QTextCharFormat tableHeaderFormat;
     tableHeaderFormat.setBackground(LINECOLOR);
-    cursor.insertText(name);
-    cursor.insertText(name);
-    cursor.insertText(name);
-    cursor.insertText(name);
+
     QTextBlockFormat centerAlignment;
     centerAlignment.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
 
@@ -517,6 +514,106 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
             textTable->removeRows(i,1);
         }
     }
+    //------
+
+    if (chartValues.contains("Цена - Год"))
+    {
+        QChart *chart = new QChart();
+        QLineSeries* series = new QLineSeries();
+        series->setName("КА");
+        QLineSeries* series2 = new QLineSeries();
+        series2->setName("РН");
+        QLineSeries* series3 = new QLineSeries();
+        series3->setName("Итого");
+
+        for (int i=1+startYear-2024;i<endYear-2024+1;i++)
+        {
+            series->append(2024+i-1, data[rows-3][i].toDouble());
+            series2->append(2024+i-1, data[rows-3+1][i].toDouble());
+            series3->append(2024+i-1, data[rows-3+2][i].toDouble());
+        }
+        chart->addSeries(series);
+        chart->addSeries(series2);
+        chart->addSeries(series3);
+        chart->createDefaultAxes();
+        chart->setTitle("Цена - Год");
+        QChartView* tmpChartView = new QChartView();
+        tmpChartView->setChart(chart);
+        tmpChartView->resize(842,595);
+        QPixmap p = tmpChartView->grab();
+        QImage img = p.toImage();
+        img = img.scaled(842,595);
+
+        cursor.movePosition(cursor.End);
+        cursor.movePosition(cursor.NextRow);
+        cursor.insertImage(img);
+    }
+
+//    for (int i=0;i<rows;i++)
+//    {
+//        for (int j=0;j<columns;j++)
+//        {
+//            if (chartValues.contains("Цена - Год"))
+//            {
+//                if (i==rows-2 && j>0 && j>=startYear && j<=endYear)
+//                {
+//                    series->append(2024+j-1, data[i][j].toInt());
+//                    series2->append(2024+j-1, data[i+1][j].toInt());
+//                }
+//            }
+//        }
+//    }
+
+
+
+
+
+//    QBarSet *set0 = new QBarSet("Jane");
+//    QBarSet *set1 = new QBarSet("John");
+//    QBarSet *set2 = new QBarSet("Axel");
+//    QBarSet *set3 = new QBarSet("Mary");
+//    QBarSet *set4 = new QBarSet("Samantha");
+
+//    *set0 << 1 << 2 << 3 << 4 << 5 << 6;
+//    *set1 << 5 << 0 << 0 << 4 << 0 << 7;
+//    *set2 << 3 << 5 << 8 << 13 << 8 << 5;
+//    *set3 << 5 << 6 << 7 << 3 << 4 << 5;
+//    *set4 << 9 << 7 << 5 << 3 << 1 << 2;
+//    QBarSeries *series = new QBarSeries();
+//    series->append(set0);
+//    series->append(set1);
+//    series->append(set2);
+//    series->append(set3);
+//    series->append(set4);
+//    QChart *chart = new QChart();
+//    chart->addSeries(series);
+//    chart->setTitle("Simple barchart example");
+//    QStringList categories;
+//    categories << "Jan" << "Feb" << "Mar" << "Apr" << "May" << "Jun";
+//    QBarCategoryAxis *axisX = new QBarCategoryAxis();
+//    axisX->append(categories);
+//    chart->addAxis(axisX, Qt::AlignBottom);
+//    series->attachAxis(axisX);
+
+//    QValueAxis *axisY = new QValueAxis();
+//    axisY->setRange(0,15);
+//    chart->addAxis(axisY, Qt::AlignLeft);
+//    series->attachAxis(axisY);
+//    chart->legend()->setVisible(true);
+//    chart->legend()->setAlignment(Qt::AlignBottom);
+//    QChartView* tmpChartView = new QChartView();
+
+//    tmpChartView->setChart(chart);
+//    tmpChartView->resize(842,595);
+
+//    QPixmap p = tmpChartView->grab();
+//    QImage img = p.toImage();
+//    img = img.scaled(842,595);
+
+//    cursor.movePosition(cursor.End);
+//    cursor.movePosition(cursor.NextRow);
+//    cursor.insertImage(img);
+
     doc.setDocumentMargin(0);
     doc.setTextWidth(4);
     fileManager.printPDF(&doc, filePath);

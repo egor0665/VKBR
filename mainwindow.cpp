@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     rebuildTabs();
     //loginWindow = userLoginWindow(this);
 
-    QObject::connect(&saveToPdfDialog,SIGNAL(startSave(QString, QVector<QString>, int, int)),this,SLOT(saveToPdf(QString, QVector<QString>, int, int)));
+    QObject::connect(&saveToPdfDialog,SIGNAL(startSave(QString, QVector<QString>,QVector<QString>, int, int)),this,SLOT(saveToPdf(QString, QVector<QString>, QVector<QString>, int, int)));
 }
 
 MainWindow::~MainWindow()
@@ -859,6 +859,7 @@ void MainWindow::buildPredictionTab()
 
     listWidgetEditedByUser = true;
     predictionTableEditedByUser = true;
+    tabPredictionModel.setUpValues();
 }
 
 void MainWindow::on_listWidget_itemChanged(QListWidgetItem *item)
@@ -1204,7 +1205,7 @@ void MainWindow::on_pushButton_16_clicked()
     this->setEnabled(false);
 }
 
-void MainWindow::saveToPdf(QString name, QVector<QString> values, int startYear, int endYear)
+void MainWindow::saveToPdf(QString name, QVector<QString> values, QVector<QString> chartValues, int startYear, int endYear)
 {
     QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.pdf");
     if (filePath != "")
@@ -1228,7 +1229,7 @@ void MainWindow::saveToPdf(QString name, QVector<QString> values, int startYear,
             }
             data.append(tmpData);
         }
-        tabPredictionModel.saveToPdf(name, data, values, startYear, endYear, filePath);
+        tabPredictionModel.saveToPdf(name, data, values, chartValues, startYear, endYear, filePath);
         saveToPdfDialog.hide();
         this->setEnabled(true);
     }

@@ -1,6 +1,8 @@
 #include "filemanager.h"
 
 #include <QFile>
+#include <QPainter>
+#include <QPdfWriter>
 #include <QPrinter>
 #include <QTextCursor>
 #include <QTextDocument>
