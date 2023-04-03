@@ -548,6 +548,49 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
         cursor.movePosition(cursor.NextRow);
         cursor.insertImage(img);
     }
+    if (chartValues.contains("Направление - Год"))
+    {
+//        QChart *chart = new QChart();
+//        QVector<QLineSeries*> serieses;
+//        for(int i=0;i<4;i++)
+//        {
+//            serieses.append(new QLineSeries);
+//        }
+//        serieses[0]->setName("Связь");
+//        serieses[1]->setName("ДЗЗ");
+//        serieses[2]->setName("ФКИ");
+//        serieses[3]->setName("Другое");
+//        int spacecraftType =0;
+//        QVector<QString> spacecraftTypes = {"ДЗЗ", "ФКИ", "Другое"};
+//        for (int i=0;i<rows;i++)
+//        {
+//            if (spacecraftTypes.contains(data[i][0]))
+//                spacecraftType ++;
+//            if (data[i][0] == "Цены КА ОКР+Серия" || data[i][0] == "Цены РН проекта")
+
+//            for (int i=1+startYear-2024;i<endYear-2024+1;i++)
+//            {
+//                series->append(2024+i-1, data[rows-3][i].toDouble());
+//                series2->append(2024+i-1, data[rows-3+1][i].toDouble());
+//                series3->append(2024+i-1, data[rows-3+2][i].toDouble());
+//            }
+//        }
+//        chart->addSeries(series);
+//        chart->addSeries(series2);
+//        chart->addSeries(series3);
+//        chart->createDefaultAxes();
+//        chart->setTitle("Направление - Год");
+//        QChartView* tmpChartView = new QChartView();
+//        tmpChartView->setChart(chart);
+//        tmpChartView->resize(842,595);
+//        QPixmap p = tmpChartView->grab();
+//        QImage img = p.toImage();
+//        img = img.scaled(842,595);
+
+//        cursor.movePosition(cursor.End);
+//        cursor.movePosition(cursor.NextRow);
+//        cursor.insertImage(img);
+    }
 
 //    for (int i=0;i<rows;i++)
 //    {

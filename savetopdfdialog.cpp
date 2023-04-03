@@ -75,6 +75,7 @@ SaveToPdfDialog::SaveToPdfDialog(QWidget *parent) :
         ui->listWidget_2->item(i)->setFlags(ui->listWidget->item(i)->flags() | Qt::ItemIsUserCheckable);
         ui->listWidget_2->item(i)->setCheckState(Qt::Checked);
     }
+    ui->checkBox->setCheckState(Qt::Checked);
 }
 
 SaveToPdfDialog::~SaveToPdfDialog()
@@ -198,3 +199,18 @@ void SaveToPdfDialog::on_pushButton_clicked()
     }
     emit startSave(name, values, chartValues, ui->spinBox->value(), ui->spinBox_2->value());
 }
+
+void SaveToPdfDialog::on_checkBox_stateChanged(int arg1)
+{
+    if (arg1)
+    {
+        ui->listWidget_2->show();
+        ui->listWidget_3->show();
+    }
+    else
+    {
+        ui->listWidget_2->hide();
+        ui->listWidget_3->hide();
+    }
+}
+
