@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     rebuildTabs();
     //loginWindow = userLoginWindow(this);
 
-    QObject::connect(&saveToPdfDialog,SIGNAL(startSave(QString, QVector<QString>,QVector<QString>, int, int)),this,SLOT(saveToPdf(QString, QVector<QString>, QVector<QString>, int, int)));
+    QObject::connect(&saveToPdfDialog,SIGNAL(startSave(QString, QVector<QString>,QVector<QPair<QVector<QString>,QString>>, int, int)),this,SLOT(saveToPdf(QString, QVector<QString>, QVector<QPair<QVector<QString>,QString>>, int, int)));
 }
 
 MainWindow::~MainWindow()
@@ -1205,7 +1205,7 @@ void MainWindow::on_pushButton_16_clicked()
     this->setEnabled(false);
 }
 
-void MainWindow::saveToPdf(QString name, QVector<QString> values, QVector<QString> chartValues, int startYear, int endYear)
+void MainWindow::saveToPdf(QString name, QVector<QString> values, QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear)
 {
     QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.pdf");
     if (filePath != "")

@@ -25,7 +25,7 @@ public:
     QVector<int> fileRowTextToVector(QString rowString);
     QVector<FileProjectValue> loadFromFile(QString filePath);
     void projectModelClear();
-    void saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values,  QVector<QString> chartValues, int startYear, int endYear, QString filePath);
+    void saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values,  QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear, QString filePath);
 
     void setUpValues();
 private:

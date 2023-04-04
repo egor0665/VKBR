@@ -448,7 +448,7 @@ void TabPredictionModel::projectModelClear()
     predictionModel.clear();
 }
 
-void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values, QVector<QString> chartValues, int startYear, int endYear, QString filePath)
+void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values, QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear, QString filePath)
 {
     const int columns = endYear-startYear + 2; // ui->tableWidget_8->columnCount();
     const int rows = data.length();
@@ -515,26 +515,110 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
         }
     }
     //------
-
-    if (chartValues.contains("Цена - Год"))
+    QVector <QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>> prices;
+    prices.append(QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>("Итого",QPair<QVector<qreal>,QVector<qreal>>({},{})));
+    prices.append(QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>("Связь",QPair<QVector<qreal>,QVector<qreal>>({},{})));
+    prices.append(QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>("ДЗЗ",QPair<QVector<qreal>,QVector<qreal>>({},{})));
+    prices.append(QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>("ФКИ",QPair<QVector<qreal>,QVector<qreal>>({},{})));
+    prices.append(QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>("Другое",QPair<QVector<qreal>,QVector<qreal>>({},{})));
+    for (int i=1+startYear-2024;i<endYear-2024+1;i++)
     {
-        QChart *chart = new QChart();
-        QLineSeries* series = new QLineSeries();
-        series->setName("КА");
-        QLineSeries* series2 = new QLineSeries();
-        series2->setName("РН");
-        QLineSeries* series3 = new QLineSeries();
-        series3->setName("Итого");
-
-        for (int i=1+startYear-2024;i<endYear-2024+1;i++)
+        prices[0].second.first.append(0);
+        prices[0].second.second.append(0);
+        prices[1].second.first.append(0);
+        prices[1].second.second.append(0);
+        prices[2].second.first.append(0);
+        prices[2].second.second.append(0);
+        prices[3].second.first.append(0);
+        prices[3].second.second.append(0);
+        prices[4].second.first.append(0);
+        prices[4].second.second.append(0);
+    }
+    QVector<QString> rowValuesUnit = {"КА Цены", "Цены КА ОКР+Серия"};
+    //QVector<QString> rowValuesBoosterRocket = {"Цены РН проекта", "Цены РН проекта"};
+    QVector<QString> spacecraftTypes = {"Связь", "ДЗЗ", "ФКИ", "Другое"};
+    int currentType = -1;
+    int unitNum = 0;
+    for (int i=0;i<data.length();i++)
+    {
+        if (spacecraftTypes.contains(data[i][0]))
+            currentType++;
+        QString rowName = data[i][0];
+        if (rowValuesUnit.contains(rowName))
         {
-            series->append(2024+i-1, data[rows-3][i].toDouble());
-            series2->append(2024+i-1, data[rows-3+1][i].toDouble());
-            series3->append(2024+i-1, data[rows-3+2][i].toDouble());
+            QVector<qreal> pricesTmpUnit;
+            QVector<qreal> pricesTmpBoosterRocket;
+            for (int j=1+startYear-2024;j<endYear-2024+1;j++)
+            {
+                pricesTmpUnit.append(data[i][j].toDouble());
+                pricesTmpBoosterRocket.append(data[i+1][j].toDouble());
+                prices[currentType+1+unitNum].second.first[j-1] += data[i][j].toDouble();
+                prices[currentType+1+unitNum].second.second[j-1] += data[i+1][j].toDouble();
+            }
+            prices.insert(currentType+1+unitNum,QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>(data[i-5][0],QPair<QVector<qreal>,QVector<qreal>>(pricesTmpUnit, pricesTmpBoosterRocket)));
+            unitNum++;
         }
-        chart->addSeries(series);
-        chart->addSeries(series2);
-        chart->addSeries(series3);
+    }
+
+    QChart *chart = new QChart();
+    for (int j=0;j<chartValues.length();j++)
+    {
+        if (chartValues[j].first.contains("Направления"))
+        {
+            for (int i=0;i<prices.length();i++)
+            {
+                if (spacecraftTypes.contains(prices[i].first))
+                {
+                    QLineSeries* series = new QLineSeries();
+                    series->setName(prices[i].first);
+                    for(int k=0;k<prices[i].second.first.length();k++)
+                        series->append(2024+k-1, prices[i].second.first[k]+prices[i].second.second[k]);
+                    chart->addSeries(series);
+                }
+            }
+        }
+        if (chartValues[j].first.contains("Итого"))
+        {
+            for (int i=0;i<prices.length();i++)
+            {
+                if (prices[i].first=="Итого")
+                {
+                    QLineSeries* series = new QLineSeries();
+                    series->setName(prices[i].first);
+                    for(int k=0;k<prices[i].second.first.length();k++)
+                        series->append(2024+k-1, prices[i].second.first[k]+prices[i].second.second[k]);
+                    chart->addSeries(series);
+                }
+            }
+        }
+        int lastType = 1;
+        for (int i=0;i<prices.length();i++)
+        {
+            if (spacecraftTypes.contains(prices[i].first))
+                lastType ++;
+            if ((chartValues[j].first.contains("КА Связь") && lastType==1) ||
+                    (chartValues[j].first.contains("КА ДЗЗ") && lastType==2) ||
+                    (chartValues[j].first.contains("КА ФКИ") && lastType==3) ||
+                    (chartValues[j].first.contains("КА Другое") && lastType==4))
+            {
+                QLineSeries* series = new QLineSeries();
+                series->setName(prices[i].first);
+                for(int k=0;k<prices[i].second.first.length();k++)
+                    series->append(2024+k-1, prices[i].second.first[k]+prices[i].second.second[k]);
+                chart->addSeries(series);
+            }
+        }
+
+//        for (int i=0;i<prices.length();i++)
+//        {
+//            QLineSeries* series = new QLineSeries();
+//            series->setName(prices[i].first);
+//            for(int j=0;j<prices[0].second.first.length();j++)
+//            {
+//                series->append(2024+j-1, prices[i].second.first[j]+prices[i].second.second[j]);
+//            }
+//            chart->addSeries(series);
+//        }
         chart->createDefaultAxes();
         chart->setTitle("Цена - Год");
         QChartView* tmpChartView = new QChartView();
@@ -548,8 +632,87 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
         cursor.movePosition(cursor.NextRow);
         cursor.insertImage(img);
     }
-    if (chartValues.contains("Направление - Год"))
-    {
+//    for (int i=0;i<chartValues.length();i++)
+//    {
+//        if (chartValues[i].second == "Линейный график")
+//        {
+//            QChart *chart = new QChart();
+
+//            QLineSeries* series = new QLineSeries();
+//            series->setName("КА");
+//            QLineSeries* series2 = new QLineSeries();
+//            series2->setName("РН");
+//            QLineSeries* series3 = new QLineSeries();
+//            series3->setName("Итого");
+
+//            for (int i=1+startYear-2024;i<endYear-2024+1;i++)
+//            {
+//                series->append(2024+i-1, data[rows-3][i].toDouble());
+//                series2->append(2024+i-1, data[rows-3+1][i].toDouble());
+//                series3->append(2024+i-1, data[rows-3+2][i].toDouble());
+//            }
+//            chart->addSeries(series);
+//            chart->addSeries(series2);
+//            chart->addSeries(series3);
+//            chart->createDefaultAxes();
+//            chart->setTitle("Цена - Год");
+//            QChartView* tmpChartView = new QChartView();
+//            tmpChartView->setChart(chart);
+//            tmpChartView->resize(842,595);
+//            QPixmap p = tmpChartView->grab();
+//            QImage img = p.toImage();
+//            img = img.scaled(842,595);
+
+//            cursor.movePosition(cursor.End);
+//            cursor.movePosition(cursor.NextRow);
+//            cursor.insertImage(img);
+//            for (int j=0;j<chartValues[i].first.length();j++)
+//            {
+
+//            }
+//        }
+//        if (chartValues[i].second == "Гистограмма")
+//        {
+//            for (int j=0;j<chartValues[i].first.length();j++)
+//            {
+
+//            }
+//        }
+//    }
+//    if (chartValues.contains("Цена - Год"))
+//    {
+//        QChart *chart = new QChart();
+//        QLineSeries* series = new QLineSeries();
+//        series->setName("КА");
+//        QLineSeries* series2 = new QLineSeries();
+//        series2->setName("РН");
+//        QLineSeries* series3 = new QLineSeries();
+//        series3->setName("Итого");
+
+//        for (int i=1+startYear-2024;i<endYear-2024+1;i++)
+//        {
+//            series->append(2024+i-1, data[rows-3][i].toDouble());
+//            series2->append(2024+i-1, data[rows-3+1][i].toDouble());
+//            series3->append(2024+i-1, data[rows-3+2][i].toDouble());
+//        }
+//        chart->addSeries(series);
+//        chart->addSeries(series2);
+//        chart->addSeries(series3);
+//        chart->createDefaultAxes();
+//        chart->setTitle("Цена - Год");
+//        QChartView* tmpChartView = new QChartView();
+//        tmpChartView->setChart(chart);
+//        tmpChartView->resize(842,595);
+//        QPixmap p = tmpChartView->grab();
+//        QImage img = p.toImage();
+//        img = img.scaled(842,595);
+
+//        cursor.movePosition(cursor.End);
+//        cursor.movePosition(cursor.NextRow);
+//        cursor.insertImage(img);
+//    }
+//    if (chartValues.contains("Направление - Год"))
+//    {
 //        QChart *chart = new QChart();
 //        QVector<QLineSeries*> serieses;
 //        for(int i=0;i<4;i++)
@@ -590,7 +753,7 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
 //        cursor.movePosition(cursor.End);
 //        cursor.movePosition(cursor.NextRow);
 //        cursor.insertImage(img);
-    }
+//    }
 
 //    for (int i=0;i<rows;i++)
 //    {

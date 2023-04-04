@@ -17,14 +17,14 @@ public:
     ~SaveToPdfDialog();
 
 Q_SIGNALS:
-    void startSave(QString name, QVector<QString> values, QVector<QString> chartValues, int startYear, int endYear);
+    void startSave(QString name, QVector<QString> values, QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear);
 
 private slots:
     void on_listWidget_itemChanged(QListWidgetItem *item);
 
     void on_pushButton_clicked();
 
-    void on_checkBox_stateChanged(int arg1);
+    void on_pushButton_2_clicked();
 
 private:
     Ui::SaveToPdfDialog *ui;

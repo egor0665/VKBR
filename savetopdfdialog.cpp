@@ -1,6 +1,8 @@
 #include "savetopdfdialog.h"
 #include "ui_savetopdfdialog.h"
 
+#include <QRadioButton>
+
 SaveToPdfDialog::SaveToPdfDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SaveToPdfDialog)
@@ -66,16 +68,16 @@ SaveToPdfDialog::SaveToPdfDialog(QWidget *parent) :
     ui->tableWidget->item(rowCount+9, 0)->setBackgroundColor(QColor(244,244,255));
     ui->tableWidget->item(rowCount+10, 0)->setBackgroundColor(QColor(244,244,255));
 
-    ui->listWidget_2->addItems({"Цена - Год",
-                                "Направление - Год",
-                                "КА - Год",
-                                "РН - Год"});
-    for(int i=0;i<ui->listWidget_2->count();i++)
-    {
-        ui->listWidget_2->item(i)->setFlags(ui->listWidget->item(i)->flags() | Qt::ItemIsUserCheckable);
-        ui->listWidget_2->item(i)->setCheckState(Qt::Checked);
-    }
-    ui->checkBox->setCheckState(Qt::Checked);
+//    ui->listWidget_2->addItems({"Цена - Год",
+//                                "Направление - Год",
+//                                "КА - Год",
+//                                "РН - Год"});
+//    for(int i=0;i<ui->listWidget_2->count();i++)
+//    {
+//        ui->listWidget_2->item(i)->setFlags(ui->listWidget->item(i)->flags() | Qt::ItemIsUserCheckable);
+//        ui->listWidget_2->item(i)->setCheckState(Qt::Checked);
+//    }
+//    ui->checkBox->setCheckState(Qt::Checked);
 }
 
 SaveToPdfDialog::~SaveToPdfDialog()
@@ -185,32 +187,73 @@ void SaveToPdfDialog::on_listWidget_itemChanged(QListWidgetItem *item)
 void SaveToPdfDialog::on_pushButton_clicked()
 {
     QVector<QString> values;
-    QVector<QString> chartValues;
+    QVector<QPair<QVector<QString>,QString>> chartValues;
     QString name = ui->lineEdit->text();
     for(int i=0;i<ui->listWidget->count();i++)
     {
         if (ui->listWidget->item(i)->checkState()==Qt::Checked)
             values.append(ui->listWidget->item(i)->text());
     }
-    for(int i=0;i<ui->listWidget_2->count();i++)
+    for(int i=0;i<ui->tabWidget->count();i++)
     {
-        if (ui->listWidget_2->item(i)->checkState()==Qt::Checked)
-            chartValues.append(ui->listWidget_2->item(i)->text());
+        QString chartType;
+        QVector<QString> chartValuesTmp;
+        QListWidget * currentListWidget = qobject_cast <QListWidget*>(ui->tabWidget[i].widget(0)->layout()->itemAt(0)->widget());
+        for (int j=0;j<currentListWidget->count();j++)
+            if (currentListWidget->item(j)->checkState() == Qt::Checked)
+                chartValuesTmp.append(currentListWidget->item(j)->text());
+        for (int j=0;j<ui->tabWidget[i].widget(0)->layout()->itemAt(1)->layout()->count();j++)
+        {
+            QRadioButton * currentButton = qobject_cast <QRadioButton*>(ui->tabWidget[i].widget(0)->layout()->itemAt(1)->layout()->itemAt(j)->widget());
+            if (currentButton->isChecked());
+                chartType = currentButton->text();
+        }
+        chartValues.append(QPair<QVector<QString>,QString>(chartValuesTmp, chartType));
+
     }
     emit startSave(name, values, chartValues, ui->spinBox->value(), ui->spinBox_2->value());
 }
 
-void SaveToPdfDialog::on_checkBox_stateChanged(int arg1)
+//void SaveToPdfDialog::on_checkBox_stateChanged(int arg1)
+//{
+////    if (arg1)
+////    {
+////        ui->listWidget_2->show();
+////        ui->listWidget_3->show();
+////    }
+////    else
+////    {
+////        ui->listWidget_2->hide();
+////        ui->listWidget_3->hide();
+////    }
+//}
+
+
+void SaveToPdfDialog::on_pushButton_2_clicked()
 {
-    if (arg1)
+    QTabWidget* newTab = new QTabWidget();
+    QHBoxLayout* newHorizontalLayout = new QHBoxLayout();
+    QVBoxLayout* newSubVerticalLayout = new QVBoxLayout();
+    QRadioButton* linearChartButton = new QRadioButton();
+    linearChartButton->setText("Линейный график");
+    linearChartButton->setChecked(true);
+    QRadioButton* barChartButton = new QRadioButton();
+    barChartButton->setText("Гистограмма");
+    QListWidget* newWidgetListParams = new QListWidget();
+
+    newSubVerticalLayout->addWidget(linearChartButton);
+    newSubVerticalLayout->addWidget(barChartButton);
+
+    newWidgetListParams->addItems({"Итого", "Направления", "КА Связь", "КА ДЗЗ", "КА ФКИ", "КА Другое"});
+    for (int i=0;i<newWidgetListParams->count();i++)
     {
-        ui->listWidget_2->show();
-        ui->listWidget_3->show();
+        newWidgetListParams->item(i)->setFlags(ui->listWidget->item(i)->flags() | Qt::ItemIsUserCheckable);
+        newWidgetListParams->item(i)->setCheckState(Qt::Unchecked);
     }
-    else
-    {
-        ui->listWidget_2->hide();
-        ui->listWidget_3->hide();
-    }
+    newHorizontalLayout->insertWidget(0,newWidgetListParams);
+    newHorizontalLayout->insertLayout(1,newSubVerticalLayout);
+
+    newTab->setLayout(newHorizontalLayout);
+    ui->tabWidget->addTab(newTab,"График " + QString::number(ui->tabWidget->count()+1));
 }
 

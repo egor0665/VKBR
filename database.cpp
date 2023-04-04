@@ -611,17 +611,18 @@ DBlaunch database::getLaunchFromParamIds(QString boosterRocket, QString upperBlo
                "WHERE unt1.name LIKE '" + boosterRocket + " %' AND lnch.booster_rocket_id = unt1.id "
                "AND unt2.name LIKE '" + upperBlock + " %' AND lnch.upper_block_id = unt2.id "
                "AND spcprt.name LIKE '" + spaceport + " %' AND lnch.spaceport_id = spcprt.id");
-    launch = DBlaunch(query.value(0).toString().trimmed().toInt(),
-                      query.value(1).toString().trimmed().toInt(),
-                      query.value(2).toString().trimmed().toInt(),
-                      query.value(3).toString().trimmed().toInt(),
-                      query.value(4).toString().trimmed().toInt(),
-                      query.value(5).toString().trimmed(),
-                      query.value(6).toString().trimmed().toDouble(),
-                      query.value(7).toString().trimmed().toDouble(),
-                      query.value(8).toString().trimmed().toDouble(),
-                      query.value(9).toString().trimmed().toDouble(),
-                      query.value(10).toBool());
+    while (query.next())
+        launch = DBlaunch(query.value(0).toString().trimmed().toInt(),
+                          query.value(1).toString().trimmed().toInt(),
+                          query.value(2).toString().trimmed().toInt(),
+                          query.value(3).toString().trimmed().toInt(),
+                          query.value(4).toString().trimmed().toInt(),
+                          query.value(5).toString().trimmed(),
+                          query.value(6).toString().trimmed().toDouble(),
+                          query.value(7).toString().trimmed().toDouble(),
+                          query.value(8).toString().trimmed().toDouble(),
+                          query.value(9).toString().trimmed().toDouble(),
+                          query.value(10).toBool());
     qDebug() << query.lastError();
     return launch;
 }
