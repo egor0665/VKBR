@@ -8,6 +8,14 @@ SaveToPdfDialog::SaveToPdfDialog(QWidget *parent) :
     ui(new Ui::SaveToPdfDialog)
 {
     ui->setupUi(this);
+    init();
+}
+
+void SaveToPdfDialog::init()
+{
+    ui->tabWidget->clear();
+    ui->listWidget->clear();
+    ui->tableWidget->clear();
     ui->listWidget->addItems({"Направление",
                               "Связь",
                               "ДЗЗ",
@@ -37,8 +45,6 @@ SaveToPdfDialog::SaveToPdfDialog(QWidget *parent) :
     ui->tableWidget->setHorizontalHeaderLabels({"","2024"});
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
 
-    //QVector<QVector<qreal>> prices = model.getProjectPricesFromName(arg1);
-
     int rowCount = ui->tableWidget->rowCount();
     for (int i=0;i<11;i++)
     {
@@ -60,26 +66,12 @@ SaveToPdfDialog::SaveToPdfDialog(QWidget *parent) :
 
     ui->tableWidget->item(rowCount, 0)->setBackgroundColor(QColor(255,239,214));
     ui->tableWidget->item(rowCount+1, 0)->setBackgroundColor(QColor(255,245,224));
-
-    //ui->tableWidget->item(rowCount+9, 0)->setBackgroundColor(QColor(244,244,255));
     ui->tableWidget->item(rowCount+6, 0)->setBackgroundColor(QColor(244,244,255));
     ui->tableWidget->item(rowCount+7, 0)->setBackgroundColor(QColor(244,244,255));
     ui->tableWidget->item(rowCount+8, 0)->setBackgroundColor(QColor(244,244,255));
     ui->tableWidget->item(rowCount+9, 0)->setBackgroundColor(QColor(244,244,255));
     ui->tableWidget->item(rowCount+10, 0)->setBackgroundColor(QColor(244,244,255));
-
-//    ui->listWidget_2->addItems({"Цена - Год",
-//                                "Направление - Год",
-//                                "КА - Год",
-//                                "РН - Год"});
-//    for(int i=0;i<ui->listWidget_2->count();i++)
-//    {
-//        ui->listWidget_2->item(i)->setFlags(ui->listWidget->item(i)->flags() | Qt::ItemIsUserCheckable);
-//        ui->listWidget_2->item(i)->setCheckState(Qt::Checked);
-//    }
-//    ui->checkBox->setCheckState(Qt::Checked);
 }
-
 SaveToPdfDialog::~SaveToPdfDialog()
 {
     delete ui;
@@ -198,36 +190,24 @@ void SaveToPdfDialog::on_pushButton_clicked()
     {
         QString chartType;
         QVector<QString> chartValuesTmp;
-        QListWidget * currentListWidget = qobject_cast <QListWidget*>(ui->tabWidget[i].widget(0)->layout()->itemAt(0)->widget());
+        ui->tabWidget[0].widget(i);
+        ui->tabWidget[0].widget(i)->layout();
+        QListWidget * currentListWidget = qobject_cast <QListWidget*>(ui->tabWidget[0].widget(i)->layout()->itemAt(0)->widget());
         for (int j=0;j<currentListWidget->count();j++)
             if (currentListWidget->item(j)->checkState() == Qt::Checked)
                 chartValuesTmp.append(currentListWidget->item(j)->text());
-        for (int j=0;j<ui->tabWidget[i].widget(0)->layout()->itemAt(1)->layout()->count();j++)
+        for (int j=0;j<ui->tabWidget[0].widget(i)->layout()->itemAt(1)->layout()->count();j++)
         {
-            QRadioButton * currentButton = qobject_cast <QRadioButton*>(ui->tabWidget[i].widget(0)->layout()->itemAt(1)->layout()->itemAt(j)->widget());
-            if (currentButton->isChecked());
+            QRadioButton * currentButton = qobject_cast <QRadioButton*>(ui->tabWidget[0].widget(i)->layout()->itemAt(1)->layout()->itemAt(j)->widget());
+            if (currentButton->isChecked())
                 chartType = currentButton->text();
         }
         chartValues.append(QPair<QVector<QString>,QString>(chartValuesTmp, chartType));
 
     }
     emit startSave(name, values, chartValues, ui->spinBox->value(), ui->spinBox_2->value());
+    init();
 }
-
-//void SaveToPdfDialog::on_checkBox_stateChanged(int arg1)
-//{
-////    if (arg1)
-////    {
-////        ui->listWidget_2->show();
-////        ui->listWidget_3->show();
-////    }
-////    else
-////    {
-////        ui->listWidget_2->hide();
-////        ui->listWidget_3->hide();
-////    }
-//}
-
 
 void SaveToPdfDialog::on_pushButton_2_clicked()
 {
@@ -237,13 +217,11 @@ void SaveToPdfDialog::on_pushButton_2_clicked()
     QRadioButton* linearChartButton = new QRadioButton();
     linearChartButton->setText("Линейный график");
     linearChartButton->setChecked(true);
-    QRadioButton* barChartButton = new QRadioButton();
-    barChartButton->setText("Гистограмма");
+//    QRadioButton* barChartButton = new QRadioButton();
+//    barChartButton->setText("Гистограмма");
     QListWidget* newWidgetListParams = new QListWidget();
 
     newSubVerticalLayout->addWidget(linearChartButton);
-    newSubVerticalLayout->addWidget(barChartButton);
-
     newWidgetListParams->addItems({"Итого", "Направления", "КА Связь", "КА ДЗЗ", "КА ФКИ", "КА Другое"});
     for (int i=0;i<newWidgetListParams->count();i++)
     {
@@ -255,5 +233,16 @@ void SaveToPdfDialog::on_pushButton_2_clicked()
 
     newTab->setLayout(newHorizontalLayout);
     ui->tabWidget->addTab(newTab,"График " + QString::number(ui->tabWidget->count()+1));
+}
+
+void SaveToPdfDialog::closeEvent(QCloseEvent *)
+{
+    emit saveToPdfDialogClosed();
+    init();
+}
+
+void SaveToPdfDialog::on_tabWidget_tabCloseRequested(int index)
+{
+    ui->tabWidget->removeTab(index);
 }
 

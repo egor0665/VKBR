@@ -463,7 +463,7 @@ void database::addSpacecraftToDB(DBSpacecraft spacecraft)
     query.exec("INSERT INTO spacecraft ( id, weight, active_lifetime, phys_info, econ_info ) VALUES (" +
                QString::number(spacecraft.id()) + ", " +
                QString::number(spacecraft.weight()) + ", '" +
-               QString::number(spacecraft.active_lifetime()) + ", '" +
+               QString::number(spacecraft.active_lifetime()) + "', '" +
                spacecraft.phys_info() + "', '" +
                spacecraft.econ_info()+"')");
     qDebug() << query.lastError();
@@ -736,6 +736,48 @@ DBSpacecraft database::getSpacecraftInfoFromId(int spacecraftId)
                                               query.value(3).toString().trimmed(),
                                               query.value(4).toString().trimmed());
     return tmpSpacecraft;
+}
+
+void database::deleteProjectWithUnitId(int unitId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM project WHERE unit_id = " + QString::number(unitId));
+}
+
+void database::deleteLaunchByBoosterRocket(int unitId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM launch  WHERE booster_rocket_id = " + QString::number(unitId));
+}
+
+void database::deleteLaunchByUpperBlock(int unitId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM launch  WHERE upper_block_id = " + QString::number(unitId));
+}
+
+void database::deleteBoosterRocket(int unitId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM booster_rocket WHERE id = " + QString::number(unitId));
+}
+
+void database::deleteSpacecraft(int unitId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM spacecraft WHERE id = " + QString::number(unitId));
+}
+
+void database::deleteUpperBlock(int unitId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM upper_block WHERE id = " + QString::number(unitId));
+}
+
+void database::deleteUnit(int unitId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM unit WHERE id = " + QString::number(unitId));
 }
 //QString database::getSpaceportsInfoByUnitId(int unitId)
 //{

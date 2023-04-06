@@ -203,3 +203,24 @@ DBSpacecraft TabNewCraftModel::getSpacecraftById(int spacecraftId)
 {
     return mainModel->db.getSpacecraftInfoFromId(spacecraftId);
 }
+
+void TabNewCraftModel::deleteSpacecraft(int unitId)
+{
+    QString unitClass = mainModel->db.getUnitClassById(unitId);
+    if (unitClass=="РН")
+    {
+        mainModel->db.deleteBoosterRocket(unitId);
+        mainModel->db.deleteLaunchByBoosterRocket(unitId);
+    }
+
+    else if (unitClass=="РБ")
+    {
+        mainModel->db.deleteUpperBlock(unitId);
+        mainModel->db.deleteLaunchByUpperBlock(unitId);
+    }
+    else if (unitClass=="КА")
+        mainModel->db.deleteSpacecraft(unitId);
+    mainModel->db.deleteProjectWithUnitId(unitId);
+    mainModel->db.deleteUnit(unitId);
+
+}

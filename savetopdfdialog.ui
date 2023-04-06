@@ -41,7 +41,7 @@
        <item>
         <widget class="QPushButton" name="pushButton_2">
          <property name="text">
-          <string>PushButton</string>
+          <string>Добавить график</string>
          </property>
         </widget>
        </item>
@@ -61,7 +61,11 @@
       </layout>
      </item>
      <item>
-      <widget class="QTabWidget" name="tabWidget"/>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="tabsClosable">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">

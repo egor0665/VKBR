@@ -49,7 +49,7 @@ int PredictionModel::addProject(ProjectSet project)
     }
     else if (type == "Другое")
     {
-        index = projects.length() - 1;
+        index = projects.length();
     }
 
     projects.insert(index, project);

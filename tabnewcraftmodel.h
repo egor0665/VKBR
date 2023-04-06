@@ -69,6 +69,7 @@ public:
     DBBooster_rocket getBoosterRocketById(int boosterRocketId);
     DBUpper_block getUpperBlockById(int upperBlockId);
     DBSpacecraft getSpacecraftById(int spacecraftId);
+    void deleteSpacecraft(int unitId);
 private:
     MainModel* mainModel;
 };

@@ -450,6 +450,11 @@ void TabPredictionModel::projectModelClear()
 
 void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values, QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear, QString filePath)
 {
+    QTextBlockFormat centerAlignment, header;
+    centerAlignment.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+    header.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+    header.setLineHeight(200,1);
+    header.setHeadingLevel(1);
     const int columns = endYear-startYear + 2; // ui->tableWidget_8->columnCount();
     const int rows = data.length();
     QTextDocument doc;
@@ -462,12 +467,16 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
     tableFormat.setBorder(1);
     tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
     tableFormat.clearColumnWidthConstraints();
+
+    cursor.movePosition(cursor.End);
+    cursor.setBlockFormat(header);
+    cursor.insertText(name);
+
+    cursor.movePosition(cursor.NextRow);
+
     QTextTable *textTable = cursor.insertTable(rows + 1, columns, tableFormat);
     QTextCharFormat tableHeaderFormat;
     tableHeaderFormat.setBackground(LINECOLOR);
-
-    QTextBlockFormat centerAlignment;
-    centerAlignment.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
 
     for (int i = 0; i < columns; i++) {
         QTextTableCell cell = textTable->cellAt(0, i);
@@ -537,6 +546,7 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
     QVector<QString> rowValuesUnit = {"КА Цены", "Цены КА ОКР+Серия"};
     //QVector<QString> rowValuesBoosterRocket = {"Цены РН проекта", "Цены РН проекта"};
     QVector<QString> spacecraftTypes = {"Связь", "ДЗЗ", "ФКИ", "Другое"};
+    QVector<QString> mainRowTypes = {"Связь", "ДЗЗ", "ФКИ", "Другое", "Итого"};
     int currentType = -1;
     int unitNum = 0;
     for (int i=0;i<data.length();i++)
@@ -554,15 +564,17 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
                 pricesTmpBoosterRocket.append(data[i+1][j].toDouble());
                 prices[currentType+1+unitNum].second.first[j-1] += data[i][j].toDouble();
                 prices[currentType+1+unitNum].second.second[j-1] += data[i+1][j].toDouble();
+                prices[0].second.first[j-1] +=data[i][j].toDouble();
+                prices[0].second.second[j-1] +=data[i+1][j].toDouble();
             }
             prices.insert(currentType+1+unitNum,QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>(data[i-5][0],QPair<QVector<qreal>,QVector<qreal>>(pricesTmpUnit, pricesTmpBoosterRocket)));
             unitNum++;
         }
     }
 
-    QChart *chart = new QChart();
     for (int j=0;j<chartValues.length();j++)
     {
+        QChart *chart = new QChart();
         if (chartValues[j].first.contains("Направления"))
         {
             for (int i=0;i<prices.length();i++)
@@ -572,7 +584,7 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
                     QLineSeries* series = new QLineSeries();
                     series->setName(prices[i].first);
                     for(int k=0;k<prices[i].second.first.length();k++)
-                        series->append(2024+k-1, prices[i].second.first[k]+prices[i].second.second[k]);
+                        series->append(k-1, prices[i].second.first[k]+prices[i].second.second[k]);
                     chart->addSeries(series);
                 }
             }
@@ -586,7 +598,7 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
                     QLineSeries* series = new QLineSeries();
                     series->setName(prices[i].first);
                     for(int k=0;k<prices[i].second.first.length();k++)
-                        series->append(2024+k-1, prices[i].second.first[k]+prices[i].second.second[k]);
+                        series->append(k-1, prices[i].second.first[k]+prices[i].second.second[k]);
                     chart->addSeries(series);
                 }
             }
@@ -594,231 +606,46 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
         int lastType = 1;
         for (int i=0;i<prices.length();i++)
         {
-            if (spacecraftTypes.contains(prices[i].first))
-                lastType ++;
-            if ((chartValues[j].first.contains("КА Связь") && lastType==1) ||
+            if (((chartValues[j].first.contains("КА Связь") && lastType==1) ||
                     (chartValues[j].first.contains("КА ДЗЗ") && lastType==2) ||
                     (chartValues[j].first.contains("КА ФКИ") && lastType==3) ||
-                    (chartValues[j].first.contains("КА Другое") && lastType==4))
+                    (chartValues[j].first.contains("КА Другое") && lastType==4)) && prices[i].first != "Итого" && !spacecraftTypes.contains(prices[i].first))
             {
                 QLineSeries* series = new QLineSeries();
                 series->setName(prices[i].first);
                 for(int k=0;k<prices[i].second.first.length();k++)
-                    series->append(2024+k-1, prices[i].second.first[k]+prices[i].second.second[k]);
+                    series->append(k-1, prices[i].second.first[k]+prices[i].second.second[k]);
                 chart->addSeries(series);
             }
+            if (spacecraftTypes.contains(prices[i].first))
+                lastType ++;
         }
-
-//        for (int i=0;i<prices.length();i++)
-//        {
-//            QLineSeries* series = new QLineSeries();
-//            series->setName(prices[i].first);
-//            for(int j=0;j<prices[0].second.first.length();j++)
-//            {
-//                series->append(2024+j-1, prices[i].second.first[j]+prices[i].second.second[j]);
-//            }
-//            chart->addSeries(series);
-//        }
+        QValueAxis * axisX = new QValueAxis();
+        axisX->setRange(startYear-2000,endYear-2000-1);
+        axisX->setTickCount(endYear-startYear);
+        axisX->setTickInterval(1);
+        axisX->setTickAnchor(24);
+        axisX->setTickType(QValueAxis::TicksDynamic);
+        axisX->setTitleText("Год 2000+");
+//        QValueAxis * axisY = new QValueAxis();
+//        axisY->setTitleText("Цены");
         chart->createDefaultAxes();
+        chart->setAxisX(axisX);
         chart->setTitle("Цена - Год");
+
+        chart->legend()->setAlignment(Qt::AlignRight);
+        QPalette a;
         QChartView* tmpChartView = new QChartView();
         tmpChartView->setChart(chart);
-        tmpChartView->resize(842,595);
+        tmpChartView->resize(1000,595);
         QPixmap p = tmpChartView->grab();
         QImage img = p.toImage();
-        img = img.scaled(842,595);
+        img = img.scaled(1000,595);
 
         cursor.movePosition(cursor.End);
         cursor.movePosition(cursor.NextRow);
         cursor.insertImage(img);
     }
-//    for (int i=0;i<chartValues.length();i++)
-//    {
-//        if (chartValues[i].second == "Линейный график")
-//        {
-//            QChart *chart = new QChart();
-
-//            QLineSeries* series = new QLineSeries();
-//            series->setName("КА");
-//            QLineSeries* series2 = new QLineSeries();
-//            series2->setName("РН");
-//            QLineSeries* series3 = new QLineSeries();
-//            series3->setName("Итого");
-
-//            for (int i=1+startYear-2024;i<endYear-2024+1;i++)
-//            {
-//                series->append(2024+i-1, data[rows-3][i].toDouble());
-//                series2->append(2024+i-1, data[rows-3+1][i].toDouble());
-//                series3->append(2024+i-1, data[rows-3+2][i].toDouble());
-//            }
-//            chart->addSeries(series);
-//            chart->addSeries(series2);
-//            chart->addSeries(series3);
-//            chart->createDefaultAxes();
-//            chart->setTitle("Цена - Год");
-//            QChartView* tmpChartView = new QChartView();
-//            tmpChartView->setChart(chart);
-//            tmpChartView->resize(842,595);
-//            QPixmap p = tmpChartView->grab();
-//            QImage img = p.toImage();
-//            img = img.scaled(842,595);
-
-//            cursor.movePosition(cursor.End);
-//            cursor.movePosition(cursor.NextRow);
-//            cursor.insertImage(img);
-//            for (int j=0;j<chartValues[i].first.length();j++)
-//            {
-
-//            }
-//        }
-//        if (chartValues[i].second == "Гистограмма")
-//        {
-//            for (int j=0;j<chartValues[i].first.length();j++)
-//            {
-
-//            }
-//        }
-//    }
-//    if (chartValues.contains("Цена - Год"))
-//    {
-//        QChart *chart = new QChart();
-//        QLineSeries* series = new QLineSeries();
-//        series->setName("КА");
-//        QLineSeries* series2 = new QLineSeries();
-//        series2->setName("РН");
-//        QLineSeries* series3 = new QLineSeries();
-//        series3->setName("Итого");
-
-//        for (int i=1+startYear-2024;i<endYear-2024+1;i++)
-//        {
-//            series->append(2024+i-1, data[rows-3][i].toDouble());
-//            series2->append(2024+i-1, data[rows-3+1][i].toDouble());
-//            series3->append(2024+i-1, data[rows-3+2][i].toDouble());
-//        }
-//        chart->addSeries(series);
-//        chart->addSeries(series2);
-//        chart->addSeries(series3);
-//        chart->createDefaultAxes();
-//        chart->setTitle("Цена - Год");
-//        QChartView* tmpChartView = new QChartView();
-//        tmpChartView->setChart(chart);
-//        tmpChartView->resize(842,595);
-//        QPixmap p = tmpChartView->grab();
-//        QImage img = p.toImage();
-//        img = img.scaled(842,595);
-
-//        cursor.movePosition(cursor.End);
-//        cursor.movePosition(cursor.NextRow);
-//        cursor.insertImage(img);
-//    }
-//    if (chartValues.contains("Направление - Год"))
-//    {
-//        QChart *chart = new QChart();
-//        QVector<QLineSeries*> serieses;
-//        for(int i=0;i<4;i++)
-//        {
-//            serieses.append(new QLineSeries);
-//        }
-//        serieses[0]->setName("Связь");
-//        serieses[1]->setName("ДЗЗ");
-//        serieses[2]->setName("ФКИ");
-//        serieses[3]->setName("Другое");
-//        int spacecraftType =0;
-//        QVector<QString> spacecraftTypes = {"ДЗЗ", "ФКИ", "Другое"};
-//        for (int i=0;i<rows;i++)
-//        {
-//            if (spacecraftTypes.contains(data[i][0]))
-//                spacecraftType ++;
-//            if (data[i][0] == "Цены КА ОКР+Серия" || data[i][0] == "Цены РН проекта")
-
-//            for (int i=1+startYear-2024;i<endYear-2024+1;i++)
-//            {
-//                series->append(2024+i-1, data[rows-3][i].toDouble());
-//                series2->append(2024+i-1, data[rows-3+1][i].toDouble());
-//                series3->append(2024+i-1, data[rows-3+2][i].toDouble());
-//            }
-//        }
-//        chart->addSeries(series);
-//        chart->addSeries(series2);
-//        chart->addSeries(series3);
-//        chart->createDefaultAxes();
-//        chart->setTitle("Направление - Год");
-//        QChartView* tmpChartView = new QChartView();
-//        tmpChartView->setChart(chart);
-//        tmpChartView->resize(842,595);
-//        QPixmap p = tmpChartView->grab();
-//        QImage img = p.toImage();
-//        img = img.scaled(842,595);
-
-//        cursor.movePosition(cursor.End);
-//        cursor.movePosition(cursor.NextRow);
-//        cursor.insertImage(img);
-//    }
-
-//    for (int i=0;i<rows;i++)
-//    {
-//        for (int j=0;j<columns;j++)
-//        {
-//            if (chartValues.contains("Цена - Год"))
-//            {
-//                if (i==rows-2 && j>0 && j>=startYear && j<=endYear)
-//                {
-//                    series->append(2024+j-1, data[i][j].toInt());
-//                    series2->append(2024+j-1, data[i+1][j].toInt());
-//                }
-//            }
-//        }
-//    }
-
-
-
-
-
-//    QBarSet *set0 = new QBarSet("Jane");
-//    QBarSet *set1 = new QBarSet("John");
-//    QBarSet *set2 = new QBarSet("Axel");
-//    QBarSet *set3 = new QBarSet("Mary");
-//    QBarSet *set4 = new QBarSet("Samantha");
-
-//    *set0 << 1 << 2 << 3 << 4 << 5 << 6;
-//    *set1 << 5 << 0 << 0 << 4 << 0 << 7;
-//    *set2 << 3 << 5 << 8 << 13 << 8 << 5;
-//    *set3 << 5 << 6 << 7 << 3 << 4 << 5;
-//    *set4 << 9 << 7 << 5 << 3 << 1 << 2;
-//    QBarSeries *series = new QBarSeries();
-//    series->append(set0);
-//    series->append(set1);
-//    series->append(set2);
-//    series->append(set3);
-//    series->append(set4);
-//    QChart *chart = new QChart();
-//    chart->addSeries(series);
-//    chart->setTitle("Simple barchart example");
-//    QStringList categories;
-//    categories << "Jan" << "Feb" << "Mar" << "Apr" << "May" << "Jun";
-//    QBarCategoryAxis *axisX = new QBarCategoryAxis();
-//    axisX->append(categories);
-//    chart->addAxis(axisX, Qt::AlignBottom);
-//    series->attachAxis(axisX);
-
-//    QValueAxis *axisY = new QValueAxis();
-//    axisY->setRange(0,15);
-//    chart->addAxis(axisY, Qt::AlignLeft);
-//    series->attachAxis(axisY);
-//    chart->legend()->setVisible(true);
-//    chart->legend()->setAlignment(Qt::AlignBottom);
-//    QChartView* tmpChartView = new QChartView();
-
-//    tmpChartView->setChart(chart);
-//    tmpChartView->resize(842,595);
-
-//    QPixmap p = tmpChartView->grab();
-//    QImage img = p.toImage();
-//    img = img.scaled(842,595);
-
-//    cursor.movePosition(cursor.End);
-//    cursor.movePosition(cursor.NextRow);
-//    cursor.insertImage(img);
 
     doc.setDocumentMargin(0);
     doc.setTextWidth(4);

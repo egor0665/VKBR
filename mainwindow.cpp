@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     //loginWindow = userLoginWindow(this);
 
     QObject::connect(&saveToPdfDialog,SIGNAL(startSave(QString, QVector<QString>,QVector<QPair<QVector<QString>,QString>>, int, int)),this,SLOT(saveToPdf(QString, QVector<QString>, QVector<QPair<QVector<QString>,QString>>, int, int)));
+    QObject::connect(&saveToPdfDialog,SIGNAL(saveToPdfDialogClosed()),this,SLOT(enableUI()));
 }
 
 MainWindow::~MainWindow()
@@ -53,6 +54,7 @@ void MainWindow::rebuildTabs()
 
     startAuth();
 }
+
 
 QString MainWindow::startAuth()
 {
@@ -110,6 +112,9 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
 
 void MainWindow::buildCompareTab()
 {
+    ui->listWidget_2->clear();
+    ui->tableWidget_4->clear();
+    ui->listWidget_2->clear();
 
     QStringList names = model.getNamesFromTableStringList("unit");
     ui->tableWidget_4->verticalHeader()->hide();
@@ -250,7 +255,22 @@ void MainWindow::on_tableWidget_4_cellDoubleClicked(int row, int column)
 
 void MainWindow::on_pushButton_clicked()
 {
-    buildChart();
+    int newColWidth;
+    if (ui->pushButton->text()=="-")
+    {
+        ui->listWidget_2->hide();
+        ui->pushButton->setText("+");
+        newColWidth = (ui->tableWidget_4->width()+ui->listWidget_2->width())/ui->tableWidget_4->columnCount();
+    }
+    else
+    {
+        ui->listWidget_2->show();
+        ui->pushButton->setText("-");
+        newColWidth = ui->tableWidget_4->width()/ui->tableWidget_4->columnCount();
+
+    }
+    for (int i=0;i<ui->tableWidget_4->columnCount();i++)
+        ui->tableWidget_4->setColumnWidth(i,newColWidth);
 }
 
 void MainWindow::buildChartTable()
@@ -353,6 +373,25 @@ void MainWindow::buildChart()
 //===============================================================================================================================================
 void MainWindow::buildAddUnitTab()
 {
+    ui->comboBoxUnitClass->clear();
+    ui->comboBoxUnitProject->clear();
+    ui->comboBoxUnitCustomer->clear();
+    ui->comboBoxUnitDeveloperId->clear();
+    ui->comboBoxUnitManufacturerId->clear();
+    ui->comboBoxUnitExtraDeveloperId->clear();
+    ui->comboBoxUnitFirstLaunchSpaceport->clear();
+    ui->comboBox_10->clear();
+
+    ui->textEditUnitObjective->clear();
+    ui->lineEditUnitWorkStatus->clear();
+    ui->spinBoxUnitLaunches->clear();
+    ui->spinBoxUnitSuccessfulLaunches->clear();
+    ui->dateTimeEditFirstLaunch->clear();
+    ui->lineEditFinancingType->clear();
+    ui->lineEditControlSystem->clear();
+    ui->doubleSpinBoxUnitPrice->clear();
+    ui->spinBoxUnitPriceYear->clear();
+
     QStringList names = model.getNamesFromTableStringList("unit");
     ui->comboBoxUnitClass->addItems({"РН", "РБ", "КА"});
     ui->comboBoxUnitProject->addItems({"Проектный", "Не проектный"});
@@ -377,9 +416,11 @@ void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
         addUnitTabUpdateValues();
         ui->label_53->setText(QString::number(-1));
         ui->pushButton_2->setText("Добавить");
+        ui->pushButton_3->setEnabled(false);
     }
     else
     {
+        ui->pushButton_3->setEnabled(true);
         DBUnit currentUnit = tabNewCraftModel.getUnitDataByName(arg1);
         ui->comboBoxUnitClass->setCurrentIndex(ui->comboBoxUnitClass->findText(currentUnit.unit_class()));
         ui->lineEditUnitName->setText(currentUnit.name());
@@ -516,6 +557,8 @@ void MainWindow::on_pushButton_2_clicked()
     QBuffer buffer(&image);
     buffer.open(QBuffer::WriteOnly);
     QImage(ui->labelUnitImageURL->text()).save(&buffer, "PNG");
+
+    QString unitName = ui->lineEditUnitName->text();
     if (ui->label_53->text().toInt() == -1)
     {
         tabNewCraftModel.addUnitToDB(
@@ -545,6 +588,7 @@ void MainWindow::on_pushButton_2_clicked()
                     econInfo,
                     physInfo);
         rebuildTabs();
+        ui->comboBox_10->setCurrentIndex(ui->comboBox_10->findText(unitName));
     }
     else
     {
@@ -579,6 +623,14 @@ void MainWindow::on_pushButton_2_clicked()
 
 }
 
+void MainWindow::on_pushButton_3_clicked()
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Удалить аппарат","Вы действительно хотите удалить аппарат? \nВсе связанные с этим аппаратом записи будут также удалены", QMessageBox::Yes|QMessageBox::Cancel);
+    if (reply == QMessageBox::Yes)
+        tabNewCraftModel.deleteSpacecraft(ui->label_53->text().toInt());
+    rebuildTabs();
+}
 //===============================================================================================================================================
 //
 //===============================================================================================================================================
@@ -666,6 +718,7 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
 
 void MainWindow::buildEditDBTab()
 {
+    ui->comboBox_3->clear();
     ui->comboBox_3->addItems(tabEditDBModel.getTableDescriptionsStringList());
     dbValuesToChange.clear();
 }
@@ -725,7 +778,7 @@ void MainWindow::on_pushButton_8_clicked()
 
 void MainWindow::buildEditProjectTab()
 {
-
+    ui->comboBox_5->clear();
     ui->tableWidget_7->clearContents();
     ui->tableWidget_7->setRowCount(0);
 
@@ -795,6 +848,7 @@ void MainWindow::buildPredictionTab()
     ui->listWidget->clear();
     ui->tableWidget_8->clear();
     tabPredictionModel.projectModelClear();
+
     predictionTableEditedByUser = false;
     listWidgetEditedByUser = false;
     QStringList projectNames = model.getNamesFromTableStringList("project");
@@ -1233,6 +1287,10 @@ void MainWindow::saveToPdf(QString name, QVector<QString> values, QVector<QPair<
         saveToPdfDialog.hide();
         this->setEnabled(true);
     }
+    else
+    {
+        this->setEnabled(true);
+    }
 }
 
 //===============================================================================================================================================
@@ -1245,9 +1303,6 @@ void MainWindow::setTableWidgetRowColor(QTableWidget *tableWidget, int row, int 
         tableWidget->item(row,i)->setBackground(color);
     }
 }
-
-
-
 
 void MainWindow::on_pushButton_12_clicked()
 {
@@ -1276,4 +1331,11 @@ void MainWindow::on_pushButton_13_clicked()
 {
 
 }
+
+void MainWindow::enableUI()
+{
+    this->setEnabled(true);
+}
+
+
 

@@ -58,6 +58,7 @@ public:
     void saveToFile(QString filePath);
 public slots:
     void saveToPdf(QString name, QVector<QString> values, QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear);
+    void enableUI();
 protected:
     QDoubleSpinBox *maxPayloadField;
     QDoubleSpinBox *minPayloadField;
@@ -146,6 +147,8 @@ private slots:
     void on_listWidget_2_itemChanged(QListWidgetItem *item);
 
     void on_pushButton_18_clicked();
+
+    void on_pushButton_3_clicked();
 
 private:
     Ui::MainWindow *ui;

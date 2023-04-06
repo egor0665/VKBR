@@ -73,6 +73,13 @@ public:
     void updateBoosterRocketDB(DBBooster_rocket boosterRocket);
     DBProject getProjectInfoFromId(int projectId);
     DBlaunch getLaunchById(int id);
+    void deleteUnit(int unitId);
+    void deleteBoosterRocket(int unitId);
+    void deleteSpacecraft(int unitId);
+    void deleteUpperBlock(int unitId);
+    void deleteProjectWithUnitId(int unitId);
+    void deleteLaunchByBoosterRocket(int unitId);
+    void deleteLaunchByUpperBlock(int unitId);
 };
 
 #endif // DATABASE_H
