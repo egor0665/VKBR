@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "loginwindow.h"
 #include "chartWidget.h"
+#include "DBUser.h"
 #include <QVariant>
 #include <QDebug>
 #include <QGraphicsPixmapItem>
@@ -29,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     tabNewExtrasModel = TabNewExtrasModel(&model);
     tabNewCraftModel = TabNewCraftModel(&model);
     tabCatalogAndComparisonModel = TabCatalogAndComparisonModel(&model);
+    tabEditUserModel = TabEditUserModel(&model);
     rebuildTabs();
     //loginWindow = userLoginWindow(this);
 
@@ -51,6 +53,7 @@ void MainWindow::rebuildTabs()
     buildEditProjectTab();
     buildAddExtrasTab();
     buildPredictionTab();
+    buildEditUsersTab();
 
     startAuth();
 }
@@ -261,12 +264,16 @@ void MainWindow::on_pushButton_clicked()
         ui->listWidget_2->hide();
         ui->pushButton->setText("+");
         newColWidth = (ui->tableWidget_4->width()+ui->listWidget_2->width())/ui->tableWidget_4->columnCount();
+        ui->label_37->hide();
+        ui->lineEdit_2->hide();
     }
     else
     {
         ui->listWidget_2->show();
         ui->pushButton->setText("-");
         newColWidth = ui->tableWidget_4->width()/ui->tableWidget_4->columnCount();
+        ui->label_37->show();
+        ui->lineEdit_2->show();
 
     }
     for (int i=0;i<ui->tableWidget_4->columnCount();i++)
@@ -276,26 +283,35 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::buildChartTable()
 {
     QVector<CompareValue> tableValues = comparator.getValues();
-    ui->tableWidget_5->clearContents();
-    ui->tableWidget_5->setRowCount(0);
-    ui->tableWidget_5->setColumnCount(tableValues[0]._values.length()+1);
-    ui->tableWidget_5->setShowGrid(true);
-    ui->tableWidget_5->setSelectionMode(QAbstractItemView::NoSelection);
-    ui->tableWidget_5->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidget_5->setEditTriggers(QTableWidget::NoEditTriggers);
-    int nameColWidth = ui->tableWidget_5->width()/(tableValues[0]._values.length()+1) * 1.5;
-    int colWidth = (ui->tableWidget_5->width()-nameColWidth)/(tableValues[0]._values.length());
-    ui->tableWidget_5->setColumnWidth(0, nameColWidth);
-    for (int i=1;i<ui->tableWidget_5->columnCount();i++)
-        ui->tableWidget_5->setColumnWidth(i, colWidth);
-    for (int i=0;i<tableValues.length();i++){
-        ui->tableWidget_5->insertRow(i);
-        ui->tableWidget_5->setItem(i,0, new QTableWidgetItem(tableValues[i]._parameter));
+    if (tableValues.length() == 0)
+    {
+        ui->tableWidget_5->clearContents();
+    }
+    else
+    {
+        ui->tableWidget_5->clearContents();
+        ui->tableWidget_5->setRowCount(0);
+        ui->tableWidget_5->setColumnCount(tableValues[0]._values.length()+1);
+        ui->tableWidget_5->setShowGrid(true);
+        ui->tableWidget_5->setSelectionMode(QAbstractItemView::NoSelection);
+        ui->tableWidget_5->horizontalHeader()->setStretchLastSection(true);
+        ui->tableWidget_5->setEditTriggers(QTableWidget::NoEditTriggers);
+        int nameColWidth = ui->tableWidget_5->width()/(tableValues[0]._values.length()+1) * 1.5;
+        int colWidth = (ui->tableWidget_5->width()-nameColWidth)/(tableValues[0]._values.length());
+        ui->tableWidget_5->setColumnWidth(0, nameColWidth);
+        for (int i=1;i<ui->tableWidget_5->columnCount();i++)
+            ui->tableWidget_5->setColumnWidth(i, colWidth);
+        for (int i=0;i<tableValues.length();i++){
+            ui->tableWidget_5->insertRow(i);
+            ui->tableWidget_5->setItem(i,0, new QTableWidgetItem(tableValues[i]._parameter));
 
-        for(int j=0;j<tableValues[0]._values.length();j++){
-            ui->tableWidget_5->setItem(i,j+1, new QTableWidgetItem(QString::number(tableValues[i]._values[j])));
+            for(int j=0;j<tableValues[0]._values.length();j++){
+                ui->tableWidget_5->setItem(i,j+1, new QTableWidgetItem(QString::number(tableValues[i]._values[j])));
+            }
         }
     }
+
+
 }
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -363,7 +379,10 @@ void MainWindow::buildChart()
         ui->widget_2->setChart(chart2);
 
     }
+    else
+    {
 
+    }
 }
 //===============================================================================================================================================
 //
@@ -510,8 +529,13 @@ void MainWindow::on_comboBoxUnitClass_currentIndexChanged(const QString &arg1)
         activeLifetimeField = new QDoubleSpinBox();
         physInfoField = new QTextEdit();
         econInfoField = new QTextEdit();
+        projectNameField = new QLineEdit();
+        projectTypeComboBox = new QComboBox();
+        projectTypeComboBox->addItems({"Связь", "ДЗЗ", "ФКИ", "Другое"});
         ui->formLayout_3->addRow(new QLabel("Вес"), weightField);
         ui->formLayout_3->addRow(new QLabel("САС"), activeLifetimeField);
+        ui->formLayout_3->addRow(new QLabel("Название проекта"), projectNameField);
+        ui->formLayout_3->addRow(new QLabel("Тип КА"),  projectTypeComboBox);
         ui->formLayout_3->addRow(new QLabel("Физические характеристики"), physInfoField);
         ui->formLayout_3->addRow(new QLabel("Экономические характеристики"), econInfoField);
     }
@@ -521,7 +545,7 @@ void MainWindow::on_pushButton_4_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Выберите изображение", "C://", "*.png *.jpg *.gif");
     QImage picture = QImage(filePath);
-    ui->label_12->setPixmap(QPixmap::fromImage(picture));
+    ui->label_12->setPixmap(QPixmap::fromImage(picture).scaled(ui->label_12->width(),ui->label_12->width(),Qt::KeepAspectRatio));
     ui->labelUnitImageURL->setText(filePath);
 }
 
@@ -587,6 +611,7 @@ void MainWindow::on_pushButton_2_clicked()
                     activeLifetime,
                     econInfo,
                     physInfo);
+        tabNewProjectModel.addProjectToDB(projectNameField->text(),projectTypeComboBox->currentText(),unitName);
         rebuildTabs();
         ui->comboBox_10->setCurrentIndex(ui->comboBox_10->findText(unitName));
     }
@@ -631,6 +656,17 @@ void MainWindow::on_pushButton_3_clicked()
         tabNewCraftModel.deleteSpacecraft(ui->label_53->text().toInt());
     rebuildTabs();
 }
+
+void MainWindow::on_lineEdit_2_textChanged(const QString &arg1)
+{
+    for(int i=0;i<ui->listWidget_2->count();i++)
+    {
+        if (!ui->listWidget_2->item(i)->text().toLower().contains(arg1.toLower()))
+            ui->listWidget_2->item(i)->setHidden(true);
+        else
+            ui->listWidget_2->item(i)->setHidden(false);
+    }
+}
 //===============================================================================================================================================
 //
 //===============================================================================================================================================
@@ -640,6 +676,11 @@ void MainWindow::on_pushButton_3_clicked()
 
 void MainWindow::buildAddExtrasTab()
 {
+    ui->comboBox->clear();
+    ui->comboBox_2->clear();
+    ui->comboBox_6->clear();
+    ui->comboBox_7->clear();
+    ui->comboBox_8->clear();
     ui->tableWidget_9->clearContents();
     ui->tableWidget_9->setRowCount(0);
     ui->tableWidget_9->setColumnCount(18); // Указываем число колонок
@@ -649,21 +690,37 @@ void MainWindow::buildAddExtrasTab()
     ui->tableWidget_9->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_9->insertRow(0);
     ui->tableWidget_9->setItem(0, 0,  new QTableWidgetItem("Цены"));
-    ui->comboBox_4->addItems({"Связь", "ДЗЗ", "ФКИ", "Другое"});
-    ui->comboBox_9->addItems(model.getNamesFromTableStringList("unit"));
     ui->comboBox_6->addItems(tabNewExtrasModel.getUnitNamesByTypeStringList("РН"));
     ui->comboBox_7->addItems(tabNewExtrasModel.getUnitNamesByTypeStringList("РБ"));
     ui->comboBox_8->addItems(model.getNamesFromTableStringList("spaceport"));
+    ui->comboBox->addItem("Добавить новую организацию");
+    ui->comboBox_2->addItem("Добавить новый космодром");
+    ui->comboBox->addItems(model.QVectorToQStringList(model.getNamesFromTable("organization")));
+    ui->comboBox_2->addItems(model.QVectorToQStringList(model.getNamesFromTable("spaceport")));
+    ui->label_10->setVisible(false);
+    ui->label_9->setVisible(false);
 }
 
 void MainWindow::on_pushButton_5_clicked()
 {
-    tabNewExtrasModel.addOrganizationToDB(ui->lineEdit_6->text());
+    if(ui->label_10->text()=="-1")
+        tabNewExtrasModel.addOrganizationToDB(ui->lineEdit_6->text());
+    else
+        tabNewExtrasModel.updateOrganizationDB(ui->label_10->text().toInt(), ui->lineEdit_6->text());
+    QString name = ui->lineEdit_6->text();
+    rebuildTabs();
+    ui->comboBox->setCurrentIndex(ui->comboBox->findText(name));
 }
 
 void MainWindow::on_pushButton_6_clicked()
 {
-     tabNewExtrasModel.addSpaceportToDB(ui->lineEdit_7->text());
+     if(ui->label_9->text()=="-1")
+         tabNewExtrasModel.addSpaceportToDB(ui->lineEdit_7->text());
+     else
+         tabNewExtrasModel.updateSpaceportDB(ui->label_9->text().toInt(), ui->lineEdit_7->text());
+     QString name = ui->lineEdit_7->text();
+     rebuildTabs();
+     ui->comboBox_2->setCurrentIndex(ui->comboBox_2->findText(name));
 }
 
 void MainWindow::on_comboBox_6_currentIndexChanged(const QString &arg1)
@@ -707,8 +764,49 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
     }
 }
 
+void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
+{
+    if (arg1=="Добавить новую организацию" && ui->comboBox->currentIndex()==0)
+    {
+        ui->pushButton_5->setText("Добавить");
+        ui->pushButton_19->setEnabled(false);
+        ui->label_10->setText("-1");
+        ui->lineEdit_6->setText("");
+    }
+    else
+    {
+        ui->pushButton_5->setText("Сохранить");
+        ui->pushButton_19->setEnabled(true);
+        ui->label_10->setText(QString::number(tabNewExtrasModel.getOrganizationId(arg1)));
+        ui->lineEdit_6->setText(arg1);
+    }
+
+}
 
 
+void MainWindow::on_comboBox_2_currentIndexChanged(const QString &arg1)
+{
+    if (arg1=="Добавить новый космодром" && ui->comboBox->currentIndex()==0)
+    {
+        ui->pushButton_6->setText("Добавить");
+        ui->pushButton_20->setEnabled(false);
+        ui->label_9->setText("-1");
+        ui->lineEdit_7->setText("");
+    }
+    else
+    {
+        ui->pushButton_6->setText("Сохранить");
+        ui->pushButton_20->setEnabled(true);
+        ui->label_9->setText(QString::number(tabNewExtrasModel.getSpaceportId(arg1)));
+        ui->lineEdit_7->setText(arg1);
+    }
+
+}
+
+void MainWindow::on_pushButton_19_clicked()
+{
+
+}
 //===============================================================================================================================================
 //
 //===============================================================================================================================================
@@ -801,12 +899,6 @@ void MainWindow::buildEditProjectTab()
     ui->tableWidget_7->setItem(rowCount+3, 0,  new QTableWidgetItem("НЭО, документация"));
     ui->tableWidget_7->setItem(rowCount+4, 0,  new QTableWidgetItem("Создание серийного образца"));
     ui->comboBox_5->addItems(model.getNamesFromTableStringList("project"));
-}
-
-void MainWindow::on_pushButton_9_clicked()
-{
-    tabNewProjectModel.addProjectToDB(ui->lineEdit_2->text(),ui->comboBox_4->currentText(), ui->comboBox_9->currentText());
-    buildEditProjectTab();
 }
 
 void MainWindow::on_comboBox_5_currentIndexChanged(const QString &arg1)
@@ -1293,6 +1385,95 @@ void MainWindow::saveToPdf(QString name, QVector<QString> values, QVector<QPair<
     }
 }
 
+void MainWindow::on_pushButton_9_clicked()
+{
+    if (ui->pushButton_9->text()=="-")
+    {
+        ui->pushButton_9->setText("+");
+        ui->listWidget->hide();
+        ui->label_36->hide();
+        ui->lineEdit->hide();
+    }
+    else
+    {
+        ui->pushButton_9->setText("-");
+        ui->listWidget->show();
+        ui->label_36->show();
+        ui->lineEdit->show();
+    }
+}
+
+void MainWindow::on_lineEdit_textChanged(const QString &arg1)
+{
+    for(int i=0;i<ui->listWidget->count();i++)
+    {
+        if (!ui->listWidget->item(i)->text().toLower().contains(arg1.toLower()))
+            ui->listWidget->item(i)->setHidden(true);
+        else
+            ui->listWidget->item(i)->setHidden(false);
+    }
+
+}
+
+
+//===============================================================================================================================================
+//
+//===============================================================================================================================================
+
+
+//===============================================================================================================================================
+//                                                          Edit user tab
+//===============================================================================================================================================
+void MainWindow::buildEditUsersTab()
+{
+    ui->comboBox_4->clear();
+    ui->lineEdit_3->clear();
+    ui->lineEdit_4->clear();
+    ui->comboBox_9->clear();
+    ui->comboBox_4->addItem("Добавить пользователя");
+    ui->comboBox_4->addItems(model.QVectorToQStringList(model.getNamesFromTable("public.user")));
+    ui->comboBox_9->addItems({"Админ", "Пользователь"});
+    ui->label_55->setVisible(false);
+}
+
+
+void MainWindow::on_comboBox_4_currentIndexChanged(const QString &arg1)
+{
+    if (arg1 == "Добавить пользователя" && ui->comboBox_4->currentIndex()==0)
+    {
+        ui->label_55->setText(QString::number(-1));
+        ui->lineEdit_3->clear();
+        ui->pushButton_21->setText("Добавить");
+        ui->pushButton_22->setEnabled(false);
+    }
+    else
+    {
+        DBUser currentUser = tabEditUserModel.getUserById(tabEditUserModel.getUserIdByName(arg1));
+        ui->label_55->setText(QString::number(currentUser.id()));
+        ui->lineEdit_3->setText(currentUser.name());
+        ui->comboBox_9->setCurrentIndex( ui->comboBox_9->findText(currentUser.role()));
+        ui->pushButton_21->setText("Сохранить");
+        ui->pushButton_22->setEnabled(true);
+    }
+}
+
+void MainWindow::on_pushButton_21_clicked()
+{
+    if(ui->label_55->text()=="-1")
+        tabEditUserModel.addUserToDB(ui->lineEdit_3->text(), ui->comboBox_9->currentText(), ui->lineEdit_4->text());
+    else
+        tabEditUserModel.updateUserDB(ui->label_55->text().toInt(), ui->lineEdit_3->text(), ui->comboBox_9->currentText(), ui->lineEdit_4->text());
+    QString name = ui->lineEdit_3->text();
+    buildEditUsersTab();
+    ui->comboBox_4->setCurrentIndex(ui->comboBox_4->findText(name));
+}
+
+void MainWindow::on_pushButton_22_clicked()
+{
+     tabEditUserModel.deleteUserFromDB(ui->label_55->text().toInt());
+     buildEditUsersTab();
+}
+
 //===============================================================================================================================================
 //
 //===============================================================================================================================================
@@ -1336,6 +1517,20 @@ void MainWindow::enableUI()
 {
     this->setEnabled(true);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -16,6 +16,10 @@ public:
     QStringList getUnitNamesByTypeStringList(QString type);
     DBlaunch getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport);
     QVector<qreal> pricesToVector(QString prices);
+    int getOrganizationId(QString name);
+    int getSpaceportId(QString name);
+    void updateOrganizationDB(int id, QString name);
+    void updateSpaceportDB(int id, QString name);
 private:
     MainModel* mainModel;
 };

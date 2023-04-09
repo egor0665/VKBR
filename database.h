@@ -2,6 +2,7 @@
 #define DATABASE_H
 
 #include "DBProject.h"
+#include "DBUser.h"
 #include "DBspacecraft.h"
 
 #include <DBorganization.h>
@@ -80,6 +81,13 @@ public:
     void deleteProjectWithUnitId(int unitId);
     void deleteLaunchByBoosterRocket(int unitId);
     void deleteLaunchByUpperBlock(int unitId);
+    void updateOrganizationDB(int id, QString name);
+    void updateSpaceportDB(int id, QString name);
+    int getUserIdByName(QString name);
+    DBUser getUserById(int userId);
+    void addUserToDB(DBUser user);
+    void updateUserDB(DBUser user);
+    void deleteUserFromDB(int userId);
 };
 
 #endif // DATABASE_H

@@ -9,6 +9,7 @@
 #include <TabCatalogModel.h>
 #include <TabComparisonModel.h>
 #include <TabEditDBModel.h>
+#include <TabEditUserModel.h>
 #include <TabNewCraftModel.h>
 #include <TabNewExtrasModel.h>
 #include <TabNewProjectModel.h>
@@ -41,6 +42,7 @@ public:
     TabNewExtrasModel tabNewExtrasModel;
     TabNewCraftModel tabNewCraftModel;
     TabCatalogAndComparisonModel tabCatalogAndComparisonModel;
+    TabEditUserModel tabEditUserModel;
 
 
     UnitComparator comparator;
@@ -56,6 +58,7 @@ public:
     QTreeWidgetItem *addTreeRoot(QString name);
     void addUnitTabUpdateValues();
     void saveToFile(QString filePath);
+    void buildEditUsersTab();
 public slots:
     void saveToPdf(QString name, QVector<QString> values, QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear);
     void enableUI();
@@ -66,7 +69,8 @@ protected:
     QDoubleSpinBox *activeLifetimeField;
     QTextEdit *physInfoField;
     QTextEdit *econInfoField;
-
+    QComboBox *projectTypeComboBox;
+    QLineEdit *projectNameField;
     //QVector<QString> comparisonTableFields;
 
     void buildDisplayTab();
@@ -112,8 +116,6 @@ private slots:
 
     void on_pushButton_6_clicked();
 
-    void on_pushButton_9_clicked();
-
     void on_comboBox_5_currentIndexChanged(const QString &arg1);
 
     void on_pushButton_11_clicked();
@@ -149,6 +151,24 @@ private slots:
     void on_pushButton_18_clicked();
 
     void on_pushButton_3_clicked();
+
+    void on_comboBox_currentIndexChanged(const QString &arg1);
+
+    void on_comboBox_2_currentIndexChanged(const QString &arg1);
+
+    void on_pushButton_9_clicked();
+
+    void on_lineEdit_textChanged(const QString &arg1);
+
+    void on_lineEdit_2_textChanged(const QString &arg1);
+
+    void on_comboBox_4_currentIndexChanged(const QString &arg1);
+
+    void on_pushButton_21_clicked();
+
+    void on_pushButton_22_clicked();
+
+    void on_pushButton_19_clicked();
 
 private:
     Ui::MainWindow *ui;

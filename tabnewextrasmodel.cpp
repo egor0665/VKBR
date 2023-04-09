@@ -57,3 +57,24 @@ QVector<qreal> TabNewExtrasModel::pricesToVector(QString prices)
     qDebug()<<pricesVector;
     return pricesVector;
 }
+
+int TabNewExtrasModel::getOrganizationId(QString name)
+{
+    return mainModel->db.getOrganizationIdFromName(name);
+}
+
+
+int TabNewExtrasModel::getSpaceportId(QString name)
+{
+    return mainModel->db.getSpaceportIdFromName(name);
+}
+
+void TabNewExtrasModel::updateOrganizationDB(int id, QString name)
+{
+    mainModel->db.updateOrganizationDB(id, name);
+}
+
+void TabNewExtrasModel::updateSpaceportDB(int id, QString name)
+{
+    mainModel->db.updateSpaceportDB(id, name);
+}

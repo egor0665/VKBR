@@ -25,6 +25,7 @@ SOURCES += \
     database.cpp \
     dbproject.cpp \
     dbspacecraft.cpp \
+    dbuser.cpp \
     filemanager.cpp \
     fileprojectvalue.cpp \
     launchdata.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
     savetopdfdialog.cpp \
     tabcatalogandcomparisonmodel.cpp \
     tabeditdbmodel.cpp \
+    tabeditusermodel.cpp \
     tabnewcraftmodel.cpp \
     tabnewextrasmodel.cpp \
     tabnewprojectmodel.cpp \
@@ -60,6 +62,7 @@ HEADERS += \
     database.h \
     dbChangeValue.h \
     dbproject.h \
+    dbuser.h \
     filemanager.h \
     fileprojectvalue.h \
     launchdata.h \
@@ -71,6 +74,7 @@ HEADERS += \
     savetopdfdialog.h \
     tabcatalogandcomparisonmodel.h \
     tabeditdbmodel.h \
+    tabeditusermodel.h \
     tabnewcraftmodel.h \
     tabnewextrasmodel.h \
     tabnewprojectmodel.h \

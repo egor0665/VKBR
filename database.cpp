@@ -1,4 +1,5 @@
 #include "DBProject.h"
+#include "DBUser.h"
 #include "DBspacecraft.h"
 #include "database.h"
 #include <QtSql/QSqlDatabase>
@@ -429,7 +430,7 @@ void database::addBoosterRocketToDB(DBBooster_rocket boosterRocket)
 void database::updateBoosterRocketDB(DBBooster_rocket boosterRocket)
 {
     QSqlQuery query;
-    query.exec("UPDATE public.booster_rocket SET  max_payload = " + QString::number(boosterRocket.max_payload()) +
+    query.exec("UPDATE public.booster_rocket SET max_payload = " + QString::number(boosterRocket.max_payload()) +
                ", min_payload = " + QString::number(boosterRocket.min_payload()) +
                ", phys_info = '" + boosterRocket.phys_info() +
                "', econ_info = '" + boosterRocket.econ_info() +
@@ -778,6 +779,74 @@ void database::deleteUnit(int unitId)
 {
     QSqlQuery query;
     query.exec("DELETE FROM unit WHERE id = " + QString::number(unitId));
+}
+
+void database::updateOrganizationDB(int id, QString name)
+{
+    QSqlQuery query;
+    QString queryString = "UPDATE public.organization SET name = '" + name + "' WHERE id = " + QString::number(id) ;
+    qDebug() <<queryString;
+    query.exec(queryString);
+    qDebug() << query.lastError().text();
+}
+
+void database::updateSpaceportDB(int id, QString name)
+{
+    QSqlQuery query;
+    QString queryString = "UPDATE public.spaceport SET name = '" + name + "' WHERE id = " + QString::number(id) ;
+    qDebug() <<queryString;
+    query.exec(queryString);
+    qDebug() << query.lastError().text();
+}
+
+int database::getUserIdByName(QString name)
+{
+    QSqlQuery query;
+    query.exec("SELECT id FROM public.user WHERE name LIKE '" + name + " %'");
+    query.next();
+    return query.value(0).toInt();
+}
+
+DBUser database::getUserById(int userId)
+{
+    QSqlQuery query;
+    query.exec("SELECT id, name, role, password FROM public.user WHERE id=" + QString::number(userId));
+    query.next();
+    qDebug() <<query.value(0)<<query.value(1)<<query.value(2);
+    DBUser tmpUser = DBUser(query.value(0).toInt(),
+                            query.value(1).toString().trimmed(),
+                            query.value(2).toString().trimmed(),
+                            query.value(3).toString().trimmed());
+    return tmpUser;
+}
+
+void database::addUserToDB(DBUser user)
+{
+    QSqlQuery query;
+    query.exec("INSERT INTO public.user ( name, role, password ) VALUES ('" +
+               user.name() + "', '" +
+               user.role() + "', " +
+               "crypt('" + user.password() + "', gen_salt('md5')))");
+    qDebug() << query.lastError();
+    return;
+}
+
+void database::updateUserDB(DBUser user)
+{
+
+    QSqlQuery query;
+    if (user.password()!="")
+        query.exec("UPDATE public.user SET name = '" + user.name() + "' , role = '"+ user.role() +"', password = crypt('" + user.password() + "', gen_salt('md5')) WHERE id = " + QString::number(user.id()));
+    else
+        query.exec("UPDATE public.user SET name = '" + user.name()+ "', role = '"+ user.role() +"' WHERE id = " + QString::number(user.id()));
+    qDebug() << query.lastError();
+    return;
+}
+
+void database::deleteUserFromDB(int userId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM public.user WHERE id = " + QString::number(userId));
 }
 //QString database::getSpaceportsInfoByUnitId(int unitId)
 //{
