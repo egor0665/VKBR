@@ -61,8 +61,7 @@ public:
             qreal weight = 0,
             qreal activeLifetime = 0,
             QString physInfo = "",
-            QString econInfo = ""
-            );
+            QString econInfo = "");
     DBUnit getUnitDataByName(QString unitName);
     DBOrganization getOrganizationById(int organizationId);
     DBSpaceport getSpaceportById(int spaceportId);
@@ -70,8 +69,12 @@ public:
     DBUpper_block getUpperBlockById(int upperBlockId);
     DBSpacecraft getSpacecraftById(int spacecraftId);
     void deleteSpacecraft(int unitId);
+    bool getUpdateUnitImageChanged() const;
+    void setUpdateUnitImageChanged(bool newUpdateUnitImageChanged);
+
 private:
     MainModel* mainModel;
+    bool updateUnitImageChanged;
 };
 
 #endif // TABNEWCRAFTMODEL_H

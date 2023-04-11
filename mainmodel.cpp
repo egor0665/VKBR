@@ -42,3 +42,18 @@ void MainModel::updateLaunchPricesByIds(QString boosterRocketName, QString upper
     int spaceportId = db.getSpaceportIdFromName(spaceportName);
     db.updateLaunchPricesByIds(boosterRocketId, upperBlockId, spaceportId,priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
 }
+
+QString MainModel::login(QString name, QString password)
+{
+    return db.login(name, password);
+}
+
+const QString &MainModel::getUserRole() const
+{
+    return userRole;
+}
+
+void MainModel::setUserRole(const QString &newUserRole)
+{
+    userRole = newUserRole;
+}

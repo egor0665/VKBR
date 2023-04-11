@@ -21,8 +21,12 @@ public:
     QStringList QVectorToQStringList(QVector <QString> vector);
     void updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload, bool valid);
 
-protected:
+    QString login(QString name, QString password);
+    const QString &getUserRole() const;
+    void setUserRole(const QString &newUserRole);
 
+protected:
+    QString userRole;
 };
 
 #endif // MAINMODEL_H

@@ -36,3 +36,11 @@ void TabEditUserModel::deleteUserFromDB(int userId)
 {
     mainModel->db.deleteUserFromDB(userId);
 }
+
+bool TabEditUserModel::lastAdmin()
+{
+    if (mainModel->db.getAdminUserCount()>1)
+        return false;
+    else
+        return true;
+}

@@ -4,7 +4,8 @@
 #include <QColor>
 
 const QColor LINECOLOR = QColor(255,249,234);
-const QColor PROJECTNAMECOLOR = QColor(255,249,224);
+const QColor PROJECTNAMECOLOR = QColor(255,249,214);
+const QColor PDFHEADERCOLOR = QColor(235,239,244);
 const QColor UNITLAUNCHCOLOR = QColor(250,255,250);
 const QColor SERIALLAUNCHCOLOR = QColor(245,255,245);
 const QColor UNITBLOCKCOLOR = QColor(240,255,240);

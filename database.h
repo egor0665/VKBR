@@ -88,6 +88,11 @@ public:
     void addUserToDB(DBUser user);
     void updateUserDB(DBUser user);
     void deleteUserFromDB(int userId);
+    QString login(QString name, QString password);
+    int getAdminUserCount();
+    int updateUnitDBNoImageRetId(DBUnit unit);
+    void deleteOrganization(int id);
+    void deleteSpaceport(int id);
 };
 
 #endif // DATABASE_H

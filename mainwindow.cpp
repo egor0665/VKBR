@@ -18,6 +18,7 @@
 #include <tabPredictionModel.h>
 
 #include <PALETTE.h>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,10 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
     tabCatalogAndComparisonModel = TabCatalogAndComparisonModel(&model);
     tabEditUserModel = TabEditUserModel(&model);
     rebuildTabs();
-    //loginWindow = userLoginWindow(this);
 
+    QObject::connect(&loginWindow,SIGNAL(login(QString, QString)),this,SLOT(login(QString,QString)));
+    QObject::connect(&loginWindow,SIGNAL(closeApp()),this,SLOT(closeApp()));
     QObject::connect(&saveToPdfDialog,SIGNAL(startSave(QString, QVector<QString>,QVector<QPair<QVector<QString>,QString>>, int, int)),this,SLOT(saveToPdf(QString, QVector<QString>, QVector<QPair<QVector<QString>,QString>>, int, int)));
     QObject::connect(&saveToPdfDialog,SIGNAL(saveToPdfDialogClosed()),this,SLOT(enableUI()));
+    startAuth();
 }
 
 MainWindow::~MainWindow()
@@ -48,63 +51,205 @@ void MainWindow::rebuildTabs()
     buildDisplayTab();
     buildCompareTab();
     buildAddUnitTab();
-
     buildEditDBTab();
     buildEditProjectTab();
     buildAddExtrasTab();
     buildPredictionTab();
     buildEditUsersTab();
-
-    startAuth();
 }
 
 
-QString MainWindow::startAuth()
+void MainWindow::startAuth()
 {
+    this->setEnabled(false);
+    loginWindow.setWindowFlags(Qt::WindowStaysOnTopHint);
     loginWindow.show();
+}
+
+void MainWindow::login(QString name, QString password)
+{
+    QString role = model.login(name, password);
+    qDebug() << role;
+    if (role != "0")
+    {
+        ui->label_51->setText(name + ", " + role);
+        this->show();
+        model.setUserRole(role);
+        enableTabsLogin();
+    }
+    else
+        startAuth();
+}
+
+void MainWindow::closeApp()
+{
+    QApplication::quit();
+}
+
+void MainWindow::enableTabsLogin()
+{
+    const QVector<int> USERENABLEDTABS = {0,1,2};
+    loginWindow.hide();
+    this->setEnabled(true);
+    QString role = model.getUserRole();
+    if (role == "Администратор")
+        for (int i=0;i<ui->tabWidget->count();i++)
+            ui->tabWidget->setTabEnabled(i,true);
+    else
+        for (int i=0;i<ui->tabWidget->count();i++)
+            if (USERENABLEDTABS.contains(i))
+                ui->tabWidget->setTabEnabled(i,true);
+            else
+                ui->tabWidget->setTabEnabled(i,false);
+}
+
+void MainWindow::on_pushButton_13_clicked()
+{
+    model.setUserRole("");
+    ui->label_51->setText("");
+    startAuth();
+}
+
+void MainWindow::showHintMessage(QString text, QString type)
+{
+    ui->label_56->setText(text);
+    ui->label_56->show();
+    if (type == "error")
+        ui->label_56->setStyleSheet("QLabel {color : red}");
+    else if (type == "notification")
+        ui->label_56->setStyleSheet("QLabel {color : blue}");
+    else if (type == "notification")
+        ui->label_56->setStyleSheet("QLabel {color : black}");
+    QTimer::singleShot(8000, this, [this] ()
+    {
+        ui->label_56->setText("");
+        ui->label_56->hide();
+    });
 }
 //===============================================================================================================================================
 //                                                          Display tab
 //===============================================================================================================================================
-
 void MainWindow::buildDisplayTab()
 {
+    ui->treeWidget->setHeaderLabel("");
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->treeWidget);
     ui->treeWidget->setColumnCount(1);
     tabCatalogAndComparisonModel.createNavigationTree(treeItem);
-    ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
 }
 
 void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(0);
-    ui->tableWidget->setColumnCount(3); // Указываем число колонок
-    ui->tableWidget->setShowGrid(true); // Включаем сетку
-    ui->tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
-    ui->tableWidget->setHorizontalHeaderLabels({"Номер показателя", "Параметр", "Значение"});
-    ui->tableWidget->hideColumn(0);
-    ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+    if(item->text(0)!= "Ракеты-носители" && item->text(0)!= "Разгонные блоки" && item->text(0)!= "КА")
+    {
+        ui->label_3->setText(item->text(0));
+        ui->tableWidget->clearContents();
+        ui->tableWidget->setRowCount(0);
+        ui->tableWidget->setColumnCount(3); // Указываем число колонок
+        ui->tableWidget->setShowGrid(true); // Включаем сетку
+        ui->tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+        ui->tableWidget->setHorizontalHeaderLabels({"Номер показателя", "Параметр", "Значение"});
+        ui->tableWidget->hideColumn(0);
+        ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
+        ui->tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+        ui->tableWidget->verticalHeader()->hide();
 
-    int rowCount = ui->tableWidget->rowCount();
+        ui->tableWidget_2->clearContents();
+        ui->tableWidget_2->setRowCount(0);
+        ui->tableWidget_2->setColumnCount(3); // Указываем число колонок
+        ui->tableWidget_2->setShowGrid(true); // Включаем сетку
+        ui->tableWidget_2->setSelectionMode(QAbstractItemView::NoSelection);
+        ui->tableWidget_2->setHorizontalHeaderLabels({"Номер показателя", "Параметр", "Значение"});
+        ui->tableWidget_2->hideColumn(0);
+        ui->tableWidget_2->horizontalHeader()->setStretchLastSection(true);
+        ui->tableWidget_2->setEditTriggers(QTableWidget::NoEditTriggers);
+        ui->tableWidget_2->verticalHeader()->hide();
 
-    int unitId = tabCatalogAndComparisonModel.getUnitIdByName(item->text(0));
-    QVector<QPair<QString,QString>> values = tabCatalogAndComparisonModel.getUnitData(unitId);
-    for (int i=0;i<values.length(); i++){
-        ui->tableWidget->insertRow(rowCount);
-        ui->tableWidget->setItem(rowCount,1, new QTableWidgetItem(values[i].first));
-        ui->tableWidget->setItem(rowCount,2, new QTableWidgetItem(values[i].second));
-        rowCount++;
+        ui->tableWidget_3->clearContents();
+        ui->tableWidget_3->setRowCount(0);
+        ui->tableWidget_3->setColumnCount(3); // Указываем число колонок
+        ui->tableWidget_3->setShowGrid(true); // Включаем сетку
+        ui->tableWidget_3->setSelectionMode(QAbstractItemView::NoSelection);
+        ui->tableWidget_3->setHorizontalHeaderLabels({"Номер показателя", "Параметр", "Значение"});
+        ui->tableWidget_3->hideColumn(0);
+        ui->tableWidget_3->horizontalHeader()->setStretchLastSection(true);
+        ui->tableWidget_3->setEditTriggers(QTableWidget::NoEditTriggers);
+        ui->tableWidget_3->verticalHeader()->hide();
+
+        int rowCount = ui->tableWidget->rowCount();
+
+        int unitId = tabCatalogAndComparisonModel.getUnitIdByName(item->text(0));
+        QVector<QVector<QPair<QString,QString>>> values = tabCatalogAndComparisonModel.getUnitData(unitId);
+        for (int i=0;i<values[0].length(); i++){
+            ui->tableWidget->insertRow(rowCount);
+            ui->tableWidget->setItem(rowCount,1, new QTableWidgetItem(values[0][i].first));
+            ui->tableWidget->setItem(rowCount,2, new QTableWidgetItem(values[0][i].second));
+            rowCount++;
+        }
+        rowCount = ui->tableWidget_2->rowCount();
+        for (int i=0;i<values[1].length(); i++){
+            ui->tableWidget_2->insertRow(rowCount);
+            ui->tableWidget_2->setItem(rowCount,1, new QTableWidgetItem(values[1][i].first));
+            ui->tableWidget_2->setItem(rowCount,2, new QTableWidgetItem(values[1][i].second));
+            rowCount++;
+        }
+        rowCount = ui->tableWidget_3->rowCount();
+        for (int i=0;i<values[2].length(); i++){
+            ui->tableWidget_3->insertRow(rowCount);
+            ui->tableWidget_3->setItem(rowCount,1, new QTableWidgetItem(values[2][i].first));
+            ui->tableWidget_3->setItem(rowCount,2, new QTableWidgetItem(values[2][i].second));
+            rowCount++;
+        }
+        //---------------------
+        QPixmap image;
+        image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId).toUtf8()), "PNG");
+        ui->label->setPixmap(image);
     }
-    //---------------------
-    QPixmap image;
-    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId).toUtf8()), "PNG");
-    //QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1));
-    ui->label->setPixmap(image);
-    //picture = QImage("C:\\Catalog\\Scheme");
-    //ui->label_6->setPixmap(QPixmap::fromImage(picture));
-    //---------------------
+}
+void MainWindow::on_pushButton_23_clicked()
+{
+    if (ui->pushButton_23->text()=="-")
+    {
+        ui->treeWidget->hide();
+        ui->pushButton_23->setText("+");
+        ui->label_57->hide();
+        ui->lineEdit_5->hide();
+    }
+    else
+    {
+        ui->treeWidget->show();
+        ui->pushButton_23->setText("-");
+        ui->label_57->show();
+        ui->lineEdit_5->show();
+    }
+}
+
+void MainWindow::on_lineEdit_5_textChanged(const QString &arg1)
+{
+    for(int i=0;i<ui->treeWidget->topLevelItem(0)->childCount();i++)
+        for (int j=0;j<ui->treeWidget->topLevelItem(0)->child(i)->childCount();j++)
+            if (ui->treeWidget->topLevelItem(0)->child(i)->child(j)->text(0).toLower().contains(arg1.toLower()))
+                ui->treeWidget->topLevelItem(0)->child(i)->child(j)->setHidden(false);
+            else
+                ui->treeWidget->topLevelItem(0)->child(i)->child(j)->setHidden(true);
+}
+
+void MainWindow::on_pushButton_24_clicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.pdf");
+    if (filePath != "")
+    {
+        QString name = ui->label_3->text();
+        QImage image = ui->label->pixmap()->toImage();
+        QVector<QPair<QString, QString>> values, physValues, econValues;
+        for (int i=0;i<ui->tableWidget->rowCount();i++)
+            values.append(QPair<QString, QString>(ui->tableWidget->item(i,1)->text(),ui->tableWidget->item(i,2)->text()));
+        for (int i=0;i<ui->tableWidget_2->rowCount();i++)
+            physValues.append(QPair<QString, QString>(ui->tableWidget_2->item(i,1)->text(),ui->tableWidget_2->item(i,2)->text()));
+        for (int i=0;i<ui->tableWidget_3->rowCount();i++)
+            econValues.append(QPair<QString, QString>(ui->tableWidget_3->item(i,1)->text(),ui->tableWidget_3->item(i,2)->text()));
+        tabCatalogAndComparisonModel.saveToPdf(name, image, values, physValues, econValues, filePath);
+        showHintMessage("Успешно сохранено в pdf", "notification");
+    }
 }
 //===============================================================================================================================================
 //
@@ -310,8 +455,6 @@ void MainWindow::buildChartTable()
             }
         }
     }
-
-
 }
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -384,6 +527,11 @@ void MainWindow::buildChart()
 
     }
 }
+
+void MainWindow::on_pushButton_25_clicked()
+{
+    showHintMessage("Успешно сохранено в pdf", "notification");
+}
 //===============================================================================================================================================
 //
 //===============================================================================================================================================
@@ -431,6 +579,8 @@ void MainWindow::buildAddUnitTab()
 
 void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
 {
+    tabNewCraftModel.setUpdateUnitImageChanged(false);
+    ui->labelUnitImageURL->setText("");
     if (arg1 == "Добавить новый аппарат" && ui->comboBox_10->currentIndex()==0){
         addUnitTabUpdateValues();
         ui->label_53->setText(QString::number(-1));
@@ -488,7 +638,7 @@ void MainWindow::on_comboBox_10_currentIndexChanged(const QString &arg1)
         }
         QPixmap image;
         image.loadFromData(QByteArray::fromBase64(currentUnit.image_url().toUtf8()), "PNG");
-        ui->label_12->setPixmap(image);
+        ui->label_12->setPixmap(image.scaled(ui->label_12->width(),ui->label_12->height(),Qt::KeepAspectRatio));
         ui->label_53->setText(QString::number(currentUnit.id()));
         ui->pushButton_2->setText("Сохранить");
     }
@@ -545,8 +695,9 @@ void MainWindow::on_pushButton_4_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Выберите изображение", "C://", "*.png *.jpg *.gif");
     QImage picture = QImage(filePath);
-    ui->label_12->setPixmap(QPixmap::fromImage(picture).scaled(ui->label_12->width(),ui->label_12->width(),Qt::KeepAspectRatio));
+    ui->label_12->setPixmap(QPixmap::fromImage(picture).scaled(ui->label_12->width(),ui->label_12->height(),Qt::KeepAspectRatio));
     ui->labelUnitImageURL->setText(filePath);
+    tabNewCraftModel.setUpdateUnitImageChanged(true);
 }
 
 void MainWindow::on_pushButton_2_clicked()
@@ -614,6 +765,7 @@ void MainWindow::on_pushButton_2_clicked()
         tabNewProjectModel.addProjectToDB(projectNameField->text(),projectTypeComboBox->currentText(),unitName);
         rebuildTabs();
         ui->comboBox_10->setCurrentIndex(ui->comboBox_10->findText(unitName));
+        showHintMessage("Аппарат добавлен в базу данных", "notification");
     }
     else
     {
@@ -644,8 +796,9 @@ void MainWindow::on_pushButton_2_clicked()
                     activeLifetime,
                     econInfo,
                     physInfo);
+        showHintMessage("Данные об аппарате обновлены", "notification");
     }
-
+    tabNewCraftModel.setUpdateUnitImageChanged(false);
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -653,7 +806,10 @@ void MainWindow::on_pushButton_3_clicked()
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "Удалить аппарат","Вы действительно хотите удалить аппарат? \nВсе связанные с этим аппаратом записи будут также удалены", QMessageBox::Yes|QMessageBox::Cancel);
     if (reply == QMessageBox::Yes)
+    {
         tabNewCraftModel.deleteSpacecraft(ui->label_53->text().toInt());
+        showHintMessage("Аппарат удален из базы данных", "notification");
+    }
     rebuildTabs();
 }
 
@@ -704,9 +860,15 @@ void MainWindow::buildAddExtrasTab()
 void MainWindow::on_pushButton_5_clicked()
 {
     if(ui->label_10->text()=="-1")
+    {
         tabNewExtrasModel.addOrganizationToDB(ui->lineEdit_6->text());
+        showHintMessage("Организация добавлена в базу данных", "notification");
+    }
     else
+    {
         tabNewExtrasModel.updateOrganizationDB(ui->label_10->text().toInt(), ui->lineEdit_6->text());
+        showHintMessage("Данные об организации обновлены", "notification");
+    }
     QString name = ui->lineEdit_6->text();
     rebuildTabs();
     ui->comboBox->setCurrentIndex(ui->comboBox->findText(name));
@@ -715,9 +877,15 @@ void MainWindow::on_pushButton_5_clicked()
 void MainWindow::on_pushButton_6_clicked()
 {
      if(ui->label_9->text()=="-1")
+     {
          tabNewExtrasModel.addSpaceportToDB(ui->lineEdit_7->text());
+         showHintMessage("Космодром добавлен в базу данных", "notification");
+     }
      else
+     {
          tabNewExtrasModel.updateSpaceportDB(ui->label_9->text().toInt(), ui->lineEdit_7->text());
+         showHintMessage("Данные о космодроме обновлены", "notification");
+     }
      QString name = ui->lineEdit_7->text();
      rebuildTabs();
      ui->comboBox_2->setCurrentIndex(ui->comboBox_2->findText(name));
@@ -764,6 +932,8 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
     }
 }
 
+
+
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 {
     if (arg1=="Добавить новую организацию" && ui->comboBox->currentIndex()==0)
@@ -805,7 +975,52 @@ void MainWindow::on_comboBox_2_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_pushButton_19_clicked()
 {
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Удалить организацию","Вы действительно хотите удалить организацию? \nВсе связанные с этой организацией записи будут также удалены", QMessageBox::Yes|QMessageBox::Cancel);
+    if (reply == QMessageBox::Yes)
+    {
+        tabNewExtrasModel.deleteOrganization(ui->label_10->text().toInt());
+        showHintMessage("Аппарат удален из базы данных", "notification");
+    }
+    rebuildTabs();
+}
 
+
+void MainWindow::on_pushButton_20_clicked()
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Удалить космодром","Вы действительно хотите удалить космодром? \nВсе связанные с этим космодромом записи будут также удалены", QMessageBox::Yes|QMessageBox::Cancel);
+    if (reply == QMessageBox::Yes)
+    {
+        tabNewExtrasModel.deleteSpaceport(ui->label_9->text().toInt());
+        showHintMessage("Аппарат удален из базы данных", "notification");
+    }
+    rebuildTabs();
+}
+
+
+void MainWindow::on_pushButton_12_clicked()
+{
+    QString boosterRocketName = ui->comboBox_6->currentText();
+    QString upperBlockName = ui->comboBox_7->currentText();
+    QString spaceportName = ui->comboBox_8->currentText();
+    int priceYear = ui->spinBox_2->value();
+    QString prices = "";
+    for (int i=1;i<ui->tableWidget_9->columnCount();i++)
+    {
+        prices += ui->tableWidget_9->item(0,i)->text() + ";";
+    }
+    qreal launchPrice = ui->doubleSpinBox_2->value();
+    qreal deliveryPrice = ui->doubleSpinBox->value();
+    qreal minPayload = ui->doubleSpinBox_3->value();
+    qreal maxPayload = ui->doubleSpinBox_4->value();
+    bool valid;
+    if (ui->checkBox->checkState()== Qt::Checked)
+        valid = true;
+    else
+        valid = false;
+    model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
+    showHintMessage("Данные о запуске обновлены", "notification");
 }
 //===============================================================================================================================================
 //
@@ -922,9 +1137,8 @@ void MainWindow::on_pushButton_11_clicked()
         post_prices.append(ui->tableWidget_7->item(3,i)->text().toDouble());
         serial_prices.append(ui->tableWidget_7->item(4,i)->text().toDouble());
     }
-
-    qDebug()<<pre_prices<<first_unit_prices<<last_unit_prices<<post_prices<<serial_prices;
     tabNewProjectModel.updateProjectInfo(ui->comboBox_5->currentText(), pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices);
+    showHintMessage("Данные о проекте обновлены", "notification");
 }
 
 //===============================================================================================================================================
@@ -1227,6 +1441,7 @@ void MainWindow::on_pushButton_17_clicked()
     if (filePath != "")
     {
         saveToFile(filePath);
+        showHintMessage("Успешно сохранено в файл", "notification");
     }
 }
 
@@ -1239,11 +1454,13 @@ void MainWindow::on_pushButton_15_clicked()
         {
             saveToFile(filePath);
         }
+        showHintMessage("Успешно сохранено в файл", "notification");
     }
     else
     {
         saveToFile(saveFilePath);
     }
+
 }
 
 void MainWindow::saveToFile(QString filePath)
@@ -1288,6 +1505,7 @@ void MainWindow::on_pushButton_14_clicked()
             if (saveFilePath != "")
             {
                 saveToFile(saveFilePath);
+                showHintMessage("Успешно сохранено в " + saveFilePath, "notification");
             }
             else
             {
@@ -1295,13 +1513,10 @@ void MainWindow::on_pushButton_14_clicked()
                 if (filePath != "")
                 {
                     saveToFile(filePath);
+                    showHintMessage("Успешно сохранено в "+ filePath, "notification");
                 }
                 else return;
             }
-        }
-        else if (reply == QMessageBox::No)
-        {
-
         }
         else if (reply == QMessageBox::Cancel)
         {
@@ -1343,6 +1558,7 @@ void MainWindow::on_pushButton_14_clicked()
         }
         saveFilePath = filePath;
     }
+    showHintMessage("Успешно открыт файл "+ filePath, "notification");
 }
 
 void MainWindow::on_pushButton_16_clicked()
@@ -1370,7 +1586,10 @@ void MainWindow::saveToPdf(QString name, QVector<QString> values, QVector<QPair<
                 tmpData.append(ui->tableWidget_8->item(i,0)->text());
                 for (int j=1;j<ui->tableWidget_8->columnCount();j++)
                 {
-                    tmpData.append(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(i,j))->currentText());
+                    if (ui->tableWidget_8->item(i-2,j)->text().toInt()+ui->tableWidget_8->item(i-3,j)->text().toInt() == 0)
+                        tmpData.append("");
+                    else
+                        tmpData.append(qobject_cast <QComboBox*> (ui->tableWidget_8->cellWidget(i,j))->currentText());
                 }
             }
             data.append(tmpData);
@@ -1378,6 +1597,7 @@ void MainWindow::saveToPdf(QString name, QVector<QString> values, QVector<QPair<
         tabPredictionModel.saveToPdf(name, data, values, chartValues, startYear, endYear, filePath);
         saveToPdfDialog.hide();
         this->setEnabled(true);
+        showHintMessage("Успешно сохранено в pdf", "notification");
     }
     else
     {
@@ -1432,10 +1652,9 @@ void MainWindow::buildEditUsersTab()
     ui->comboBox_9->clear();
     ui->comboBox_4->addItem("Добавить пользователя");
     ui->comboBox_4->addItems(model.QVectorToQStringList(model.getNamesFromTable("public.user")));
-    ui->comboBox_9->addItems({"Админ", "Пользователь"});
+    ui->comboBox_9->addItems({"Администратор", "Пользователь"});
     ui->label_55->setVisible(false);
 }
-
 
 void MainWindow::on_comboBox_4_currentIndexChanged(const QString &arg1)
 {
@@ -1470,8 +1689,13 @@ void MainWindow::on_pushButton_21_clicked()
 
 void MainWindow::on_pushButton_22_clicked()
 {
-     tabEditUserModel.deleteUserFromDB(ui->label_55->text().toInt());
-     buildEditUsersTab();
+    if (tabEditUserModel.getUserById(tabEditUserModel.getUserIdByName(ui->comboBox_4->currentText())).role() == "Администратор" && tabEditUserModel.lastAdmin())
+        showHintMessage("Невозможно удалить единственного пользователя с ролью Администратор", "error");
+    else
+    {
+        tabEditUserModel.deleteUserFromDB(ui->label_55->text().toInt());
+        buildEditUsersTab();
+    }
 }
 
 //===============================================================================================================================================
@@ -1485,38 +1709,31 @@ void MainWindow::setTableWidgetRowColor(QTableWidget *tableWidget, int row, int 
     }
 }
 
-void MainWindow::on_pushButton_12_clicked()
-{
-    QString boosterRocketName = ui->comboBox_6->currentText();
-    QString upperBlockName = ui->comboBox_7->currentText();
-    QString spaceportName = ui->comboBox_8->currentText();
-    int priceYear = ui->spinBox_2->value();
-    QString prices = "";
-    for (int i=1;i<ui->tableWidget_9->columnCount();i++)
-    {
-        prices += ui->tableWidget_9->item(0,i)->text() + ";";
-    }
-    qreal launchPrice = ui->doubleSpinBox_2->value();
-    qreal deliveryPrice = ui->doubleSpinBox->value();
-    qreal minPayload = ui->doubleSpinBox_3->value();
-    qreal maxPayload = ui->doubleSpinBox_4->value();
-    bool valid;
-    if (ui->checkBox->checkState()== Qt::Checked)
-        valid = true;
-    else
-        valid = false;
-    model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
-}
 
-void MainWindow::on_pushButton_13_clicked()
-{
 
-}
+
 
 void MainWindow::enableUI()
 {
     this->setEnabled(true);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

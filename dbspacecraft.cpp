@@ -38,3 +38,15 @@ qreal DBSpacecraft::weight() const
     return _weight;
 }
 
+QStringList DBSpacecraft::getValues()
+{
+    QStringList values;
+
+    values.append(QString::number(this->weight()));
+    values.append(QString::number(this->active_lifetime()));
+    values.append(this->econ_info());
+    values.append(this->phys_info());
+
+    return values;
+}
+

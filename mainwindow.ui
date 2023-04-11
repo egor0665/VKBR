@@ -477,7 +477,7 @@
         <item>
          <widget class="QLabel" name="label_51">
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -487,7 +487,7 @@
            <string notr="true">background-color: rgb(249, 249, 249)</string>
           </property>
           <property name="text">
-           <string>PushButton</string>
+           <string>Выйти</string>
           </property>
          </widget>
         </item>
@@ -592,13 +592,6 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_16">
               <item>
-               <widget class="QPushButton" name="pushButton_18">
-                <property name="text">
-                 <string>Пересчитать</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <spacer name="horizontalSpacer_18">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -664,69 +657,108 @@
                <x>0</x>
                <y>0</y>
                <width>1200</width>
-               <height>768</height>
+               <height>740</height>
               </rect>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_7">
+             <layout class="QVBoxLayout" name="verticalLayout_29">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_7">
-                <property name="sizeConstraint">
-                 <enum>QLayout::SetMaximumSize</enum>
-                </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_31">
                 <item>
-                 <widget class="QScrollArea" name="scrollArea">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="lineWidth">
-                   <number>0</number>
-                  </property>
-                  <property name="widgetResizable">
-                   <bool>true</bool>
-                  </property>
-                  <widget class="QWidget" name="scrollAreaWidgetContents">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>0</y>
-                     <width>274</width>
-                     <height>746</height>
-                    </rect>
-                   </property>
-                   <layout class="QVBoxLayout" name="verticalLayout">
+                 <layout class="QVBoxLayout" name="verticalLayout">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_7">
                     <item>
-                     <widget class="QTreeWidget" name="treeWidget">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
+                     <widget class="QLabel" name="label_57">
+                      <property name="maximumSize">
+                       <size>
+                        <width>40</width>
+                        <height>16777215</height>
+                       </size>
                       </property>
-                      <property name="frameShape">
-                       <enum>QFrame::NoFrame</enum>
+                      <property name="text">
+                       <string>Найти</string>
                       </property>
-                      <property name="lineWidth">
-                       <number>0</number>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_5">
+                      <property name="maximumSize">
+                       <size>
+                        <width>150</width>
+                        <height>16777215</height>
+                       </size>
                       </property>
-                      <column>
-                       <property name="text">
-                        <string notr="true">1</string>
-                       </property>
-                      </column>
                      </widget>
                     </item>
                    </layout>
-                  </widget>
-                 </widget>
+                  </item>
+                  <item>
+                   <widget class="QTreeWidget" name="treeWidget">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>200</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="lineWidth">
+                     <number>0</number>
+                    </property>
+                    <property name="alternatingRowColors">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sortingEnabled">
+                     <bool>true</bool>
+                    </property>
+                    <column>
+                     <property name="text">
+                      <string notr="true">1</string>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <item>
+                   <widget class="QPushButton" name="pushButton_23">
+                    <property name="maximumSize">
+                     <size>
+                      <width>20</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>-</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer_5">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_28">
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout">
                     <item>
@@ -752,7 +784,7 @@
                        </font>
                       </property>
                       <property name="text">
-                       <string>TextLabel</string>
+                       <string/>
                       </property>
                      </widget>
                     </item>
@@ -772,58 +804,62 @@
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_5">
-                    <item>
-                     <spacer name="horizontalSpacer_5">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_4">
-                      <property name="font">
-                       <font>
-                        <pointsize>12</pointsize>
-                       </font>
-                      </property>
-                      <property name="text">
-                       <string>Основные тактико-технические показатели</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_6">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_4">
                     <item>
                      <widget class="QLabel" name="label">
                       <property name="text">
-                       <string>TextLabel</string>
+                       <string/>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QTableWidget" name="tableWidget"/>
+                     <layout class="QVBoxLayout" name="verticalLayout_2">
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_5">
+                        <item>
+                         <spacer name="horizontalSpacer_5">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_4">
+                          <property name="font">
+                           <font>
+                            <pointsize>12</pointsize>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>Основные тактико-технические показатели</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="horizontalSpacer_6">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <widget class="QTableWidget" name="tableWidget"/>
+                      </item>
+                     </layout>
                     </item>
                    </layout>
                   </item>
@@ -850,7 +886,7 @@
                        </font>
                       </property>
                       <property name="text">
-                       <string>Основные технико-экономические показатели</string>
+                       <string>Основные экономические показатели</string>
                       </property>
                      </widget>
                     </item>
@@ -895,7 +931,7 @@
                        </font>
                       </property>
                       <property name="text">
-                       <string>Сравнение с аналогами</string>
+                       <string>Основные физические показатели</string>
                       </property>
                      </widget>
                     </item>
@@ -915,22 +951,29 @@
                    </layout>
                   </item>
                   <item>
+                   <widget class="QTableWidget" name="tableWidget_3"/>
+                  </item>
+                  <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_6">
                     <item>
-                     <widget class="QLabel" name="label_6">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
+                     <spacer name="horizontalSpacer_20">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
                       </property>
-                      <property name="text">
-                       <string>Картинка</string>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
                       </property>
-                     </widget>
+                     </spacer>
                     </item>
                     <item>
-                     <widget class="QTableWidget" name="tableWidget_3"/>
+                     <widget class="QPushButton" name="pushButton_24">
+                      <property name="text">
+                       <string>В pdf</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </item>
@@ -960,144 +1003,164 @@
                <x>0</x>
                <y>0</y>
                <width>1183</width>
-               <height>830</height>
+               <height>859</height>
               </rect>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_25">
+             <layout class="QVBoxLayout" name="verticalLayout_22">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_22">
+               <layout class="QHBoxLayout" name="horizontalLayout_29">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_27">
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
                   <item>
-                   <layout class="QVBoxLayout" name="verticalLayout_8">
+                   <layout class="QHBoxLayout" name="horizontalLayout_24">
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_24">
-                      <item>
-                       <widget class="QLabel" name="label_37">
-                        <property name="maximumSize">
-                         <size>
-                          <width>40</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="text">
-                         <string>Найти</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLineEdit" name="lineEdit_2">
-                        <property name="maximumSize">
-                         <size>
-                          <width>150</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
-                     <widget class="QListWidget" name="listWidget_2">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
+                     <widget class="QLabel" name="label_37">
                       <property name="maximumSize">
                        <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QVBoxLayout" name="verticalLayout_6">
-                    <item>
-                     <widget class="QPushButton" name="pushButton">
-                      <property name="maximumSize">
-                       <size>
-                        <width>20</width>
+                        <width>40</width>
                         <height>16777215</height>
                        </size>
                       </property>
                       <property name="text">
-                       <string>-</string>
+                       <string>Найти</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <spacer name="verticalSpacer">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
+                     <widget class="QLineEdit" name="lineEdit_2">
+                      <property name="maximumSize">
                        <size>
-                        <width>20</width>
-                        <height>40</height>
+                        <width>150</width>
+                        <height>16777215</height>
                        </size>
                       </property>
-                     </spacer>
+                     </widget>
                     </item>
                    </layout>
                   </item>
                   <item>
-                   <widget class="QTableWidget" name="tableWidget_4">
-                    <property name="minimumSize">
+                   <widget class="QListWidget" name="listWidget_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="maximumSize">
                      <size>
-                      <width>0</width>
-                      <height>300</height>
+                      <width>200</width>
+                      <height>16777215</height>
                      </size>
                     </property>
-                    <attribute name="horizontalHeaderCascadingSectionResizes">
-                     <bool>true</bool>
-                    </attribute>
                    </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <layout class="QVBoxLayout" name="verticalLayout_6">
                   <item>
-                   <widget class="QChartView" name="widget" native="true">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
+                   <widget class="QPushButton" name="pushButton">
+                    <property name="maximumSize">
                      <size>
-                      <width>0</width>
-                      <height>500</height>
+                      <width>20</width>
+                      <height>16777215</height>
                      </size>
+                    </property>
+                    <property name="text">
+                     <string>-</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QChartView" name="widget_2" native="true">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
+                   <spacer name="verticalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
                     </property>
-                    <property name="minimumSize">
+                    <property name="sizeHint" stdset="0">
                      <size>
-                      <width>0</width>
-                      <height>500</height>
+                      <width>20</width>
+                      <height>40</height>
                      </size>
                     </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QTableWidget" name="tableWidget_5"/>
+                   </spacer>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QTableWidget" name="tableWidget_4">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>300</height>
+                   </size>
+                  </property>
+                  <attribute name="horizontalHeaderCascadingSectionResizes">
+                   <bool>true</bool>
+                  </attribute>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_27">
+                <item>
+                 <spacer name="horizontalSpacer_21">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_25">
+                  <property name="text">
+                   <string>В pdf</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_8">
+                <item>
+                 <widget class="QChartView" name="widget" native="true">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>500</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QChartView" name="widget_2" native="true">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>500</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QTableWidget" name="tableWidget_5"/>
                 </item>
                </layout>
               </item>
@@ -1123,7 +1186,7 @@
                <x>0</x>
                <y>0</y>
                <width>1200</width>
-               <height>737</height>
+               <height>709</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1406,7 +1469,7 @@
                      <string notr="true">background-color: rgb(249, 249, 249)</string>
                     </property>
                     <property name="text">
-                     <string>PushButton</string>
+                     <string>Выбрать изображение</string>
                     </property>
                    </widget>
                   </item>
@@ -1483,7 +1546,7 @@
                <x>0</x>
                <y>0</y>
                <width>1200</width>
-               <height>768</height>
+               <height>740</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_20">
@@ -2173,6 +2236,37 @@
          </layout>
         </widget>
        </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_30">
+        <item>
+         <spacer name="horizontalSpacer_19">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_56">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>

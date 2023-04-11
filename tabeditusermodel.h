@@ -16,6 +16,7 @@ public:
     void addUserToDB(QString name, QString role, QString password);
     void updateUserDB(int id, QString name, QString role, QString password);
     void deleteUserFromDB(int userId);
+    bool lastAdmin();
 };
 
 #endif // TABEDITUSERMODEL_H

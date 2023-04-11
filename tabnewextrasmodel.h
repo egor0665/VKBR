@@ -20,6 +20,8 @@ public:
     int getSpaceportId(QString name);
     void updateOrganizationDB(int id, QString name);
     void updateSpaceportDB(int id, QString name);
+    void deleteOrganization(int id);
+    void deleteSpaceport(int id);
 private:
     MainModel* mainModel;
 };

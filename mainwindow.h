@@ -59,7 +59,11 @@ public:
     void addUnitTabUpdateValues();
     void saveToFile(QString filePath);
     void buildEditUsersTab();
+    void enableTabsLogin();
+    void showHintMessage(QString text, QString type);
 public slots:
+    void login(QString name,QString password);
+    void closeApp();
     void saveToPdf(QString name, QVector<QString> values, QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear);
     void enableUI();
 protected:
@@ -92,7 +96,7 @@ protected:
     void buildPredictionTab();
     void setTableWidgetRowColor(QTableWidget *tableWidget, int row, int startColumn, QColor color);
     void rebuildEditLaunchTable(QString boosterRocket, QString upperBlock, QString spaceport);
-    QString startAuth();
+    void startAuth();
 private slots:
     void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
@@ -169,6 +173,16 @@ private slots:
     void on_pushButton_22_clicked();
 
     void on_pushButton_19_clicked();
+
+    void on_pushButton_23_clicked();
+
+    void on_lineEdit_5_textChanged(const QString &arg1);
+
+    void on_pushButton_24_clicked();
+
+    void on_pushButton_25_clicked();
+
+    void on_pushButton_20_clicked();
 
 private:
     Ui::MainWindow *ui;

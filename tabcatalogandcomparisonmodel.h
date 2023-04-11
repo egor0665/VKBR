@@ -1,6 +1,7 @@
 #ifndef TABCATALOGANDCOMPARISONMODEL_H
 #define TABCATALOGANDCOMPARISONMODEL_H
 
+#include <FileManager.h>
 #include <MainModel.h>
 #include <QObject>
 #include <QTreeWidget>
@@ -14,7 +15,7 @@ public:
     QTreeWidget *navigationTreeWidget;
 
     QVector <QPair<QString,QString>> splitValues(QString values);
-    QVector <QPair<QString,QString>> getUnitData(int unitId);
+    QVector<QVector <QPair<QString,QString>>> getUnitData(int unitId);
     int getUnitIdByName(QString unitName);
     QString getUnitImageFromId(int unitId);
     void createNavigationTree(QTreeWidgetItem *navigatiorMenuRoot);
@@ -26,11 +27,15 @@ public:
     qreal getNumberFromString(QString line, int param = 0);
 
     QVector <QPair<QString,QString>> vectorUnitData(int unitId);
-    QVector <QPair<QString,QString>> vectorBoosterRocketData(int unitId);
-    QVector <QPair<QString,QString>> vectorUpperBlockData(int unitId);
+    QVector<QVector <QPair<QString,QString>>> vectorBoosterRocketData(int unitId);
+    QVector<QVector <QPair<QString,QString>>> vectorUpperBlockData(int unitId);
+    QVector<QVector <QPair<QString,QString>>> vectorSpacecraftData(int unitId);
     QVector <QLineSeries*> createChartLineSeries(int unitNum, QVector <CompareValue> compareValues, QStringList unitNames);
     QBarSeries *createChartBarSeries(int unitNum, QVector <CompareValue> compareValues, QStringList unitNames);
+
+    void saveToPdf(QString name, QImage image, QVector<QPair<QString,QString>> values, QVector<QPair<QString,QString>> physValues, QVector<QPair<QString,QString>> econValues, QString path);
 private:
+    FileManager *fileManager;
     MainModel* mainModel;
 };
 

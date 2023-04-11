@@ -78,3 +78,29 @@ void TabNewExtrasModel::updateSpaceportDB(int id, QString name)
 {
     mainModel->db.updateSpaceportDB(id, name);
 }
+
+void TabNewExtrasModel::deleteOrganization(int id)
+{
+    QString unitClass = mainModel->db.getUnitClassById(unitId);
+    if (unitClass=="РН")
+    {
+        mainModel->db.deleteBoosterRocket(unitId);
+        mainModel->db.deleteLaunchByBoosterRocket(unitId);
+    }
+
+    else if (unitClass=="РБ")
+    {
+        mainModel->db.deleteUpperBlock(unitId);
+        mainModel->db.deleteLaunchByUpperBlock(unitId);
+    }
+    else if (unitClass=="КА")
+        mainModel->db.deleteSpacecraft(unitId);
+    mainModel->db.deleteProjectWithUnitId(unitId);
+    mainModel->db.deleteUnit(unitId);
+    mainModel->db.deleteOrganization(id);
+}
+
+void TabNewExtrasModel::deleteSpaceport(int id)
+{
+     mainModel->db.deleteSpaceport(id);
+}

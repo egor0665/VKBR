@@ -412,11 +412,17 @@ void TabPredictionModel::saveToFile(QVector<FileProjectValue> saveValues, QStrin
         launchIds.remove(launchIds.length()-1,1);
         resultString += QString::number(mainModel->db.getProjectInfoFromName(saveValues[i].getProjectName()).id()) + "," + okrYears + "," + serialYears + "," + unitBlock + "," + launchIds + "\n";
     }
-    fileManager.saveToFile(filePath, resultString);
+    fileManager = new FileManager();
+    fileManager->saveToFile(filePath, resultString);
+    delete fileManager;
 }
+
 QVector<FileProjectValue> TabPredictionModel::loadFromFile(QString filePath)
 {
-    QString values = fileManager.readFile(filePath);
+    fileManager = new FileManager();
+    QString values = fileManager->readFile(filePath);
+    delete fileManager;
+
     QVector<FileProjectValue> resultVector;
     QStringList projectValues = values.split("\n");
     projectValues.removeLast();
@@ -453,8 +459,37 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
     QTextBlockFormat centerAlignment, header;
     centerAlignment.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
     header.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-    header.setLineHeight(200,1);
+    header.setLineHeight(100,1);
     header.setHeadingLevel(1);
+
+    QTextCharFormat mainHeaderFormat;
+    mainHeaderFormat.setFont(QFont("Times New Roman", 18));
+
+    QTextCharFormat verticalTableHeaderFormat;
+    verticalTableHeaderFormat.setFont(QFont("Times New Roman", 8));
+    verticalTableHeaderFormat.setFontWeight(QFont::Bold);
+
+    QTextCharFormat verticalTypeTableHeaderFormat;
+    verticalTypeTableHeaderFormat.setFont(QFont("Times New Roman", 10));
+    verticalTypeTableHeaderFormat.setBackground(LINECOLOR);
+    verticalTypeTableHeaderFormat.setFontWeight(QFont::Bold);
+
+    QTextCharFormat projectNameLineFormat;
+    projectNameLineFormat.setFont(QFont("Times New Roman", 10));
+    projectNameLineFormat.setBackground(PROJECTNAMECOLOR);
+    projectNameLineFormat.setFontWeight(QFont::Bold);
+
+    QTextCharFormat tableTextFormat;
+    tableTextFormat.setFont(QFont("Times New Roman", 8));
+
+    QTextCharFormat tableUnitFormat;
+    tableUnitFormat.setFont(QFont("Times New Roman", 8));
+    tableUnitFormat.setBackground(UNITLAUNCHCOLOR);
+
+    QTextCharFormat tableHeaderFormat;
+    tableHeaderFormat.setFont(QFont("Times New Roman", 8));
+    tableHeaderFormat.setBackground(PDFHEADERCOLOR);
+
     const int columns = endYear-startYear + 2; // ui->tableWidget_8->columnCount();
     const int rows = data.length();
     QTextDocument doc;
@@ -462,7 +497,7 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
     QTextTableFormat tableFormat;
     tableFormat.setHeaderRowCount(1);
     tableFormat.setAlignment(Qt::AlignHCenter);
-    tableFormat.setCellPadding(0.5);
+    tableFormat.setCellPadding(5);
     tableFormat.setCellSpacing(0);
     tableFormat.setBorder(1);
     tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
@@ -470,19 +505,24 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
 
     cursor.movePosition(cursor.End);
     cursor.setBlockFormat(header);
-    cursor.insertText(name);
+    cursor.insertText(name,mainHeaderFormat);
 
     cursor.movePosition(cursor.NextRow);
-
+    tableFormat.setWidth(950);
+    QTextLength verticalHeader = QTextLength(QTextLength::FixedLength,100);
+    QTextLength verticalCell = QTextLength(QTextLength::FixedLength,800/columns);
+    QVector<QTextLength> lengths;
+    lengths.append(verticalHeader);
+    for (int i=0;i<columns-1;i++)
+        lengths.append(verticalCell);
+    tableFormat.setColumnWidthConstraints(lengths);
     QTextTable *textTable = cursor.insertTable(rows + 1, columns, tableFormat);
-    QTextCharFormat tableHeaderFormat;
-    tableHeaderFormat.setBackground(LINECOLOR);
 
     for (int i = 0; i < columns; i++) {
         QTextTableCell cell = textTable->cellAt(0, i);
         cell.setFormat(tableHeaderFormat);
         QTextCursor cellCursor = cell.firstCursorPosition();
-                cellCursor.setBlockFormat(centerAlignment);
+        cellCursor.setBlockFormat(centerAlignment);
         if (i==0)
             cellCursor.insertText("");
         else
@@ -490,29 +530,64 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
     }
     bool includeLine = true;
     QVector<QString> linesNames = {"Связь", "ДЗЗ", "ФКИ", "Другое", "Цены КА", "Цены РН", "Итого"};
+    QVector<QString> typeNames = {"Связь", "ДЗЗ", "ФКИ", "Другое"};
+    QVector<QString> totalNames = {"Цены КА", "Цены РН", "Итого"};
+    QVector<QString> unitLines = {"Запуск ОКР аппаратов", "Запуск серийных аппаратов"};
     QVector<QString> rowsNames = {"Запуск ОКР аппаратов", "Запуск серийных аппаратов", "Блок КА", "Ракета-носитель", "Цены КА ОКР+Серия", "Цены РН проекта", "Итого"};
     QVector<int> removeRows;
     for (int i = 0; i < rows; i++) {
         bool includeRow = true;
-        if (linesNames.contains(data[i][0])) //Строка является разделом
+        if (linesNames.contains(data[i][0]))
         {
-            if (!values.contains(data[i][0])) //Раздел надо включить
+            if (!values.contains(data[i][0]))
                 includeLine = false;
             else
                 includeLine = true;
         }
-        if (rowsNames.contains(data[i][0])) //Строка не название аппарата
+        if (rowsNames.contains(data[i][0]))
         {
-            if (!values.contains(data[i][0])) //Строку надо включить
+            if (!values.contains(data[i][0]))
                 includeRow = false;
         }
         if (includeLine & includeRow)
-            for (int j = 0; j < columns; j++) {
+        {
+
+            for (int j = 0; j < columns; j++)
+            {
+                QString dataVal = data[i][j];
+                QTextCharFormat currentCellFormat;
+                if (i+1 < rows && data[i+1][0]=="Запуск ОКР аппаратов")
+                    currentCellFormat = projectNameLineFormat;
+                else if (typeNames.contains(data[i][0]))
+                    currentCellFormat = verticalTypeTableHeaderFormat;
+                else if (totalNames.contains(data[i][j]))
+                {
+                    currentCellFormat = verticalTypeTableHeaderFormat;
+                    int intVal = data[i][j].toDouble();
+                    if (intVal != 0)
+                        dataVal = QString::number(intVal);
+                }
+                else if (unitLines.contains(data[i][0]) && data[i][j]!="" && j>0)
+                    currentCellFormat = tableUnitFormat;
+                else
+                {
+                    if (j==0)
+                        currentCellFormat = verticalTableHeaderFormat;
+                    else
+                    {
+                        currentCellFormat = tableTextFormat;
+                        int intVal = data[i][j].toDouble();
+                        if (intVal != 0)
+                            dataVal = QString::number(intVal);
+                    }
+                }
                 QTextTableCell cell = textTable->cellAt(i+1, j);
                 QTextCursor cellCursor = cell.firstCursorPosition();
+                cell.setFormat(currentCellFormat);
                 cellCursor.setBlockFormat(centerAlignment);
-                cellCursor.insertText(data[i][j]);
+                cellCursor.insertText(dataVal);
             }
+        }
         else
             removeRows.append(i+1);
     }
@@ -564,8 +639,8 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
                 pricesTmpBoosterRocket.append(data[i+1][j].toDouble());
                 prices[currentType+1+unitNum].second.first[j-1] += data[i][j].toDouble();
                 prices[currentType+1+unitNum].second.second[j-1] += data[i+1][j].toDouble();
-                prices[0].second.first[j-1] +=data[i][j].toDouble();
-                prices[0].second.second[j-1] +=data[i+1][j].toDouble();
+                prices[0].second.first[j-1] += data[i][j].toDouble();
+                prices[0].second.second[j-1] += data[i+1][j].toDouble();
             }
             prices.insert(currentType+1+unitNum,QPair<QString,QPair<QVector<qreal>,QVector<qreal>>>(data[i-5][0],QPair<QVector<qreal>,QVector<qreal>>(pricesTmpUnit, pricesTmpBoosterRocket)));
             unitNum++;
@@ -649,5 +724,7 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
 
     doc.setDocumentMargin(0);
     doc.setTextWidth(4);
-    fileManager.printPDF(&doc, filePath);
+    fileManager = new FileManager();
+    fileManager->printPDF(&doc, filePath);
+    delete fileManager;
 }

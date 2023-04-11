@@ -28,14 +28,34 @@ QString TabCatalogAndComparisonModel::getUnitImageFromId(int unitId)
     return mainModel->db.getUnitImageFromId(unitId);
 }
 
-QVector<QPair<QString,QString>> TabCatalogAndComparisonModel::getUnitData(int unitId)
+QVector<QVector<QPair<QString,QString>>> TabCatalogAndComparisonModel::getUnitData(int unitId)
 {
-    QVector<QPair<QString,QString>> result = vectorUnitData(unitId);
+    QVector<QVector<QPair<QString,QString>>> result;
+    result.append(vectorUnitData(unitId));
+    result.append(QVector<QPair<QString,QString>>());
+    result.append(QVector<QPair<QString,QString>>());
     QString unitClass = mainModel->db.getUnitClassById(unitId);
     if (unitClass == "РН")
-        result.append(vectorBoosterRocketData(unitId));
+    {
+        QVector<QVector<QPair<QString,QString>>> tmpValues = vectorBoosterRocketData(unitId);
+        result[0].append(tmpValues[0]);
+        result[1].append(tmpValues[1]);
+        result[2].append(tmpValues[2]);
+    }
     else if (unitClass == "РБ")
-        result.append(vectorUpperBlockData(unitId));
+    {
+        QVector<QVector<QPair<QString,QString>>> tmpValues = vectorUpperBlockData(unitId);
+        result[0].append(tmpValues[0]);
+        result[1].append(tmpValues[1]);
+        result[2].append(tmpValues[2]);
+    }
+    else if (unitClass == "КА")
+    {
+        QVector<QVector<QPair<QString,QString>>> tmpValues = vectorSpacecraftData(unitId);
+        result[0].append(tmpValues[0]);
+        result[1].append(tmpValues[1]);
+        result[2].append(tmpValues[2]);
+    }
 
     qDebug() << result;
     return result;
@@ -65,33 +85,61 @@ QVector<QPair<QString,QString>> TabCatalogAndComparisonModel::vectorUnitData(int
     return vectoredData;
 }
 
-QVector<QPair<QString,QString>> TabCatalogAndComparisonModel::vectorBoosterRocketData(int boosterRocketId)
+QVector<QVector<QPair<QString,QString>>> TabCatalogAndComparisonModel::vectorBoosterRocketData(int boosterRocketId)
 {
-    QVector<QPair<QString,QString>> vectoredData;
+    QVector<QVector<QPair<QString,QString>>> vectoredData;
+    for(int i=0;i<3;i++)
+        vectoredData.append(QVector<QPair<QString,QString>>());
     DBBooster_rocket selectedBooster_rocket = mainModel->db.getBooster_rocketInfoFromId(boosterRocketId);
     QStringList values = selectedBooster_rocket.getValues();
     for (int i=0;i<selectedBooster_rocket.BOOSTER_ROCKET_DEF_ROW_NUM; i++){
         if (values[i]!="" && values[i]!="0"){
-            if (selectedBooster_rocket.BOOSTER_ROCKET_VALUES[i]=="phys_info" || selectedBooster_rocket.BOOSTER_ROCKET_VALUES[i]=="econ_info")
-                vectoredData.append(splitValues(values[i]));
+            if (selectedBooster_rocket.BOOSTER_ROCKET_VALUES[i]=="phys_info")
+                vectoredData[1].append(splitValues(values[i]));
+            else if (selectedBooster_rocket.BOOSTER_ROCKET_VALUES[i]=="econ_info")
+                vectoredData[2].append(splitValues(values[i]));
             else
-                vectoredData.append(QPair<QString,QString>(selectedBooster_rocket.BOOSTER_ROCKET_VALUES[i], values[i]));
+                vectoredData[0].append(QPair<QString,QString>(selectedBooster_rocket.BOOSTER_ROCKET_VALUES[i], values[i]));
         }
     }
     return vectoredData;
 }
 
-QVector <QPair<QString,QString>> TabCatalogAndComparisonModel::vectorUpperBlockData(int unitId)
+QVector<QVector <QPair<QString,QString>>> TabCatalogAndComparisonModel::vectorUpperBlockData(int unitId)
 {
-    QVector<QPair<QString,QString>> vectoredData;
+    QVector<QVector<QPair<QString,QString>>> vectoredData;
+    for(int i=0;i<3;i++)
+        vectoredData.append(QVector<QPair<QString,QString>>());
     DBUpper_block selectedUpper_block =  mainModel->db.getUpper_blockInfoFromId(unitId);
     QStringList values = selectedUpper_block.getValues();
     for (int i=0;i<selectedUpper_block.UPPER_BLOCK_DEF_ROW_NUM; i++){
         if (values[i]!="" && values[i]!="0"){
-            if (selectedUpper_block.UPPER_BLOCK_VALUES[i]=="phys_info" || selectedUpper_block.UPPER_BLOCK_VALUES[i]=="econ_info")
-                vectoredData.append(splitValues(values[i]));
+            if (selectedUpper_block.UPPER_BLOCK_VALUES[i]=="phys_info")
+                vectoredData[1].append(splitValues(values[i]));
+            else if (selectedUpper_block.UPPER_BLOCK_VALUES[i]=="econ_info")
+                vectoredData[2].append(splitValues(values[i]));
             else
-                vectoredData.append(QPair<QString,QString>(selectedUpper_block.UPPER_BLOCK_VALUES[i], values[i]));
+                vectoredData[0].append(QPair<QString,QString>(selectedUpper_block.UPPER_BLOCK_VALUES[i], values[i]));
+        }
+    }
+    return vectoredData;
+}
+
+QVector<QVector <QPair<QString,QString>>> TabCatalogAndComparisonModel::vectorSpacecraftData(int unitId)
+{
+    QVector<QVector<QPair<QString,QString>>> vectoredData;
+    for(int i=0;i<3;i++)
+        vectoredData.append(QVector<QPair<QString,QString>>());
+    DBSpacecraft selectedSpacecraft =  mainModel->db.getSpacecraftInfoFromId(unitId);
+    QStringList values = selectedSpacecraft.getValues();
+    for (int i=0;i<selectedSpacecraft.SPACECRAFT_DEF_ROW_NUM; i++){
+        if (values[i]!="" && values[i]!="0"){
+            if (selectedSpacecraft.SPACECRAFT_VALUES[i]=="phys_info")
+                vectoredData[1].append(splitValues(values[i]));
+            else if (selectedSpacecraft.SPACECRAFT_VALUES[i]=="econ_info")
+                vectoredData[2].append(splitValues(values[i]));
+            else
+                vectoredData[0].append(QPair<QString,QString>(selectedSpacecraft.SPACECRAFT_VALUES[i], values[i]));
         }
     }
     return vectoredData;
@@ -100,6 +148,7 @@ QVector <QPair<QString,QString>> TabCatalogAndComparisonModel::vectorUpperBlockD
 void TabCatalogAndComparisonModel::createNavigationTree(QTreeWidgetItem *navigatiorMenuRoot)
 {
     navigatiorMenuRoot->setText(0, "Каталог");
+
     QVector <QPair<QString,QString>> units = mainModel->db.getUnitClassesAndNames();
     qDebug() << units;
     QString lastclass = "";
@@ -108,7 +157,6 @@ void TabCatalogAndComparisonModel::createNavigationTree(QTreeWidgetItem *navigat
     for (int i=0;i < units.size();i++){
         QString _class = units[i].first;
         QString _name = units[i].second;
-
         if (lastclass!=_class){
             if (!nameArray.empty()){
                 addTreeChild(navigatiorMenuRoot, classSelect(lastclass), nameArray);
@@ -117,14 +165,13 @@ void TabCatalogAndComparisonModel::createNavigationTree(QTreeWidgetItem *navigat
             lastclass = _class;
         }
         nameArray.append(_name);
-
     }
     addTreeChild(navigatiorMenuRoot, classSelect(lastclass), nameArray);
+    navigatiorMenuRoot->setExpanded(true);
     return;
 }
 
-void TabCatalogAndComparisonModel::addTreeChild(QTreeWidgetItem *parent,
-                              QString name, QVector <QString> child_array)
+void TabCatalogAndComparisonModel::addTreeChild(QTreeWidgetItem *parent, QString name, QVector <QString> child_array)
 {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
     treeItem->setText(0, name);
@@ -132,8 +179,9 @@ void TabCatalogAndComparisonModel::addTreeChild(QTreeWidgetItem *parent,
     for (int i=0; i<child_array.size();i++){
         addTreeChild2(treeItem, child_array[i]);
     }
-
+    treeItem->setExpanded(true);
 }
+
 void TabCatalogAndComparisonModel::addTreeChild2(QTreeWidgetItem *parent,
                                QString name)
 {
@@ -269,6 +317,128 @@ QBarSeries* TabCatalogAndComparisonModel::createChartBarSeries(int unitNum, QVec
     }
 
     return seriesSummary;
+}
+
+void TabCatalogAndComparisonModel::saveToPdf(QString name, QImage image, QVector<QPair<QString, QString>> values, QVector<QPair<QString, QString>> physValues, QVector<QPair<QString, QString>> econValues, QString filePath)
+{
+    QTextBlockFormat centerAlignment, header;
+    centerAlignment.setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    header.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+    header.setLineHeight(100,1);
+    header.setHeadingLevel(1);
+
+    QTextCharFormat textFormat;
+    textFormat.setFont(QFont("Times New Roman", 12));
+    QTextCharFormat headerFormat;
+    headerFormat.setFont(QFont("Times New Roman", 14));
+    headerFormat.setFontWeight(QFont::Bold);
+    QTextCharFormat mainHeaderFormat;
+    mainHeaderFormat.setFont(QFont("Times New Roman", 24));
+    mainHeaderFormat.setFontWeight(QFont::Bold);
+
+    int columns = 2;
+    int rows = values.length();
+    QTextDocument doc;
+    QTextCursor cursor(&doc);
+    QTextTableFormat tableFormat;
+
+    tableFormat.setHeaderRowCount(1);
+    tableFormat.setAlignment(Qt::AlignHCenter);
+    tableFormat.setCellPadding(3);
+    tableFormat.setCellSpacing(0);
+    tableFormat.setBorder(0);
+    tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
+    tableFormat.clearColumnWidthConstraints();
+
+    tableFormat.setWidth(950);
+    tableFormat.setColumnWidthConstraints({QTextLength(QTextLength::FixedLength,300),QTextLength(QTextLength::FixedLength,650)});
+
+    cursor.movePosition(cursor.End);
+
+    cursor.movePosition(QTextCursor::NextWord, QTextCursor::KeepAnchor);
+    cursor.movePosition(cursor.End);
+
+    cursor.setBlockFormat(header);
+    cursor.insertText(name, mainHeaderFormat);
+
+    cursor.movePosition(cursor.End);
+    QTextTable *mainTable = cursor.insertTable(1, 2, tableFormat);
+
+    QTextTableCell mainTableCell = mainTable->cellAt(0, 0);
+    QTextCursor mainTableCellCursor = mainTableCell.firstCursorPosition();
+    mainTableCellCursor.insertImage(image);
+
+    tableFormat.setBorder(0.2);
+    tableFormat.setWidth(650);
+    tableFormat.setColumnWidthConstraints({QTextLength(QTextLength::FixedLength,200),QTextLength(QTextLength::FixedLength,450)});
+
+    mainTableCell = mainTable->cellAt(0, 1);
+    mainTableCellCursor = mainTableCell.firstCursorPosition();
+    mainTableCellCursor.setBlockFormat(header);
+    mainTableCellCursor.insertText("Основные тактико-технические показатели",headerFormat);
+
+    QTextTable *textTable = mainTableCellCursor.insertTable(rows, columns, tableFormat);
+    QTextCharFormat tableHeaderFormat;
+
+    for (int i=0;i<rows;i++)
+    {
+        QTextTableCell cell = textTable->cellAt(i, 0);
+        cell.setFormat(tableHeaderFormat);
+        QTextCursor cellCursor = cell.firstCursorPosition();
+        cellCursor.setBlockFormat(centerAlignment);
+        cellCursor.insertText(values[i].first,textFormat);
+        cell = textTable->cellAt(i, 1);
+        cell.setFormat(tableHeaderFormat);
+        cellCursor = cell.firstCursorPosition();
+        cellCursor.setBlockFormat(centerAlignment);
+        cellCursor.insertText(values[i].second,textFormat);
+    }
+
+    tableFormat.setWidth(960);
+    tableFormat.setColumnWidthConstraints({QTextLength(QTextLength::FixedLength,300),QTextLength(QTextLength::FixedLength,660)});
+    rows = econValues.length();
+    cursor.movePosition(cursor.End);
+    cursor.setBlockFormat(header);
+    cursor.insertText("Основные экономические показатели",headerFormat);
+    QTextTable *econTable = cursor.insertTable(rows, columns, tableFormat);
+    for (int i=0;i<rows;i++)
+    {
+        QTextTableCell cell = econTable->cellAt(i, 0);
+        cell.setFormat(tableHeaderFormat);
+        QTextCursor cellCursor = cell.firstCursorPosition();
+        cellCursor.setBlockFormat(centerAlignment);
+        cellCursor.insertText(econValues[i].first,textFormat);
+        cell = econTable->cellAt(i, 1);
+        cell.setFormat(tableHeaderFormat);
+        cellCursor = cell.firstCursorPosition();
+        cellCursor.setBlockFormat(centerAlignment);
+        cellCursor.insertText(econValues[i].second,textFormat);
+    }
+
+    rows = econValues.length();
+    cursor.movePosition(cursor.End);
+    cursor.setBlockFormat(header);
+    cursor.insertText("Основные физические показатели",headerFormat);
+    QTextTable * physTable = cursor.insertTable(rows, columns, tableFormat);
+    for (int i=0;i<rows;i++)
+    {
+        QTextTableCell cell = physTable->cellAt(i, 0);
+        cell.setFormat(tableHeaderFormat);
+        QTextCursor cellCursor = cell.firstCursorPosition();
+        cellCursor.setBlockFormat(centerAlignment);
+        cellCursor.insertText(physValues[i].first,textFormat);
+        cell = physTable->cellAt(i, 1);
+        cell.setFormat(tableHeaderFormat);
+        cellCursor = cell.firstCursorPosition();
+        cellCursor.setBlockFormat(centerAlignment);
+        cellCursor.insertText(physValues[i].second,textFormat);
+    }
+
+    doc.setDocumentMargin(0);
+    doc.setTextWidth(4);
+    fileManager = new FileManager();
+    fileManager->printPDF(&doc, filePath);
+    delete fileManager;
 }
 
 qreal TabCatalogAndComparisonModel::getNumberFromString(QString line, int param)

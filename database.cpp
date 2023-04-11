@@ -219,6 +219,19 @@ DBUpper_block database::getUpper_blockInfoFromId(int unitId)
     return tmpUpper_block;
 }
 
+DBSpacecraft database::getSpacecraftInfoFromId(int spacecraftId)
+{
+    QSqlQuery query;
+    query.exec("SELECT id, weight, active_lifetime, phys_info, econ_info FROM spacecraft WHERE id=" + QString::number(spacecraftId));
+    query.next();
+    DBSpacecraft tmpSpacecraft = DBSpacecraft(query.value(0).toInt(),
+                                              query.value(1).toDouble(),
+                                              query.value(2).toDouble(),
+                                              query.value(3).toString().trimmed(),
+                                              query.value(4).toString().trimmed());
+    return tmpSpacecraft;
+}
+
 QString database::getUnitClassById(int unitId)
 {
     QSqlQuery query;
@@ -413,6 +426,32 @@ int database::updateUnitDBRetId(DBUnit unit)
 
 }
 
+int database::updateUnitDBNoImageRetId(DBUnit unit)
+{
+    QSqlQuery query;
+    query.exec("UPDATE public.unit SET unit_class = '" + unit.unit_class() +
+               "', name = '" + unit.name() +
+               "', purpose = '" + unit.purpose() +
+               "', project = " + QString::number(unit.project()) +
+               ", objective = '" + unit.objective() +
+               "', work_status = '" + unit.work_status() +
+               "', developer_id = " + QString::number(unit.developer_id()) +
+               ", extra_developer_id = " + QString::number(unit.extra_developer_id()) +
+               ", manufacturer_id = " + QString::number(unit.manufacturer_id()) +
+               ", launches = " + QString::number(unit.launches()) +
+               ", successful = " + QString::number(unit.successful()) +
+               ", first_launch = '" + unit.first_launch().toString("yyyy-MM-dd HH:mm:ss") +
+               "', first_launch_spaceport_id = " + QString::number(unit.first_launch_spaceport_id()) +
+               ", financing_type = '" + unit.financing_type() +
+               "', control_system_type = '" + unit.control_system_type() +
+               "', price = " + QString::number(unit.price()) +
+               ", price_year = " + QString::number(unit.price_year()) +
+               " WHERE id = " + QString::number(unit.id())+ " RETURNING id");
+    qDebug() << query.lastError();
+    query.next();
+    return query.value(0).toString().trimmed().toInt();
+
+}
 
 void database::addBoosterRocketToDB(DBBooster_rocket boosterRocket)
 {
@@ -725,19 +764,6 @@ QVector<qreal> database::getInflationPercents(int startYear, int endYear)
     return inflationPercents;
 }
 
-DBSpacecraft database::getSpacecraftInfoFromId(int spacecraftId)
-{
-    QSqlQuery query;
-    query.exec("SELECT id, weight, active_lifetime, phys_info, econ_info FROM spacecraft WHERE id=" + QString::number(spacecraftId));
-    query.next();
-    qDebug() <<query.value(0)<<query.value(1)<<query.value(2);
-    DBSpacecraft tmpSpacecraft = DBSpacecraft(query.value(0).toInt(),
-                                              query.value(1).toDouble(),
-                                              query.value(2).toDouble(),
-                                              query.value(3).toString().trimmed(),
-                                              query.value(4).toString().trimmed());
-    return tmpSpacecraft;
-}
 
 void database::deleteProjectWithUnitId(int unitId)
 {
@@ -779,6 +805,18 @@ void database::deleteUnit(int unitId)
 {
     QSqlQuery query;
     query.exec("DELETE FROM unit WHERE id = " + QString::number(unitId));
+}
+
+void database::deleteOrganization(int id)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM organization WHERE id = " + QString::number(id));
+}
+
+void database::deleteSpaceport(int id)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM spaceport WHERE id = " + QString::number(id));;
 }
 
 void database::updateOrganizationDB(int id, QString name)
@@ -848,14 +886,21 @@ void database::deleteUserFromDB(int userId)
     QSqlQuery query;
     query.exec("DELETE FROM public.user WHERE id = " + QString::number(userId));
 }
-//QString database::getSpaceportsInfoByUnitId(int unitId)
-//{
-//    QSqlQuery query;
-//    query.exec("SELECT s.name FROM spaceport s, u_s us, unit u WHERE u.id=us.id and s.id=us.id and u.id=" + QString::number(unitId));
-//    query.next();
-//    qDebug() <<query.value(0)<<query.value(1)<<query.value(2);
-//    Upper_block tmpUpper_block = Upper_block(query.value(0).toInt(),
-//                                                 query.value(1).toString().trimmed(),
-//                                                 query.value(2).toString().trimmed());
-//    return tmpUpper_block;
-//}
+
+QString database::login(QString name, QString password)
+{
+    QSqlQuery query;
+    query.exec("SELECT (password = crypt('" + password + "', password)), role FROM public.user WHERE name LIKE '" + name + " %'");
+    query.next();
+    if (query.value(0).toBool())
+         return query.value(1).toString().trimmed();
+    else
+        return "0";
+}
+int database::getAdminUserCount()
+{
+    QSqlQuery query;
+    query.exec("SELECT COUNT(*) FROM public.user WHERE role LIKE 'Администратор %'");
+    query.next();
+    return query.value(0).toInt();
+}

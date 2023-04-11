@@ -118,8 +118,7 @@ QString TabNewCraftModel::updateUnitDB(
         qreal weight,
         qreal activeLifetime,
         QString physInfo,
-        QString econInfo
-        )
+        QString econInfo)
 {
     bool proj;
     if (project == "Проектный") proj = true;
@@ -129,6 +128,7 @@ QString TabNewCraftModel::updateUnitDB(
     int manId = mainModel->db.getOrganizationIdFromName(manufacturer);
     int custId = mainModel->db.getOrganizationIdFromName(customer);
     int spaceportId = mainModel->db.getSpaceportIdFromName(first_launch_spaceport);
+
     DBUnit newUnit = DBUnit(id,unit_class,name,purpose,
                             proj,objective,work_status,
                             devId,extrDevId,manId,launches,
@@ -136,8 +136,11 @@ QString TabNewCraftModel::updateUnitDB(
                             spaceportId,financing_type,
                             control_system_type,image_url,
                             price,price_year);
-    int newUnitId = mainModel->db.updateUnitDBRetId(newUnit);
-
+    int newUnitId;
+    if (updateUnitImageChanged)
+        newUnitId = mainModel->db.updateUnitDBRetId(newUnit);
+    else
+        newUnitId = mainModel->db.updateUnitDBNoImageRetId(newUnit);
     if (unit_class == "РН")
     {
         DBBooster_rocket newBoosterRocket = DBBooster_rocket(newUnitId, maxPayload, minPayload, physInfo, econInfo);
@@ -222,5 +225,14 @@ void TabNewCraftModel::deleteSpacecraft(int unitId)
         mainModel->db.deleteSpacecraft(unitId);
     mainModel->db.deleteProjectWithUnitId(unitId);
     mainModel->db.deleteUnit(unitId);
+}
 
+bool TabNewCraftModel::getUpdateUnitImageChanged() const
+{
+    return updateUnitImageChanged;
+}
+
+void TabNewCraftModel::setUpdateUnitImageChanged(bool newUpdateUnitImageChanged)
+{
+    updateUnitImageChanged = newUpdateUnitImageChanged;
 }

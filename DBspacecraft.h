@@ -10,7 +10,7 @@ class DBSpacecraft
 
 public:
     const int SPACECRAFT_DEF_ROW_NUM = 4;
-    const QStringList BOOSTER_ROCKET_VALUES = {"Вес", "САС", "phys_info", "econ_info"};
+    const QStringList SPACECRAFT_VALUES = {"Вес", "САС", "phys_info", "econ_info"};
     DBSpacecraft();
     DBSpacecraft(int id, qreal weight, qreal active_lifetime, const QString &phys_info, const QString &econ_info);
 
@@ -24,12 +24,14 @@ public:
 
     qreal weight() const;
 
+    QStringList getValues();
+
 private:
-int _id;
-qreal _weight;
-qreal _active_lifetime;
-QString _phys_info;
-QString _econ_info;
+    int _id;
+    qreal _weight;
+    qreal _active_lifetime;
+    QString _phys_info;
+    QString _econ_info;
 };
 
 

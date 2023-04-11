@@ -104,6 +104,12 @@
          <property name="text">
           <string>Войти</string>
          </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
         </widget>
        </item>
        <item>

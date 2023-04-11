@@ -31,7 +31,7 @@ public:
 private:
     MainModel* mainModel;
     PredictionModel predictionModel;
-    FileManager fileManager;
+    FileManager *fileManager;
     qreal inflationMatrix[INFLATIONMATRIXN][INFLATIONMATRIXN];
     QPair<QVector<qreal>,int> pricesTextToVector(QString pricesString);
 };
