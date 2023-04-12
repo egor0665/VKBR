@@ -502,7 +502,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>2</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -1172,7 +1172,7 @@
         </widget>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
-          <string>Упр. Ап.</string>
+          <string>Упр. Апп.</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_11">
           <item>
@@ -1532,7 +1532,7 @@
         </widget>
         <widget class="QWidget" name="tab_4">
          <attribute name="title">
-          <string>Упр. Орг., Косм., Пуски</string>
+          <string>Упр. Орг., Косм., Инфл., Пуски</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <item>
@@ -1549,9 +1549,9 @@
                <height>740</height>
               </rect>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_20">
+             <layout class="QVBoxLayout" name="verticalLayout_25">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_19">
+               <layout class="QVBoxLayout" name="verticalLayout_20">
                 <item>
                  <layout class="QFormLayout" name="formLayout_2">
                   <item row="0" column="0">
@@ -1565,13 +1565,6 @@
                     </property>
                     <property name="text">
                      <string>Организации</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLabel" name="label_10">
-                    <property name="text">
-                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1632,7 +1625,7 @@
                     </item>
                    </layout>
                   </item>
-                  <item row="4" column="0">
+                  <item row="4" column="0" colspan="2">
                    <widget class="QLabel" name="label_16">
                     <property name="font">
                      <font>
@@ -1642,14 +1635,7 @@
                      </font>
                     </property>
                     <property name="text">
-                     <string>Добавить космодром</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <widget class="QLabel" name="label_9">
-                    <property name="text">
-                     <string/>
+                     <string>Космодромы</string>
                     </property>
                    </widget>
                   </item>
@@ -1705,6 +1691,61 @@
                       </property>
                       <property name="text">
                        <string>Добавить</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_19">
+                  <item>
+                   <widget class="QLabel" name="label_58">
+                    <property name="font">
+                     <font>
+                      <pointsize>12</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Инфляция</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget_10">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>100</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_32">
+                    <item>
+                     <spacer name="horizontalSpacer_22">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_18">
+                      <property name="styleSheet">
+                       <string notr="true">background-color: rgb(249, 249, 249)</string>
+                      </property>
+                      <property name="text">
+                       <string>Сохранить</string>
                       </property>
                      </widget>
                     </item>
@@ -1947,84 +1988,23 @@
                 </item>
                </layout>
               </item>
+              <item>
+               <widget class="QLabel" name="label_10">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_9">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_5">
-         <attribute name="title">
-          <string>Упр. БД</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_15">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_14">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_12">
-              <item>
-               <widget class="QComboBox" name="comboBox_3">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(249, 249, 249)</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_11">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QTableWidget" name="tableWidget_6"/>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_13">
-              <item>
-               <spacer name="horizontalSpacer_13">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_7">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(249, 249, 249)</string>
-                </property>
-                <property name="text">
-                 <string>PushButton</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_8">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(249, 249, 249)</string>
-                </property>
-                <property name="text">
-                 <string>Сохранить</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
           </item>
          </layout>
         </widget>
@@ -2230,6 +2210,81 @@
                </size>
               </property>
              </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_5">
+         <attribute name="title">
+          <string>Упр. БД</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_14">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <widget class="QComboBox" name="comboBox_3">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(249, 249, 249)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_11">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="tableWidget_6"/>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <item>
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_7">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(249, 249, 249)</string>
+                </property>
+                <property name="text">
+                 <string>PushButton</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_8">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(249, 249, 249)</string>
+                </property>
+                <property name="text">
+                 <string>Сохранить</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>

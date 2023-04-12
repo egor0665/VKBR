@@ -783,6 +783,12 @@ void database::deleteLaunchByUpperBlock(int unitId)
     query.exec("DELETE FROM launch  WHERE upper_block_id = " + QString::number(unitId));
 }
 
+void database::deleteLaunchBySpaceport(int unitId)
+{
+    QSqlQuery query;
+    query.exec("DELETE FROM launch WHERE spaceport_id = " + QString::number(unitId));
+}
+
 void database::deleteBoosterRocket(int unitId)
 {
     QSqlQuery query;
@@ -903,4 +909,42 @@ int database::getAdminUserCount()
     query.exec("SELECT COUNT(*) FROM public.user WHERE role LIKE 'Администратор %'");
     query.next();
     return query.value(0).toInt();
+}
+
+QVector<int> database::getUnitIdsByOrganizationId(int id)
+{
+    QVector<int> unitIds;
+    QSqlQuery query;
+    query.exec("SELECT id FROM public.unit WHERE developer_id = " + QString::number(id) + " OR extra_developer_id = " + QString::number(id) + " OR manufacturer_id = " + QString::number(id) + " OR customer_id = " + QString::number(id));
+    while (query.next())
+           unitIds.append(query.value(0).toInt());
+    return unitIds;
+}
+
+QVector<int> database::getUnitIdsBySpaceportId(int id)
+{
+    QVector<int> unitIds;
+    QSqlQuery query;
+    query.exec("SELECT id FROM public.unit WHERE first_launch_spaceport_id = " + QString::number(id));
+    while (query.next())
+           unitIds.append(query.value(0).toInt());
+    return unitIds;
+}
+
+QVector<int> database::getLaunchIdsBySpaceportId(int id)
+{
+    QVector<int> unitIds;
+    QSqlQuery query;
+    query.exec("SELECT id FROM public.launch WHERE spaceport_id = " + QString::number(id));
+    while (query.next())
+           unitIds.append(query.value(0).toInt());
+    return unitIds;
+}
+
+void database::updateInflation(int year, qreal percent)
+{
+    QVector<int> unitIds;
+    QSqlQuery query;
+    query.exec("UPDATE public.inflation SET percent = " + QString::number(percent)+ " WHERE year = " + QString::number(year));
+    qDebug() << query.lastError();
 }

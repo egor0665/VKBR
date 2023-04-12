@@ -459,11 +459,12 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
     QTextBlockFormat centerAlignment, header;
     centerAlignment.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
     header.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-    header.setLineHeight(100,1);
+    header.setLineHeight(200,1);
     header.setHeadingLevel(1);
 
     QTextCharFormat mainHeaderFormat;
     mainHeaderFormat.setFont(QFont("Times New Roman", 18));
+    mainHeaderFormat.setFontWeight(QFont::Bold);
 
     QTextCharFormat verticalTableHeaderFormat;
     verticalTableHeaderFormat.setFont(QFont("Times New Roman", 8));
@@ -619,7 +620,6 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
         prices[4].second.second.append(0);
     }
     QVector<QString> rowValuesUnit = {"КА Цены", "Цены КА ОКР+Серия"};
-    //QVector<QString> rowValuesBoosterRocket = {"Цены РН проекта", "Цены РН проекта"};
     QVector<QString> spacecraftTypes = {"Связь", "ДЗЗ", "ФКИ", "Другое"};
     QVector<QString> mainRowTypes = {"Связь", "ДЗЗ", "ФКИ", "Другое", "Итого"};
     int currentType = -1;

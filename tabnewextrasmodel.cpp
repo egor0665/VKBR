@@ -81,26 +81,63 @@ void TabNewExtrasModel::updateSpaceportDB(int id, QString name)
 
 void TabNewExtrasModel::deleteOrganization(int id)
 {
-    QString unitClass = mainModel->db.getUnitClassById(unitId);
-    if (unitClass=="РН")
+    QVector<int> unitIds = mainModel->db.getUnitIdsByOrganizationId(id);
+    for (int i=0;i<unitIds.length();i++)
     {
-        mainModel->db.deleteBoosterRocket(unitId);
-        mainModel->db.deleteLaunchByBoosterRocket(unitId);
-    }
+        QString unitClass = mainModel->db.getUnitClassById(unitIds[i]);
+        if (unitClass=="РН")
+        {
+            mainModel->db.deleteBoosterRocket(unitIds[i]);
+            mainModel->db.deleteLaunchByBoosterRocket(unitIds[i]);
+        }
 
-    else if (unitClass=="РБ")
-    {
-        mainModel->db.deleteUpperBlock(unitId);
-        mainModel->db.deleteLaunchByUpperBlock(unitId);
+        else if (unitClass=="РБ")
+        {
+            mainModel->db.deleteUpperBlock(unitIds[i]);
+            mainModel->db.deleteLaunchByUpperBlock(unitIds[i]);
+        }
+        else if (unitClass=="КА")
+            mainModel->db.deleteSpacecraft(unitIds[i]);
+        mainModel->db.deleteProjectWithUnitId(unitIds[i]);
+        mainModel->db.deleteUnit(unitIds[i]);
     }
-    else if (unitClass=="КА")
-        mainModel->db.deleteSpacecraft(unitId);
-    mainModel->db.deleteProjectWithUnitId(unitId);
-    mainModel->db.deleteUnit(unitId);
     mainModel->db.deleteOrganization(id);
 }
 
 void TabNewExtrasModel::deleteSpaceport(int id)
 {
-     mainModel->db.deleteSpaceport(id);
+    QVector<int> unitIds = mainModel->db.getUnitIdsBySpaceportId(id);
+    for (int i=0;i<unitIds.length();i++)
+    {
+        QString unitClass = mainModel->db.getUnitClassById(unitIds[i]);
+        if (unitClass=="РН")
+        {
+            mainModel->db.deleteBoosterRocket(unitIds[i]);
+            mainModel->db.deleteLaunchByBoosterRocket(unitIds[i]);
+        }
+
+        else if (unitClass=="РБ")
+        {
+            mainModel->db.deleteUpperBlock(unitIds[i]);
+            mainModel->db.deleteLaunchByUpperBlock(unitIds[i]);
+        }
+        else if (unitClass=="КА")
+            mainModel->db.deleteSpacecraft(unitIds[i]);
+        mainModel->db.deleteProjectWithUnitId(unitIds[i]);
+        mainModel->db.deleteUnit(unitIds[i]);
+    }
+    QVector<int> launchIds = mainModel->db.getLaunchIdsBySpaceportId(id);
+    mainModel->db.deleteLaunchBySpaceport(id);
+    mainModel->db.deleteSpaceport(id);
+}
+
+QVector<qreal> TabNewExtrasModel::getInflation()
+{
+    return mainModel->db.getInflationPercents(2024,2040);
+}
+
+void TabNewExtrasModel::updateInflation(QVector<QPair<int,qreal>> values)
+{
+    for (int i=0;i<values.length();i++)
+        mainModel->db.updateInflation(values[i].first, values[i].second);
 }

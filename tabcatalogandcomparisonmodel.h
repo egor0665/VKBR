@@ -33,7 +33,7 @@ public:
     QVector <QLineSeries*> createChartLineSeries(int unitNum, QVector <CompareValue> compareValues, QStringList unitNames);
     QBarSeries *createChartBarSeries(int unitNum, QVector <CompareValue> compareValues, QStringList unitNames);
 
-    void saveToPdf(QString name, QImage image, QVector<QPair<QString,QString>> values, QVector<QPair<QString,QString>> physValues, QVector<QPair<QString,QString>> econValues, QString path);
+    void saveToPdfCatalogTab(QString name, QImage image, QVector<QPair<QString,QString>> values, QVector<QPair<QString,QString>> physValues, QVector<QPair<QString,QString>> econValues, QString path);
 private:
     FileManager *fileManager;
     MainModel* mainModel;

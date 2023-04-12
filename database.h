@@ -93,6 +93,11 @@ public:
     int updateUnitDBNoImageRetId(DBUnit unit);
     void deleteOrganization(int id);
     void deleteSpaceport(int id);
+    QVector<int> getUnitIdsByOrganizationId(int id);
+    QVector<int> getLaunchIdsBySpaceportId(int id);
+    QVector<int> getUnitIdsBySpaceportId(int id);
+    void deleteLaunchBySpaceport(int unitId);
+    void updateInflation(int year, qreal percent);
 };
 
 #endif // DATABASE_H

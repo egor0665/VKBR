@@ -319,7 +319,7 @@ QBarSeries* TabCatalogAndComparisonModel::createChartBarSeries(int unitNum, QVec
     return seriesSummary;
 }
 
-void TabCatalogAndComparisonModel::saveToPdf(QString name, QImage image, QVector<QPair<QString, QString>> values, QVector<QPair<QString, QString>> physValues, QVector<QPair<QString, QString>> econValues, QString filePath)
+void TabCatalogAndComparisonModel::saveToPdfCatalogTab(QString name, QImage image, QVector<QPair<QString, QString>> values, QVector<QPair<QString, QString>> physValues, QVector<QPair<QString, QString>> econValues, QString filePath)
 {
     QTextBlockFormat centerAlignment, header;
     centerAlignment.setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
@@ -441,6 +441,118 @@ void TabCatalogAndComparisonModel::saveToPdf(QString name, QImage image, QVector
     delete fileManager;
 }
 
+void TabCatalogAndComparisonModel::saveToPdfComparisonTab(QImage mainTable, QImage compareTable, QImage chart1, QImage chart2)
+{
+    QTextBlockFormat centerAlignment, header;
+    centerAlignment.setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    header.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+    header.setLineHeight(100,1);
+    header.setHeadingLevel(1);
+
+    QTextCharFormat textFormat;
+    textFormat.setFont(QFont("Times New Roman", 12));
+    QTextCharFormat headerFormat;
+    headerFormat.setFont(QFont("Times New Roman", 14));
+    headerFormat.setFontWeight(QFont::Bold);
+    QTextCharFormat mainHeaderFormat;
+    mainHeaderFormat.setFont(QFont("Times New Roman", 24));
+    mainHeaderFormat.setFontWeight(QFont::Bold);
+
+    QTextDocument doc;
+    QTextCursor cursor(&doc);
+    QTextTableFormat tableFormat;
+
+    cursor.movePosition(cursor.NextRow);
+    cursor.insertImage(mainTable);
+//    tableFormat.setHeaderRowCount(1);
+//    tableFormat.setAlignment(Qt::AlignHCenter);
+//    tableFormat.setCellPadding(3);
+//    tableFormat.setCellSpacing(0);
+//    tableFormat.setBorder(0);
+//    tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
+//    tableFormat.clearColumnWidthConstraints();
+//    tableFormat.setWidth(950);
+//    QTextLength verticalHeader = QTextLength(QTextLength::FixedLength,100);
+//    QTextLength verticalCell = QTextLength(QTextLength::FixedLength,800/columns);
+//    QVector<QTextLength> lengths;
+//    lengths.append(verticalHeader);
+//    for (int i=0;i<columns-1;i++)
+//        lengths.append(verticalCell);
+//    tableFormat.setColumnWidthConstraints(lengths);
+//    cursor.insertText("Сравнение аппаратов", mainHeaderFormat);
+
+//    cursor.movePosition(cursor.End);
+//    QTextTable *textTable = cursor.insertTable(rows, columns, tableFormat);
+//    QTextCharFormat tableHeaderFormat;
+//    for (int i=0;i<rows;i++)
+//    {
+//        QTextTableCell cell = textTable->cellAt(i, 0);
+//        cell.setFormat(tableHeaderFormat);
+//        QTextCursor cellCursor = cell.firstCursorPosition();
+//        cellCursor.setBlockFormat(centerAlignment);
+//        cellCursor.insertImage(images[i]);
+//    }
+//    for (int i=1;i<rows;i++)
+//    {
+
+//        QTextTableCell cell = textTable->cellAt(i, 0);
+//        cell.setFormat(tableHeaderFormat);
+//        QTextCursor cellCursor = cell.firstCursorPosition();
+//        cellCursor.setBlockFormat(centerAlignment);
+//        cellCursor.insertText(values[i].first,textFormat);
+//        cell = textTable->cellAt(i, 1);
+//        cell.setFormat(tableHeaderFormat);
+//        cellCursor = cell.firstCursorPosition();
+//        cellCursor.setBlockFormat(centerAlignment);
+//        cellCursor.insertText(values[i].second,textFormat);
+//    }
+
+//    tableFormat.setWidth(960);
+//    tableFormat.setColumnWidthConstraints({QTextLength(QTextLength::FixedLength,300),QTextLength(QTextLength::FixedLength,660)});
+//    rows = econValues.length();
+//    cursor.movePosition(cursor.End);
+//    cursor.setBlockFormat(header);
+//    cursor.insertText("Основные экономические показатели",headerFormat);
+//    QTextTable *econTable = cursor.insertTable(rows, columns, tableFormat);
+//    for (int i=0;i<rows;i++)
+//    {
+//        QTextTableCell cell = econTable->cellAt(i, 0);
+//        cell.setFormat(tableHeaderFormat);
+//        QTextCursor cellCursor = cell.firstCursorPosition();
+//        cellCursor.setBlockFormat(centerAlignment);
+//        cellCursor.insertText(econValues[i].first,textFormat);
+//        cell = econTable->cellAt(i, 1);
+//        cell.setFormat(tableHeaderFormat);
+//        cellCursor = cell.firstCursorPosition();
+//        cellCursor.setBlockFormat(centerAlignment);
+//        cellCursor.insertText(econValues[i].second,textFormat);
+//    }
+
+//    rows = econValues.length();
+//    cursor.movePosition(cursor.End);
+//    cursor.setBlockFormat(header);
+//    cursor.insertText("Основные физические показатели",headerFormat);
+//    QTextTable * physTable = cursor.insertTable(rows, columns, tableFormat);
+//    for (int i=0;i<rows;i++)
+//    {
+//        QTextTableCell cell = physTable->cellAt(i, 0);
+//        cell.setFormat(tableHeaderFormat);
+//        QTextCursor cellCursor = cell.firstCursorPosition();
+//        cellCursor.setBlockFormat(centerAlignment);
+//        cellCursor.insertText(physValues[i].first,textFormat);
+//        cell = physTable->cellAt(i, 1);
+//        cell.setFormat(tableHeaderFormat);
+//        cellCursor = cell.firstCursorPosition();
+//        cellCursor.setBlockFormat(centerAlignment);
+//        cellCursor.insertText(physValues[i].second,textFormat);
+//    }
+
+    doc.setDocumentMargin(0);
+    doc.setTextWidth(4);
+    fileManager = new FileManager();
+    fileManager->printPDF(&doc, filePath);
+    delete fileManager;
+}
 qreal TabCatalogAndComparisonModel::getNumberFromString(QString line, int param)
 {
     //param

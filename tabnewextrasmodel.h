@@ -22,6 +22,8 @@ public:
     void updateSpaceportDB(int id, QString name);
     void deleteOrganization(int id);
     void deleteSpaceport(int id);
+    QVector<qreal> getInflation();
+    void updateInflation(QVector<QPair<int,qreal>> values);
 private:
     MainModel* mainModel;
 };

@@ -126,11 +126,17 @@ void MainWindow::showHintMessage(QString text, QString type)
         ui->label_56->hide();
     });
 }
+
+void MainWindow::enableUI()
+{
+    this->setEnabled(true);
+}
 //===============================================================================================================================================
 //                                                          Display tab
 //===============================================================================================================================================
 void MainWindow::buildDisplayTab()
 {
+    ui->treeWidget->clear();
     ui->treeWidget->setHeaderLabel("");
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->treeWidget);
     ui->treeWidget->setColumnCount(1);
@@ -247,7 +253,7 @@ void MainWindow::on_pushButton_24_clicked()
             physValues.append(QPair<QString, QString>(ui->tableWidget_2->item(i,1)->text(),ui->tableWidget_2->item(i,2)->text()));
         for (int i=0;i<ui->tableWidget_3->rowCount();i++)
             econValues.append(QPair<QString, QString>(ui->tableWidget_3->item(i,1)->text(),ui->tableWidget_3->item(i,2)->text()));
-        tabCatalogAndComparisonModel.saveToPdf(name, image, values, physValues, econValues, filePath);
+        tabCatalogAndComparisonModel.saveToPdfCatalogTab(name, image, values, physValues, econValues, filePath);
         showHintMessage("Успешно сохранено в pdf", "notification");
     }
 }
@@ -530,6 +536,13 @@ void MainWindow::buildChart()
 
 void MainWindow::on_pushButton_25_clicked()
 {
+    emit on_pushButton_8_clicked()
+    QImage mainTable = ui->tableWidget_8->grab().toImage();
+    QImage compareTable = ui->tableWidget_5->grab().toImage();
+    QImage chart1 = ui->widget->grab().toImage();
+    QImage chart2 = ui->widget_2->grab().toImage();
+    emit on_pushButton_8_clicked();
+    tabCatalogAndComparisonModel.saveToPdfComparisonTab(mainTable, compareTable, chart1, chart2);
     showHintMessage("Успешно сохранено в pdf", "notification");
 }
 //===============================================================================================================================================
@@ -735,7 +748,7 @@ void MainWindow::on_pushButton_2_clicked()
 
     QString unitName = ui->lineEditUnitName->text();
     if (ui->label_53->text().toInt() == -1)
-    {
+    {            
         tabNewCraftModel.addUnitToDB(
                     ui->comboBoxUnitClass->currentText(),
                     ui->lineEditUnitName->text(),
@@ -762,7 +775,10 @@ void MainWindow::on_pushButton_2_clicked()
                     activeLifetime,
                     econInfo,
                     physInfo);
-        tabNewProjectModel.addProjectToDB(projectNameField->text(),projectTypeComboBox->currentText(),unitName);
+        QString projectName = projectNameField->text();
+        if (projectName == "")
+            projectName = ui->lineEditUnitName->text();
+        tabNewProjectModel.addProjectToDB(projectName,projectTypeComboBox->currentText(),unitName);
         rebuildTabs();
         ui->comboBox_10->setCurrentIndex(ui->comboBox_10->findText(unitName));
         showHintMessage("Аппарат добавлен в базу данных", "notification");
@@ -837,7 +853,20 @@ void MainWindow::buildAddExtrasTab()
     ui->comboBox_6->clear();
     ui->comboBox_7->clear();
     ui->comboBox_8->clear();
-    ui->tableWidget_9->clearContents();
+    ui->tableWidget_10->clear();
+    ui->tableWidget_10->setRowCount(0);
+    ui->tableWidget_10->setColumnCount(18); // Указываем число колонок
+    ui->tableWidget_10->setShowGrid(true); // Включаем сетку
+    ui->tableWidget_10->setSelectionMode(QAbstractItemView::NoSelection);
+    ui->tableWidget_10->setHorizontalHeaderLabels({"","2024","2025","2026","2027","2028","2029","2030","2031","2032","2033","2034","2035","2036","2037","2038","2039","2040"});
+    ui->tableWidget_10->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidget_10->insertRow(0);
+    ui->tableWidget_10->setItem(0, 0,  new QTableWidgetItem("Проценты"));
+    QVector<qreal> inflation = tabNewExtrasModel.getInflation();
+    for (int i=0;i<inflation.length();i++)
+        ui->tableWidget_10->setItem(0,i+1,new QTableWidgetItem(QString::number(inflation[i])));
+
+    ui->tableWidget_9->clear();
     ui->tableWidget_9->setRowCount(0);
     ui->tableWidget_9->setColumnCount(18); // Указываем число колонок
     ui->tableWidget_9->setShowGrid(true); // Включаем сетку
@@ -846,6 +875,7 @@ void MainWindow::buildAddExtrasTab()
     ui->tableWidget_9->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_9->insertRow(0);
     ui->tableWidget_9->setItem(0, 0,  new QTableWidgetItem("Цены"));
+
     ui->comboBox_6->addItems(tabNewExtrasModel.getUnitNamesByTypeStringList("РН"));
     ui->comboBox_7->addItems(tabNewExtrasModel.getUnitNamesByTypeStringList("РБ"));
     ui->comboBox_8->addItems(model.getNamesFromTableStringList("spaceport"));
@@ -980,7 +1010,7 @@ void MainWindow::on_pushButton_19_clicked()
     if (reply == QMessageBox::Yes)
     {
         tabNewExtrasModel.deleteOrganization(ui->label_10->text().toInt());
-        showHintMessage("Аппарат удален из базы данных", "notification");
+        showHintMessage("Организация удалена из базы данных", "notification");
     }
     rebuildTabs();
 }
@@ -993,7 +1023,7 @@ void MainWindow::on_pushButton_20_clicked()
     if (reply == QMessageBox::Yes)
     {
         tabNewExtrasModel.deleteSpaceport(ui->label_9->text().toInt());
-        showHintMessage("Аппарат удален из базы данных", "notification");
+        showHintMessage("Космодром удален из базы данных", "notification");
     }
     rebuildTabs();
 }
@@ -1021,6 +1051,16 @@ void MainWindow::on_pushButton_12_clicked()
         valid = false;
     model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
     showHintMessage("Данные о запуске обновлены", "notification");
+}
+
+void MainWindow::on_pushButton_18_clicked()
+{
+   QVector<QPair<int,qreal>> values;
+   for (int i=1;i<ui->tableWidget_10->columnCount();i++)
+   {
+       values.append(QPair<int,qreal>(2023+i, ui->tableWidget_10->item(0,i)->text().toDouble()));
+   }
+   tabNewExtrasModel.updateInflation(values);
 }
 //===============================================================================================================================================
 //
@@ -1423,17 +1463,7 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column, QString space
     }
 }
 
-void MainWindow::on_pushButton_18_clicked()
-{
-    tabPredictionModel.setUpValues();
-    for (int i=0;i<ui->tableWidget_8->rowCount();i++)
-    {
-        if (ui->tableWidget_8->item(i,0)->backgroundColor() == PROJECTNAMECOLOR)
-        {
-            emit on_tableWidget_8_cellChanged(i+1,1);
-        }
-    }
-}
+
 
 void MainWindow::on_pushButton_17_clicked()
 {
@@ -1708,46 +1738,3 @@ void MainWindow::setTableWidgetRowColor(QTableWidget *tableWidget, int row, int 
         tableWidget->item(row,i)->setBackground(color);
     }
 }
-
-
-
-
-
-void MainWindow::enableUI()
-{
-    this->setEnabled(true);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
