@@ -498,7 +498,7 @@ void MainWindow::buildChart()
         radialAxis->setMax(radialMax);
         radialAxis->setMin(radialMin);
         chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
-        chart->setAnimationOptions(QChart::SeriesAnimations);
+        //chart->setAnimationOptions(QChart::SeriesAnimations);
         for (int i=0;i<seriesSummary.length();i++)
         {
             qDebug() << seriesSummary[i];
@@ -506,12 +506,13 @@ void MainWindow::buildChart()
         }
 
         // ВТОРОЙ ГРАФИК
+        chart->legend()->setAlignment(Qt::AlignRight);
         ui->widget->setChart(chart);
 
         QChart *chart2 = new QChart();
         chart2->addSeries(tabCatalogAndComparisonModel.createChartBarSeries(comparator.unitNames().length(), comparator.compareValues(), comparator.unitNames()));
         chart2->setTitle("Сравнение аппаратов");
-        chart2->setAnimationOptions(QChart::SeriesAnimations);
+        //chart2->setAnimationOptions(QChart::SeriesAnimations);
         QStringList categories;
 
         for (int i=0;i<ui->tableWidget_5->rowCount();i++)
@@ -524,9 +525,9 @@ void MainWindow::buildChart()
         QValueAxis *axisY = new QValueAxis();
         axisY->setRange(0,minMax.second);
         chart2->addAxis(axisY, Qt::AlignLeft);
+        chart2->legend()->setAlignment(Qt::AlignRight);
         //series->attachAxis(axisY);
         ui->widget_2->setChart(chart2);
-
     }
     else
     {
@@ -536,14 +537,46 @@ void MainWindow::buildChart()
 
 void MainWindow::on_pushButton_25_clicked()
 {
-    emit on_pushButton_8_clicked()
-    QImage mainTable = ui->tableWidget_8->grab().toImage();
-    QImage compareTable = ui->tableWidget_5->grab().toImage();
-    QImage chart1 = ui->widget->grab().toImage();
-    QImage chart2 = ui->widget_2->grab().toImage();
-    emit on_pushButton_8_clicked();
-    tabCatalogAndComparisonModel.saveToPdfComparisonTab(mainTable, compareTable, chart1, chart2);
-    showHintMessage("Успешно сохранено в pdf", "notification");
+    QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.pdf");
+    if (filePath != "")
+    {
+        QVector<QImage> images;
+        QVector<QString> names;
+        QVector<QVector<QString>> values;
+        QVector<QVector<QString>> compareValues;
+        QVector<int> selectedValues1, selectedValues2;
+        for (int i=0;i<ui->tableWidget_4->columnCount();i++)
+        {
+            names.append(ui->tableWidget_4->horizontalHeaderItem(i)->text());
+            if (i!=0)
+                images.append(qobject_cast <QLabel*>(ui->tableWidget_4->cellWidget(0,i))->pixmap()->toImage());
+        }
+
+        for (int i=1;i<ui->tableWidget_4->rowCount();i++)
+        {
+            QVector<QString> tmpValues;
+            if (ui->tableWidget_4->item(i,0)->backgroundColor()==Qt::green)
+                selectedValues1.append(i);
+            if (ui->tableWidget_4->item(i,0)->backgroundColor()==Qt::yellow)
+                selectedValues2.append(i);
+            for (int j=0;j<ui->tableWidget_4->columnCount();j++)
+            {
+                tmpValues.append(ui->tableWidget_4->item(i,j)->text());
+            }
+            values.append(tmpValues);
+        }
+        for (int i=0;i<ui->tableWidget_5->rowCount();i++)
+        {
+            QVector<QString> tmpValues;
+            for (int j=0;j<ui->tableWidget_5->columnCount();j++)
+            {
+                tmpValues.append(ui->tableWidget_5->item(i,j)->text());
+            }
+            compareValues.append(tmpValues);
+        }
+        tabCatalogAndComparisonModel.saveToPdfComparisonTab(names, images, values, compareValues, selectedValues1, selectedValues2, ui->widget, ui->widget_2, filePath);
+        showHintMessage("Успешно сохранено в pdf", "notification");
+    }
 }
 //===============================================================================================================================================
 //

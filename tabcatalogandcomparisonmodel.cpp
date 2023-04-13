@@ -183,7 +183,7 @@ void TabCatalogAndComparisonModel::addTreeChild(QTreeWidgetItem *parent, QString
 }
 
 void TabCatalogAndComparisonModel::addTreeChild2(QTreeWidgetItem *parent,
-                               QString name)
+                                                 QString name)
 {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
     treeItem->setText(0, name);
@@ -208,8 +208,16 @@ QString TabCatalogAndComparisonModel::classSelect(QString _class)
     return resultClass;
 }
 
-QVector<QPair<QString,QStringList>> TabCatalogAndComparisonModel::formCompareTable(QVector<QVector<QPair<QString,QString>>> values)
+QVector<QPair<QString,QStringList>> TabCatalogAndComparisonModel::formCompareTable(QVector<QVector<QPair<QString,QString>>> gotValues)
 {
+    QVector<QVector<QPair<QString,QString>>> values;
+    for (int i=0;i<gotValues.length();i+=3)
+    {
+        values.append(QVector<QPair<QString,QString>>());
+        values[i/3].append(gotValues[i]);
+        values[i/3].append(gotValues[i+1]);
+        values[i/3].append(gotValues[i+2]);
+    }
     QMap<QString,bool> usedValues;
     QVector<QPair<QString,QStringList>> compareVector;
     for (int i=0;i<values.length();i++)
@@ -247,40 +255,40 @@ QVector<QPair<QString,QStringList>> TabCatalogAndComparisonModel::formCompareTab
         }
     }
 
-//    QVector<QPair<QString,QStringList>> singleValuesVector;
-//    for (int i=0; i<unitValues_1.length();i++)
-//    {
-//        QString compVal = unitValues_1[i].first;
-//        bool found = false;
-//        for (int j=0;j<unitValues_2.length();j++)
-//        {
-//            if (unitValues_2[j].first==compVal){
-//                compareVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second,unitValues_2[j].second}));
-//                found=true;
-//                break;
-//            }
-//        }
-//        if (!found) {
-//            singleValuesVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second, ""}));
-//        }
-//    }
+    //    QVector<QPair<QString,QStringList>> singleValuesVector;
+    //    for (int i=0; i<unitValues_1.length();i++)
+    //    {
+    //        QString compVal = unitValues_1[i].first;
+    //        bool found = false;
+    //        for (int j=0;j<unitValues_2.length();j++)
+    //        {
+    //            if (unitValues_2[j].first==compVal){
+    //                compareVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second,unitValues_2[j].second}));
+    //                found=true;
+    //                break;
+    //            }
+    //        }
+    //        if (!found) {
+    //            singleValuesVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second, ""}));
+    //        }
+    //    }
 
-//    for (int i=0; i<unitValues_2.length();i++)
-//    {
-//        QString compVal = unitValues_2[i].first;
-//        bool found = false;
-//        for (int j=0;j<unitValues_1.length();j++)
-//        {
-//            if (unitValues_1[j].first==compVal){
-//                found=true;
-//                break;
-//            }
-//        }
-//        if (!found) {
-//            singleValuesVector.append(QPair<QString,QStringList>(compVal, { "", unitValues_2[i].second}));
-//        }
-//    }
-//    compareVector.append(singleValuesVector);
+    //    for (int i=0; i<unitValues_2.length();i++)
+    //    {
+    //        QString compVal = unitValues_2[i].first;
+    //        bool found = false;
+    //        for (int j=0;j<unitValues_1.length();j++)
+    //        {
+    //            if (unitValues_1[j].first==compVal){
+    //                found=true;
+    //                break;
+    //            }
+    //        }
+    //        if (!found) {
+    //            singleValuesVector.append(QPair<QString,QStringList>(compVal, { "", unitValues_2[i].second}));
+    //        }
+    //    }
+    //    compareVector.append(singleValuesVector);
     return compareVector;
 }
 
@@ -441,12 +449,12 @@ void TabCatalogAndComparisonModel::saveToPdfCatalogTab(QString name, QImage imag
     delete fileManager;
 }
 
-void TabCatalogAndComparisonModel::saveToPdfComparisonTab(QImage mainTable, QImage compareTable, QImage chart1, QImage chart2)
+void TabCatalogAndComparisonModel::saveToPdfComparisonTab(QVector<QString> names, QVector<QImage> images, QVector<QVector<QString>> values, QVector<QVector<QString>> compareValues, QVector<int> selectedValues1, QVector<int> selectedValues2, QChartView* chart1 , QChartView* chart2 ,QString filePath)
 {
     QTextBlockFormat centerAlignment, header;
     centerAlignment.setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     header.setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-    header.setLineHeight(100,1);
+    header.setLineHeight(150,1);
     header.setHeadingLevel(1);
 
     QTextCharFormat textFormat;
@@ -457,95 +465,112 @@ void TabCatalogAndComparisonModel::saveToPdfComparisonTab(QImage mainTable, QIma
     QTextCharFormat mainHeaderFormat;
     mainHeaderFormat.setFont(QFont("Times New Roman", 24));
     mainHeaderFormat.setFontWeight(QFont::Bold);
+    QTextCharFormat secondaryHeaderFormat;
+    secondaryHeaderFormat.setFont(QFont("Times New Roman", 14));
+    secondaryHeaderFormat.setFontWeight(QFont::Bold);
 
+    int columns = values[0].length();
+    int rows = values.length();
     QTextDocument doc;
     QTextCursor cursor(&doc);
     QTextTableFormat tableFormat;
 
     cursor.movePosition(cursor.NextRow);
-    cursor.insertImage(mainTable);
-//    tableFormat.setHeaderRowCount(1);
-//    tableFormat.setAlignment(Qt::AlignHCenter);
-//    tableFormat.setCellPadding(3);
-//    tableFormat.setCellSpacing(0);
-//    tableFormat.setBorder(0);
-//    tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
-//    tableFormat.clearColumnWidthConstraints();
-//    tableFormat.setWidth(950);
-//    QTextLength verticalHeader = QTextLength(QTextLength::FixedLength,100);
-//    QTextLength verticalCell = QTextLength(QTextLength::FixedLength,800/columns);
-//    QVector<QTextLength> lengths;
-//    lengths.append(verticalHeader);
-//    for (int i=0;i<columns-1;i++)
-//        lengths.append(verticalCell);
-//    tableFormat.setColumnWidthConstraints(lengths);
-//    cursor.insertText("Сравнение аппаратов", mainHeaderFormat);
 
-//    cursor.movePosition(cursor.End);
-//    QTextTable *textTable = cursor.insertTable(rows, columns, tableFormat);
-//    QTextCharFormat tableHeaderFormat;
-//    for (int i=0;i<rows;i++)
-//    {
-//        QTextTableCell cell = textTable->cellAt(i, 0);
-//        cell.setFormat(tableHeaderFormat);
-//        QTextCursor cellCursor = cell.firstCursorPosition();
-//        cellCursor.setBlockFormat(centerAlignment);
-//        cellCursor.insertImage(images[i]);
-//    }
-//    for (int i=1;i<rows;i++)
-//    {
 
-//        QTextTableCell cell = textTable->cellAt(i, 0);
-//        cell.setFormat(tableHeaderFormat);
-//        QTextCursor cellCursor = cell.firstCursorPosition();
-//        cellCursor.setBlockFormat(centerAlignment);
-//        cellCursor.insertText(values[i].first,textFormat);
-//        cell = textTable->cellAt(i, 1);
-//        cell.setFormat(tableHeaderFormat);
-//        cellCursor = cell.firstCursorPosition();
-//        cellCursor.setBlockFormat(centerAlignment);
-//        cellCursor.insertText(values[i].second,textFormat);
-//    }
+    tableFormat.setHeaderRowCount(1);
+    tableFormat.setAlignment(Qt::AlignHCenter);
+    tableFormat.setCellPadding(3);
+    tableFormat.setCellSpacing(0);
+    tableFormat.setBorder(1);
+    tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
+    tableFormat.clearColumnWidthConstraints();
+    tableFormat.setWidth(950);
+    QTextLength verticalHeader = QTextLength(QTextLength::FixedLength,150);
+    QTextLength verticalCell = QTextLength(QTextLength::FixedLength,800/columns);
+    QVector<QTextLength> lengths;
+    lengths.append(verticalHeader);
+    for (int i=0;i<columns-1;i++)
+        lengths.append(verticalCell);
+    tableFormat.setColumnWidthConstraints(lengths);
 
-//    tableFormat.setWidth(960);
-//    tableFormat.setColumnWidthConstraints({QTextLength(QTextLength::FixedLength,300),QTextLength(QTextLength::FixedLength,660)});
-//    rows = econValues.length();
-//    cursor.movePosition(cursor.End);
-//    cursor.setBlockFormat(header);
-//    cursor.insertText("Основные экономические показатели",headerFormat);
-//    QTextTable *econTable = cursor.insertTable(rows, columns, tableFormat);
-//    for (int i=0;i<rows;i++)
-//    {
-//        QTextTableCell cell = econTable->cellAt(i, 0);
-//        cell.setFormat(tableHeaderFormat);
-//        QTextCursor cellCursor = cell.firstCursorPosition();
-//        cellCursor.setBlockFormat(centerAlignment);
-//        cellCursor.insertText(econValues[i].first,textFormat);
-//        cell = econTable->cellAt(i, 1);
-//        cell.setFormat(tableHeaderFormat);
-//        cellCursor = cell.firstCursorPosition();
-//        cellCursor.setBlockFormat(centerAlignment);
-//        cellCursor.insertText(econValues[i].second,textFormat);
-//    }
+    cursor.setBlockFormat(header);
+    cursor.insertText("Сравнение аппаратов", mainHeaderFormat);
 
-//    rows = econValues.length();
-//    cursor.movePosition(cursor.End);
-//    cursor.setBlockFormat(header);
-//    cursor.insertText("Основные физические показатели",headerFormat);
-//    QTextTable * physTable = cursor.insertTable(rows, columns, tableFormat);
-//    for (int i=0;i<rows;i++)
-//    {
-//        QTextTableCell cell = physTable->cellAt(i, 0);
-//        cell.setFormat(tableHeaderFormat);
-//        QTextCursor cellCursor = cell.firstCursorPosition();
-//        cellCursor.setBlockFormat(centerAlignment);
-//        cellCursor.insertText(physValues[i].first,textFormat);
-//        cell = physTable->cellAt(i, 1);
-//        cell.setFormat(tableHeaderFormat);
-//        cellCursor = cell.firstCursorPosition();
-//        cellCursor.setBlockFormat(centerAlignment);
-//        cellCursor.insertText(physValues[i].second,textFormat);
-//    }
+    cursor.movePosition(cursor.End);
+    QTextTable *textTable = cursor.insertTable(rows, columns, tableFormat);
+    QTextCharFormat tableHeaderFormat;
+    for (int i=0;i<columns;i++)
+    {
+        QTextTableCell cell = textTable->cellAt(0,i);
+        cell.setFormat(tableHeaderFormat);
+        QTextCursor cellCursor = cell.firstCursorPosition();
+        cellCursor.setBlockFormat(header);
+        cellCursor.insertText(names[i],headerFormat);
+    }
+    for (int i=1;i<columns;i++)
+    {
+        QTextTableCell cell = textTable->cellAt(1,i);
+        cell.setFormat(tableHeaderFormat);
+        QTextCursor cellCursor = cell.firstCursorPosition();
+        cellCursor.setBlockFormat(header);
+        cellCursor.insertImage(images[i-1]);
+    }
+    for (int i=2;i<rows;i++)
+        for (int j=0;j<columns;j++)
+        {
+            QTextTableCell cell = textTable->cellAt(i, j);
+            cell.setFormat(tableHeaderFormat);
+            QTextCursor cellCursor = cell.firstCursorPosition();
+            cellCursor.setBlockFormat(centerAlignment);
+            cellCursor.insertText(values[i][j],textFormat);
+        }
+    cursor.movePosition(cursor.End);
+    cursor.movePosition(cursor.NextRow);
+    cursor.movePosition(cursor.NextRow);
+    cursor.setBlockFormat(header);
+    cursor.insertText("Параметры сравнения", secondaryHeaderFormat);
+    cursor.movePosition(cursor.NextRow);
+
+    columns = compareValues[0].length();
+    rows = compareValues.length();
+    tableFormat.setWidth(950);
+    verticalHeader = QTextLength(QTextLength::FixedLength,150);
+    verticalCell = QTextLength(QTextLength::FixedLength,800/columns);
+    lengths.clear();
+    lengths.append(verticalHeader);
+    for (int i=0;i<columns-1;i++)
+        lengths.append(verticalCell);
+    tableFormat.setColumnWidthConstraints(lengths);
+
+    textTable = cursor.insertTable(rows, columns, tableFormat);
+    for (int i=0;i<rows;i++)
+        for (int j=0;j<columns;j++)
+        {
+            QTextTableCell cell = textTable->cellAt(i, j);
+            cell.setFormat(tableHeaderFormat);
+            QTextCursor cellCursor = cell.firstCursorPosition();
+            cellCursor.setBlockFormat(centerAlignment);
+            cellCursor.insertText(compareValues[i][j],textFormat);
+        }
+    cursor.movePosition(cursor.End);
+    cursor.movePosition(cursor.NextRow);
+
+    QSize tmpSize = chart1->size();
+    chart1->resize(470,500);
+    QPixmap p = chart1->grab();
+    QImage img = p.toImage();
+    img = img.scaled(470,500);
+    cursor.insertImage(img);
+    chart1->resize(tmpSize);
+
+    tmpSize = chart2->size();
+    chart2->resize(470,500);
+    p = chart2->grab();
+    img = p.toImage();
+    img = img.scaled(470,500);
+    cursor.insertImage(img);
+    chart2->resize(tmpSize);
 
     doc.setDocumentMargin(0);
     doc.setTextWidth(4);

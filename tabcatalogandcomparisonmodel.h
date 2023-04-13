@@ -34,6 +34,7 @@ public:
     QBarSeries *createChartBarSeries(int unitNum, QVector <CompareValue> compareValues, QStringList unitNames);
 
     void saveToPdfCatalogTab(QString name, QImage image, QVector<QPair<QString,QString>> values, QVector<QPair<QString,QString>> physValues, QVector<QPair<QString,QString>> econValues, QString path);
+    void saveToPdfComparisonTab(QVector<QString> names, QVector<QImage> images, QVector<QVector<QString>> values, QVector<QVector<QString>> compareValues, QVector<int> selectedValues1, QVector<int> selectedValues2, QChartView* chart1 , QChartView* chart2 ,QString filePath);
 private:
     FileManager *fileManager;
     MainModel* mainModel;
