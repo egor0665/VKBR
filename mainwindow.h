@@ -86,7 +86,6 @@ protected:
     QString classSelect(QString _class);
     void buildChart();
     void buildChartTable();
-    void buildEditDBTab();
     bool readyToStore;
     QVector<dbChangeValue> dbValuesToChange;
 
