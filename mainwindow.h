@@ -106,12 +106,6 @@ private slots:
 
     void on_pushButton_4_clicked();
 
-    void on_comboBox_3_currentIndexChanged(const QString &arg1);
-
-    void on_pushButton_8_clicked();
-
-    void on_tableWidget_6_itemChanged(QTableWidgetItem *item);
-
     void on_pushButton_2_clicked();
 
     void on_comboBoxUnitClass_currentIndexChanged(const QString &arg1);

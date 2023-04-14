@@ -502,7 +502,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>6</number>
         </property>
         <property name="documentMode">
          <bool>false</bool>
@@ -2210,81 +2210,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_5">
-         <attribute name="title">
-          <string>Упр. БД</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_15">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_14">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_12">
-              <item>
-               <widget class="QComboBox" name="comboBox_3">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(249, 249, 249)</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_11">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QTableWidget" name="tableWidget_6"/>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_13">
-              <item>
-               <spacer name="horizontalSpacer_13">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_7">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(249, 249, 249)</string>
-                </property>
-                <property name="text">
-                 <string>PushButton</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_8">
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(249, 249, 249)</string>
-                </property>
-                <property name="text">
-                 <string>Сохранить</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </item>
            </layout>
           </item>

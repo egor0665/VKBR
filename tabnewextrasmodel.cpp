@@ -6,30 +6,35 @@ TabNewExtrasModel::TabNewExtrasModel()
 
 }
 
-TabNewExtrasModel::TabNewExtrasModel(MainModel *_mainModel)
+//TabNewExtrasModel::TabNewExtrasModel(MainModel *_mainModel)
+//{
+//    mainModel = _mainModel;
+//}
+
+TabNewExtrasModel::TabNewExtrasModel(database *db)
 {
-    mainModel = _mainModel;
+    this->db = db;
 }
 
 void TabNewExtrasModel::addOrganizationToDB(QString name)
 {
     DBOrganization newOrganization = DBOrganization(-1, name);
-    mainModel->db.addOrganoizationToDB(newOrganization);
+    db->addOrganoizationToDB(newOrganization);
 }
 
 void TabNewExtrasModel::addSpaceportToDB(QString name)
 {
     DBSpaceport newSpaceport = DBSpaceport(-1, name);
-    mainModel->db.addSpaceportToDB(newSpaceport);
+    db->addSpaceportToDB(newSpaceport);
 
-    int spaceportId = mainModel->db.getSpaceportIdFromName(name);
-    QVector<int> boosterRocketIds = mainModel->db.getIdsFromTable("booster_rocket");
-    QVector<int> upperBlockIds = mainModel->db.getIdsFromTable("upper_block");
+    int spaceportId = db->getSpaceportIdFromName(name);
+    QVector<int> boosterRocketIds = db->getIdsFromTable("booster_rocket");
+    QVector<int> upperBlockIds = db->getIdsFromTable("upper_block");
     for (int i=0;i<boosterRocketIds.length();i++)
         for (int j=0;j<upperBlockIds.length();j++)
         {
             DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockIds[j],spaceportId,2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0,false);
-            mainModel->db.addLaunchInformation(tmpLaunch);
+            db->addLaunchInformation(tmpLaunch);
         }
 }
 
@@ -40,12 +45,12 @@ void TabNewExtrasModel::addSpaceportToDB(QString name)
 
 QStringList TabNewExtrasModel::getUnitNamesByTypeStringList(QString type)
 {
-    return mainModel->QVectorToQStringList(mainModel->db.getUnitNamesByType(type));
+    return QVectorToQStringList(db->getUnitNamesByType(type));
 }
 
 DBlaunch TabNewExtrasModel::getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport)
 {
-    return mainModel->db.getLaunchFromParamIds(boosterRocket, upperBlock, spaceport);
+    return db->getLaunchFromParamIds(boosterRocket, upperBlock, spaceport);
 }
 
 QVector<qreal> TabNewExtrasModel::pricesToVector(QString prices)
@@ -60,84 +65,104 @@ QVector<qreal> TabNewExtrasModel::pricesToVector(QString prices)
 
 int TabNewExtrasModel::getOrganizationId(QString name)
 {
-    return mainModel->db.getOrganizationIdFromName(name);
+    return db->getOrganizationIdFromName(name);
 }
 
 
 int TabNewExtrasModel::getSpaceportId(QString name)
 {
-    return mainModel->db.getSpaceportIdFromName(name);
+    return db->getSpaceportIdFromName(name);
 }
 
 void TabNewExtrasModel::updateOrganizationDB(int id, QString name)
 {
-    mainModel->db.updateOrganizationDB(id, name);
+    db->updateOrganizationDB(id, name);
 }
 
 void TabNewExtrasModel::updateSpaceportDB(int id, QString name)
 {
-    mainModel->db.updateSpaceportDB(id, name);
+    db->updateSpaceportDB(id, name);
 }
 
 void TabNewExtrasModel::deleteOrganization(int id)
 {
-    QVector<int> unitIds = mainModel->db.getUnitIdsByOrganizationId(id);
+    QVector<int> unitIds = db->getUnitIdsByOrganizationId(id);
     for (int i=0;i<unitIds.length();i++)
     {
-        QString unitClass = mainModel->db.getUnitClassById(unitIds[i]);
+        QString unitClass = db->getUnitClassById(unitIds[i]);
         if (unitClass=="РН")
         {
-            mainModel->db.deleteBoosterRocket(unitIds[i]);
-            mainModel->db.deleteLaunchByBoosterRocket(unitIds[i]);
+            db->deleteBoosterRocket(unitIds[i]);
+            db->deleteLaunchByBoosterRocket(unitIds[i]);
         }
 
         else if (unitClass=="РБ")
         {
-            mainModel->db.deleteUpperBlock(unitIds[i]);
-            mainModel->db.deleteLaunchByUpperBlock(unitIds[i]);
+            db->deleteUpperBlock(unitIds[i]);
+            db->deleteLaunchByUpperBlock(unitIds[i]);
         }
         else if (unitClass=="КА")
-            mainModel->db.deleteSpacecraft(unitIds[i]);
-        mainModel->db.deleteProjectWithUnitId(unitIds[i]);
-        mainModel->db.deleteUnit(unitIds[i]);
+            db->deleteSpacecraft(unitIds[i]);
+        db->deleteProjectWithUnitId(unitIds[i]);
+        db->deleteUnit(unitIds[i]);
     }
-    mainModel->db.deleteOrganization(id);
+    db->deleteOrganization(id);
 }
 
 void TabNewExtrasModel::deleteSpaceport(int id)
 {
-    QVector<int> unitIds = mainModel->db.getUnitIdsBySpaceportId(id);
+    QVector<int> unitIds = db->getUnitIdsBySpaceportId(id);
     for (int i=0;i<unitIds.length();i++)
     {
-        QString unitClass = mainModel->db.getUnitClassById(unitIds[i]);
+        QString unitClass = db->getUnitClassById(unitIds[i]);
         if (unitClass=="РН")
         {
-            mainModel->db.deleteBoosterRocket(unitIds[i]);
-            mainModel->db.deleteLaunchByBoosterRocket(unitIds[i]);
+            db->deleteBoosterRocket(unitIds[i]);
+            db->deleteLaunchByBoosterRocket(unitIds[i]);
         }
 
         else if (unitClass=="РБ")
         {
-            mainModel->db.deleteUpperBlock(unitIds[i]);
-            mainModel->db.deleteLaunchByUpperBlock(unitIds[i]);
+            db->deleteUpperBlock(unitIds[i]);
+            db->deleteLaunchByUpperBlock(unitIds[i]);
         }
         else if (unitClass=="КА")
-            mainModel->db.deleteSpacecraft(unitIds[i]);
-        mainModel->db.deleteProjectWithUnitId(unitIds[i]);
-        mainModel->db.deleteUnit(unitIds[i]);
+            db->deleteSpacecraft(unitIds[i]);
+        db->deleteProjectWithUnitId(unitIds[i]);
+        db->deleteUnit(unitIds[i]);
     }
-    QVector<int> launchIds = mainModel->db.getLaunchIdsBySpaceportId(id);
-    mainModel->db.deleteLaunchBySpaceport(id);
-    mainModel->db.deleteSpaceport(id);
+    QVector<int> launchIds = db->getLaunchIdsBySpaceportId(id);
+    db->deleteLaunchBySpaceport(id);
+    db->deleteSpaceport(id);
 }
 
 QVector<qreal> TabNewExtrasModel::getInflation()
 {
-    return mainModel->db.getInflationPercents(2024,2040);
+    return db->getInflationPercents(2024,2040);
 }
 
 void TabNewExtrasModel::updateInflation(QVector<QPair<int,qreal>> values)
 {
     for (int i=0;i<values.length();i++)
-        mainModel->db.updateInflation(values[i].first, values[i].second);
+        db->updateInflation(values[i].first, values[i].second);
+}
+
+void TabNewExtrasModel::updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload, bool valid)
+{
+    int boosterRocketId = db->getUnitIdByName(boosterRocketName);
+    int upperBlockId = db->getUnitIdByName(upperBlockName);
+    int spaceportId = db->getSpaceportIdFromName(spaceportName);
+    db->updateLaunchPricesByIds(boosterRocketId, upperBlockId, spaceportId,priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
+}
+
+QStringList TabNewExtrasModel::QVectorToQStringList(QVector <QString> vector)
+{
+    {
+        QStringList result = {};
+        for (int i=0;i<vector.length();i++)
+        {
+            result.append(vector[i]);
+        }
+        return result;
+    }
 }

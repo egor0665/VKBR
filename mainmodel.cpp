@@ -15,6 +15,10 @@ MainModel::MainModel()
     db.createConnection();
 }
 
+database* MainModel::getDBLink()
+{
+    return &db;
+}
 QStringList MainModel::getNamesFromTableStringList(QString tableName)
 {
      return QVectorToQStringList(getNamesFromTable(tableName));
@@ -35,13 +39,13 @@ QStringList MainModel::QVectorToQStringList(QVector<QString> vector)
     return result;
 }
 
-void MainModel::updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload, bool valid)
-{
-    int boosterRocketId = db.getUnitIdByName(boosterRocketName);
-    int upperBlockId = db.getUnitIdByName(upperBlockName);
-    int spaceportId = db.getSpaceportIdFromName(spaceportName);
-    db.updateLaunchPricesByIds(boosterRocketId, upperBlockId, spaceportId,priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
-}
+//void MainModel::updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload, bool valid)
+//{
+//    int boosterRocketId = db.getUnitIdByName(boosterRocketName);
+//    int upperBlockId = db.getUnitIdByName(upperBlockName);
+//    int spaceportId = db.getSpaceportIdFromName(spaceportName);
+//    db.updateLaunchPricesByIds(boosterRocketId, upperBlockId, spaceportId,priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
+//}
 
 QString MainModel::login(QString name, QString password)
 {

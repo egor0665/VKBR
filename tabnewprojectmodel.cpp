@@ -7,25 +7,30 @@ TabNewProjectModel::TabNewProjectModel()
 
 }
 
-TabNewProjectModel::TabNewProjectModel(MainModel *_mainModel)
+//TabNewProjectModel::TabNewProjectModel(MainModel *_mainModel)
+//{
+//    mainModel = _mainModel;
+//}
+
+TabNewProjectModel::TabNewProjectModel(database *db)
 {
-    mainModel = _mainModel;
+    this->db = db;
 }
 
 void TabNewProjectModel::addProjectToDB(QString name, QString type, QString unit_name)
 {
-    int unit_id = mainModel->db.getUnitIdByName(unit_name);
+    int unit_id = db->getUnitIdByName(unit_name);
     DBProject newProject = DBProject(-1, name, type, unit_id, "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",
                                      "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",
                                      "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",
                                      "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",
                                      "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;");
-    mainModel->db.addProjectToDB(newProject);
+    db->addProjectToDB(newProject);
 }
 
 QVector<QVector<qreal>> TabNewProjectModel::getProjectPricesFromName(QString projectName)
 {
-    DBProject currentProject = mainModel->db.getProjectInfoFromName(projectName);
+    DBProject currentProject = db->getProjectInfoFromName(projectName);
     QVector<qreal> pre_prices, post_prices, first_unit_prices, last_unit_prices, serial_prices;
     QStringList preVals = currentProject.pre_prices().split(";");
     QStringList firstUnitVals = currentProject.first_unit_prices().split(";");
@@ -60,5 +65,5 @@ void TabNewProjectModel::updateProjectInfo(QString projectName, QVector<qreal> p
         new_serial_prices += QString::number(serial_prices[i]) + ";";
     }
     qDebug()<<new_pre_prices<<new_first_unit_prices<<new_last_unit_prices<<new_post_prices<<new_serial_prices;
-    mainModel->db.updateProjectPricesByName(projectName,new_pre_prices,new_first_unit_prices, new_last_unit_prices, new_post_prices,new_serial_prices);
+    db->updateProjectPricesByName(projectName,new_pre_prices,new_first_unit_prices, new_last_unit_prices, new_post_prices,new_serial_prices);
 }

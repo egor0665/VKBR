@@ -5,46 +5,62 @@ TabEditDBModel::TabEditDBModel()
 {
 
 }
-TabEditDBModel::TabEditDBModel(MainModel *_mainModel)
+//TabEditDBModel::TabEditDBModel(MainModel *_mainModel)
+//{
+//    mainModel = _mainModel;
+//}
+
+TabEditDBModel::TabEditDBModel(database *db)
 {
-    mainModel = _mainModel;
+    this->db = db;
 }
+
 QStringList TabEditDBModel::getTableDescriptionsStringList()
 {
-    return  mainModel->QVectorToQStringList(getTableDescriptions());
+    return  QVectorToQStringList(getTableDescriptions());
 }
 QVector <QString> TabEditDBModel::getTableDescriptions()
 {
-    return mainModel->db.getTableDescriptions();
+    return db->getTableDescriptions();
 }
 
 int TabEditDBModel::getTableColumnCount(QString tableName)
 {
-    return mainModel->db.getTableColumnCount(tableName);
+    return db->getTableColumnCount(tableName);
 }
 
 QVector <QString> TabEditDBModel::getTableColumnNames(QString tableName)
 {
-    return mainModel->db.getTableColumnNames(tableName);
+    return db->getTableColumnNames(tableName);
 }
 
 QStringList TabEditDBModel::getTableColumnNamesStringList(QString tableName)
 {
-    return mainModel->QVectorToQStringList(getTableColumnNames(tableName));
+    return QVectorToQStringList(getTableColumnNames(tableName));
 }
 
 //QString TabEditDBModel::getUnitImageFromId(int unitId)
 //{
-//    return mainModel->db.getUnitImageFromId(unitId);
+//    return db->getUnitImageFromId(unitId);
 //}
 
 QVector <QVector<QString>> TabEditDBModel::getValuesFromTable(QString tableName, int valuesNum)
 {
-    return mainModel->db.getValuesFromTable(tableName, valuesNum);
+    return db->getValuesFromTable(tableName, valuesNum);
 }
 
 QString TabEditDBModel::updateDataInTable(QString tableName, QVector<dbChangeValue> dbValuesToChange)
 {
-    return mainModel->db.updateDataInTable(tableName, dbValuesToChange);
+    return db->updateDataInTable(tableName, dbValuesToChange);
+}
+
+QStringList TabEditDBModel::QVectorToQStringList(QVector<QString> vector)
+{
+    QStringList result = {};
+    for (int i=0;i<vector.length();i++)
+    {
+        result.append(vector[i]);
+    }
+    return result;
 }
 

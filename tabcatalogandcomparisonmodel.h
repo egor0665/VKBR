@@ -1,6 +1,7 @@
 #ifndef TABCATALOGANDCOMPARISONMODEL_H
 #define TABCATALOGANDCOMPARISONMODEL_H
 
+#include <DataBase.h>
 #include <FileManager.h>
 #include <MainModel.h>
 #include <QObject>
@@ -11,7 +12,8 @@ class TabCatalogAndComparisonModel
 {
 public:
     TabCatalogAndComparisonModel();
-    TabCatalogAndComparisonModel(MainModel* _mainModel);
+    //TabCatalogAndComparisonModel(MainModel* _mainModel);
+    TabCatalogAndComparisonModel(database* d);
     QTreeWidget *navigationTreeWidget;
 
     QVector <QPair<QString,QString>> splitValues(QString values);
@@ -37,7 +39,8 @@ public:
     void saveToPdfComparisonTab(QVector<QString> names, QVector<QImage> images, QVector<QVector<QString>> values, QVector<QVector<QString>> compareValues, QVector<int> selectedValues1, QVector<int> selectedValues2, QChartView* chart1 , QChartView* chart2 ,QString filePath);
 private:
     FileManager *fileManager;
-    MainModel* mainModel;
+    //MainModel* mainModel;
+    database* db;
 };
 
 #endif // TABCATALOGANDCOMPARISONMODEL_H

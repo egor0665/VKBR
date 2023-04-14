@@ -6,9 +6,14 @@ TabCatalogAndComparisonModel::TabCatalogAndComparisonModel()
 {
 
 }
-TabCatalogAndComparisonModel::TabCatalogAndComparisonModel(MainModel *_mainModel)
+//TabCatalogAndComparisonModel::TabCatalogAndComparisonModel(MainModel *_mainModel)
+//{
+//    mainModel = _mainModel;
+//}
+
+TabCatalogAndComparisonModel::TabCatalogAndComparisonModel(database *db)
 {
-    mainModel = _mainModel;
+    this->db = db;
 }
 
 QVector<QPair<QString,QString>> TabCatalogAndComparisonModel::splitValues(QString values)
@@ -25,7 +30,7 @@ QVector<QPair<QString,QString>> TabCatalogAndComparisonModel::splitValues(QStrin
 
 QString TabCatalogAndComparisonModel::getUnitImageFromId(int unitId)
 {
-    return mainModel->db.getUnitImageFromId(unitId);
+    return db->getUnitImageFromId(unitId);
 }
 
 QVector<QVector<QPair<QString,QString>>> TabCatalogAndComparisonModel::getUnitData(int unitId)
@@ -34,7 +39,7 @@ QVector<QVector<QPair<QString,QString>>> TabCatalogAndComparisonModel::getUnitDa
     result.append(vectorUnitData(unitId));
     result.append(QVector<QPair<QString,QString>>());
     result.append(QVector<QPair<QString,QString>>());
-    QString unitClass = mainModel->db.getUnitClassById(unitId);
+    QString unitClass = db->getUnitClassById(unitId);
     if (unitClass == "РН")
     {
         QVector<QVector<QPair<QString,QString>>> tmpValues = vectorBoosterRocketData(unitId);
@@ -63,21 +68,21 @@ QVector<QVector<QPair<QString,QString>>> TabCatalogAndComparisonModel::getUnitDa
 
 int TabCatalogAndComparisonModel::getUnitIdByName(QString unitName)
 {
-    return  mainModel->db.getUnitIdByName(unitName);
+    return  db->getUnitIdByName(unitName);
 }
 
 QVector<QPair<QString,QString>> TabCatalogAndComparisonModel::vectorUnitData(int unitId)
 {
     QVector<QPair<QString,QString>> vectoredData;
-    DBUnit selectedUnit = mainModel->db.getUnitInfoFromId(unitId);
+    DBUnit selectedUnit = db->getUnitInfoFromId(unitId);
 
     QStringList values = selectedUnit.getValues();
     for (int i=0;i<selectedUnit.UNIT_ROW_NUM; i++){
         if (values[i]!="" && values[i]!="0"){
             if (selectedUnit.UNIT_VALUES[i] == "Разработчик" || selectedUnit.UNIT_VALUES[i] == "Разработчик 2" || selectedUnit.UNIT_VALUES[i] == "Производитель" || selectedUnit.UNIT_VALUES[i] == "Заказчик")
-                vectoredData.append(QPair<QString,QString>(selectedUnit.UNIT_VALUES[i], mainModel->db.getOrganizationInfoFromId(values[i].toInt()).name()));
+                vectoredData.append(QPair<QString,QString>(selectedUnit.UNIT_VALUES[i], db->getOrganizationInfoFromId(values[i].toInt()).name()));
             else if (selectedUnit.UNIT_VALUES[i] == "Космодром первого запуска")
-                vectoredData.append(QPair<QString,QString>(selectedUnit.UNIT_VALUES[i], mainModel->db.getSpaceportInfoFromId(values[i].toInt()).name()));
+                vectoredData.append(QPair<QString,QString>(selectedUnit.UNIT_VALUES[i], db->getSpaceportInfoFromId(values[i].toInt()).name()));
             else
                 vectoredData.append(QPair<QString,QString>(selectedUnit.UNIT_VALUES[i], values[i]));
         }
@@ -90,7 +95,7 @@ QVector<QVector<QPair<QString,QString>>> TabCatalogAndComparisonModel::vectorBoo
     QVector<QVector<QPair<QString,QString>>> vectoredData;
     for(int i=0;i<3;i++)
         vectoredData.append(QVector<QPair<QString,QString>>());
-    DBBooster_rocket selectedBooster_rocket = mainModel->db.getBooster_rocketInfoFromId(boosterRocketId);
+    DBBooster_rocket selectedBooster_rocket = db->getBooster_rocketInfoFromId(boosterRocketId);
     QStringList values = selectedBooster_rocket.getValues();
     for (int i=0;i<selectedBooster_rocket.BOOSTER_ROCKET_DEF_ROW_NUM; i++){
         if (values[i]!="" && values[i]!="0"){
@@ -110,7 +115,7 @@ QVector<QVector <QPair<QString,QString>>> TabCatalogAndComparisonModel::vectorUp
     QVector<QVector<QPair<QString,QString>>> vectoredData;
     for(int i=0;i<3;i++)
         vectoredData.append(QVector<QPair<QString,QString>>());
-    DBUpper_block selectedUpper_block =  mainModel->db.getUpper_blockInfoFromId(unitId);
+    DBUpper_block selectedUpper_block =  db->getUpper_blockInfoFromId(unitId);
     QStringList values = selectedUpper_block.getValues();
     for (int i=0;i<selectedUpper_block.UPPER_BLOCK_DEF_ROW_NUM; i++){
         if (values[i]!="" && values[i]!="0"){
@@ -130,7 +135,7 @@ QVector<QVector <QPair<QString,QString>>> TabCatalogAndComparisonModel::vectorSp
     QVector<QVector<QPair<QString,QString>>> vectoredData;
     for(int i=0;i<3;i++)
         vectoredData.append(QVector<QPair<QString,QString>>());
-    DBSpacecraft selectedSpacecraft =  mainModel->db.getSpacecraftInfoFromId(unitId);
+    DBSpacecraft selectedSpacecraft =  db->getSpacecraftInfoFromId(unitId);
     QStringList values = selectedSpacecraft.getValues();
     for (int i=0;i<selectedSpacecraft.SPACECRAFT_DEF_ROW_NUM; i++){
         if (values[i]!="" && values[i]!="0"){
@@ -149,7 +154,7 @@ void TabCatalogAndComparisonModel::createNavigationTree(QTreeWidgetItem *navigat
 {
     navigatiorMenuRoot->setText(0, "Каталог");
 
-    QVector <QPair<QString,QString>> units = mainModel->db.getUnitClassesAndNames();
+    QVector <QPair<QString,QString>> units = db->getUnitClassesAndNames();
     qDebug() << units;
     QString lastclass = "";
     QVector <QString> nameArray;

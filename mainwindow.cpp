@@ -25,13 +25,17 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    tabPredictionModel = TabPredictionModel(&model);
-    tabNewProjectModel = TabNewProjectModel(&model);
-    tabEditDBModel = TabEditDBModel(&model);
-    tabNewExtrasModel = TabNewExtrasModel(&model);
-    tabNewCraftModel = TabNewCraftModel(&model);
-    tabCatalogAndComparisonModel = TabCatalogAndComparisonModel(&model);
-    tabEditUserModel = TabEditUserModel(&model);
+
+    database*  db = model.getDBLink();
+    tabCatalogAndComparisonModel = TabCatalogAndComparisonModel(db);
+
+    tabPredictionModel = TabPredictionModel(db);
+    tabNewProjectModel = TabNewProjectModel(db);
+    tabEditDBModel = TabEditDBModel(db);
+    tabNewExtrasModel = TabNewExtrasModel(db);
+    tabNewCraftModel = TabNewCraftModel(db);
+
+    tabEditUserModel = TabEditUserModel(db);
     rebuildTabs();
 
     QObject::connect(&loginWindow,SIGNAL(login(QString, QString)),this,SLOT(login(QString,QString)));
@@ -51,7 +55,6 @@ void MainWindow::rebuildTabs()
     buildDisplayTab();
     buildCompareTab();
     buildAddUnitTab();
-    buildEditDBTab();
     buildEditProjectTab();
     buildAddExtrasTab();
     buildPredictionTab();
@@ -1082,7 +1085,7 @@ void MainWindow::on_pushButton_12_clicked()
         valid = true;
     else
         valid = false;
-    model.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
+    tabNewExtrasModel.updateLaunchPricesByIds(boosterRocketName, upperBlockName, spaceportName, priceYear, prices, launchPrice, deliveryPrice, minPayload, maxPayload, valid);
     showHintMessage("Данные о запуске обновлены", "notification");
 }
 
@@ -1095,66 +1098,6 @@ void MainWindow::on_pushButton_18_clicked()
    }
    tabNewExtrasModel.updateInflation(values);
 }
-//===============================================================================================================================================
-//
-//===============================================================================================================================================
-//===============================================================================================================================================
-//                                                          Edit tab
-//===============================================================================================================================================
-
-void MainWindow::buildEditDBTab()
-{
-    ui->comboBox_3->clear();
-    ui->comboBox_3->addItems(tabEditDBModel.getTableDescriptionsStringList());
-    dbValuesToChange.clear();
-}
-
-void MainWindow::on_comboBox_3_currentIndexChanged(const QString &arg1)
-{
-    readyToStore = false;
-    ui->tableWidget_6->clearContents();
-    ui->tableWidget_6->setRowCount(0);
-
-    ui->tableWidget_6->setColumnCount(tabEditDBModel.getTableColumnCount(arg1)); // Указываем число колонок
-    ui->tableWidget_6->setShowGrid(true); // Включаем сетку
-    ui->tableWidget_6->setSelectionMode(QAbstractItemView::NoSelection);
-    ui->tableWidget_6->setHorizontalHeaderLabels(tabEditDBModel.getTableColumnNamesStringList(arg1));
-    ui->tableWidget_6->horizontalHeader()->setStretchLastSection(true);
-    //ui->tableWidget_6->setEditTriggers(QTableWidget::NoEditTriggers);
-
-    QVector <QVector<QString>> values = tabEditDBModel.getValuesFromTable(ui->comboBox_3->currentText(), ui->tableWidget_6->columnCount());
-    for (int i=0;i<values.length(); i++){
-        int rowCount = ui->tableWidget_6->rowCount();
-        ui->tableWidget_6->insertRow(rowCount);
-        for (int j=0;j<values[i].length();j++){
-            ui->tableWidget_6->setItem(rowCount,j, new QTableWidgetItem(values[i][j]));
-        }
-    }
-
-    readyToStore = true;
-    dbValuesToChange.clear();
-}
-
-void MainWindow::on_tableWidget_6_itemChanged(QTableWidgetItem *item)
-{
-    if (readyToStore){
-        dbValuesToChange.append(dbChangeValue(
-                                    ui->tableWidget_6->item(item->row(),0)->text(),
-                                    ui->tableWidget_6->horizontalHeaderItem(item->column())->text(),
-                                    item->text()));
-        qDebug()<<ui->tableWidget_6->item(item->row(),0)->text()<<item->text();
-    }
-}
-
-void MainWindow::on_pushButton_8_clicked()
-{
-    qDebug() << tabEditDBModel.updateDataInTable(ui->comboBox_3->currentText(), dbValuesToChange);
-    rebuildTabs();
-}
-
-
-
-
 //===============================================================================================================================================
 //
 //===============================================================================================================================================
@@ -1245,8 +1188,6 @@ void MainWindow::buildPredictionTab()
     ui->tableWidget_8->setSelectionMode(QAbstractItemView::NoSelection);
     ui->tableWidget_8->setHorizontalHeaderLabels({"","2024","2025","2026","2027","2028","2029","2030","2031","2032","2033","2034","2035","2036","2037","2038","2039","2040"});
     ui->tableWidget_8->horizontalHeader()->setStretchLastSection(true);
-
-    //QVector<QVector<qreal>> prices = model.getProjectPricesFromName(arg1);
 
     int rowCount = ui->tableWidget_8->rowCount();
     ui->tableWidget_8->insertRow(rowCount);

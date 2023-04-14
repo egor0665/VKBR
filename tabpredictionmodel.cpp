@@ -17,14 +17,19 @@ TabPredictionModel::TabPredictionModel()
 
 }
 
-TabPredictionModel::TabPredictionModel(MainModel *_mainModel)
+TabPredictionModel::TabPredictionModel(database *db)
 {
-    mainModel = _mainModel;
+    this->db = db;
 }
+
+//TabPredictionModel::TabPredictionModel(MainModel *_mainModel)
+//{
+//    mainModel = _mainModel;
+//}
 
 void TabPredictionModel::setUpValues()
 {
-    QVector<qreal> inflationPercents = mainModel->db.getInflationPercents(2024,2040);
+    QVector<qreal> inflationPercents = db->getInflationPercents(2024,2040);
     qDebug() << inflationPercents;
 
     for (int i=0;i<inflationPercents.length();i++)
@@ -65,12 +70,12 @@ void TabPredictionModel::setUpValues()
 }
 QStringList TabPredictionModel::getNamesFromTableStringList(QString tableName)
 {
-     return mainModel->QVectorToQStringList(mainModel->getNamesFromTable(tableName));
+     return QVectorToQStringList(db->getNamesFromTable(tableName));
 }
 
 int TabPredictionModel::projectModelAddProject(QString projectName)
 {
-    DBProject project = mainModel->db.getProjectInfoFromName(projectName);
+    DBProject project = db->getProjectInfoFromName(projectName);
     QPair<QVector<qreal>,int> pricesTmp;
 
     pricesTmp = pricesTextToVector(project.pre_prices());
@@ -96,7 +101,7 @@ int TabPredictionModel::projectModelAddProject(QString projectName)
     int projectLifetime = -1;
     if (project.type()!="Другое")
     {
-        projectLifetime = mainModel->db.getSpacecraftLifetimeById(project.unit_id());
+        projectLifetime = db->getSpacecraftLifetimeById(project.unit_id());
     }
 
     ProjectSet newProjectSet = ProjectSet(project.type(),
@@ -131,17 +136,17 @@ int TabPredictionModel::projectModelAddProject(QString projectName)
 
 QStringList TabPredictionModel::getValidLaunchesNamesStringList()
 {
-    QVector<QVector<int>> ids = mainModel->db.getValidLaunchesIds();
+    QVector<QVector<int>> ids = db->getValidLaunchesIds();
     QVector<QString> names;
     for (int i=0;i<ids.length();i++)
     {
-        QString boosterRocketName = mainModel->db.getNameFromTableById("unit",ids[i][0]);
-        QString upperBlockName = mainModel->db.getNameFromTableById("unit",ids[i][1]);
-        QString spaceportName = mainModel->db.getNameFromTableById("spaceport",ids[i][2]);
+        QString boosterRocketName = db->getNameFromTableById("unit",ids[i][0]);
+        QString upperBlockName = db->getNameFromTableById("unit",ids[i][1]);
+        QString spaceportName = db->getNameFromTableById("spaceport",ids[i][2]);
         names.append(boosterRocketName + " с " + upperBlockName + " (" + spaceportName+ ")");
     }
 
-    return mainModel->QVectorToQStringList(names);
+    return QVectorToQStringList(names);
 }
 
 int TabPredictionModel::projectModelGetProjectNumber(QString projectName)
@@ -249,7 +254,7 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
                     curYear--;
                 }
             }
-            qreal spacecraftWeigth = mainModel->db.getSpacecraftWeightByProjectName(projectName);
+            qreal spacecraftWeigth = db->getSpacecraftWeightByProjectName(projectName);
 
             firstUnit = false;
             int fInd;
@@ -260,7 +265,7 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
             QString upperBlockName = boosterRocketValues[i].mid(fInd+3,sInd-(fInd+4));
             QString spaceportName = boosterRocketValues[i].mid(sInd+1, boosterRocketValues[i].length()-(sInd+2));
 
-            DBlaunch currentLaunch = mainModel->db.getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName);
+            DBlaunch currentLaunch = db->getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName);
             qreal launchPrice = currentLaunch.launch_price();
             qreal deliveryPrice = currentLaunch.delivery_price();
             int launchDeliveryStartYear = currentLaunch.price_year();
@@ -404,13 +409,13 @@ void TabPredictionModel::saveToFile(QVector<FileProjectValue> saveValues, QStrin
             QString upperBlockName = launchValueVector[j].mid(fInd+3,sInd-(fInd+4));
             QString spaceportName = launchValueVector[j].mid(sInd+1, launchValueVector[j].length()-(sInd+2));
 
-            launchIds += (QString::number(mainModel->db.getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName).id()) + ";");
+            launchIds += (QString::number(db->getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName).id()) + ";");
         }
         okrYears.remove(okrYears.length()-1,1);
         serialYears.remove(serialYears.length()-1,1);
         unitBlock.remove(unitBlock.length()-1,1);
         launchIds.remove(launchIds.length()-1,1);
-        resultString += QString::number(mainModel->db.getProjectInfoFromName(saveValues[i].getProjectName()).id()) + "," + okrYears + "," + serialYears + "," + unitBlock + "," + launchIds + "\n";
+        resultString += QString::number(db->getProjectInfoFromName(saveValues[i].getProjectName()).id()) + "," + okrYears + "," + serialYears + "," + unitBlock + "," + launchIds + "\n";
     }
     fileManager = new FileManager();
     fileManager->saveToFile(filePath, resultString);
@@ -429,7 +434,7 @@ QVector<FileProjectValue> TabPredictionModel::loadFromFile(QString filePath)
     for (int i=0;i<projectValues.length();i++)
     {
         QStringList rows = projectValues[i].split(",");
-        QString projectName = mainModel->db.getProjectInfoFromId(rows[0].toInt()).name();
+        QString projectName = db->getProjectInfoFromId(rows[0].toInt()).name();
         QVector<int> okrYears = fileRowTextToVector(rows[1]);
         QVector<int> serialYears = fileRowTextToVector(rows[2]);
         QVector<int> unitBlocks = fileRowTextToVector(rows[3]);
@@ -438,10 +443,10 @@ QVector<FileProjectValue> TabPredictionModel::loadFromFile(QString filePath)
 
         for (int j=0;j<launchIds.length();j++)
         {
-            DBlaunch a = mainModel->db.getLaunchById(launchIds[i]);
-            QString boosterRocketName = mainModel->db.getNameFromTableById("unit",a.booster_rocket_id());
-            QString upperBlockName = mainModel->db.getNameFromTableById("unit",a.upper_block_id());
-            QString spaceportName = mainModel->db.getNameFromTableById("spaceport",a.spaceport_id());
+            DBlaunch a = db->getLaunchById(launchIds[i]);
+            QString boosterRocketName = db->getNameFromTableById("unit",a.booster_rocket_id());
+            QString upperBlockName = db->getNameFromTableById("unit",a.upper_block_id());
+            QString spaceportName = db->getNameFromTableById("spaceport",a.spaceport_id());
             launchValues.append(boosterRocketName + " с " + upperBlockName + " (" + spaceportName+ ")");
         }
         resultVector.append(FileProjectValue(projectName, okrYears, serialYears, unitBlocks, launchValues));
@@ -727,4 +732,14 @@ void TabPredictionModel::saveToPdf(QString name, QVector<QVector<QString>> data,
     fileManager = new FileManager();
     fileManager->printPDF(&doc, filePath);
     delete fileManager;
+}
+
+QStringList TabPredictionModel::QVectorToQStringList(QVector<QString> vector)
+{
+    QStringList result = {};
+    for (int i=0;i<vector.length();i++)
+    {
+        result.append(vector[i]);
+    }
+    return result;
 }

@@ -9,7 +9,7 @@ class TabNewCraftModel
 {
 public:
     TabNewCraftModel();
-    TabNewCraftModel(MainModel* _mainModel);
+//    TabNewCraftModel(MainModel* _mainModel);
     QString addUnitToDB(QString unit_class,
             QString name,
             QString purpose,
@@ -72,8 +72,10 @@ public:
     bool getUpdateUnitImageChanged() const;
     void setUpdateUnitImageChanged(bool newUpdateUnitImageChanged);
 
+    TabNewCraftModel(database *db);
 private:
-    MainModel* mainModel;
+//    MainModel* mainModel;
+    database* db;
     bool updateUnitImageChanged;
 };
 

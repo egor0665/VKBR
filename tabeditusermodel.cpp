@@ -7,39 +7,44 @@ TabEditUserModel::TabEditUserModel()
 
 }
 
-TabEditUserModel::TabEditUserModel(MainModel *_mainModel)
+//TabEditUserModel::TabEditUserModel(MainModel *_mainModel)
+//{
+//    mainModel = _mainModel;
+//}
+
+TabEditUserModel::TabEditUserModel(database *db)
 {
-    mainModel = _mainModel;
+    this->db = db;
 }
 
 int TabEditUserModel::getUserIdByName(QString name)
 {
-    return mainModel->db.getUserIdByName(name);
+    return db->getUserIdByName(name);
 }
 
 DBUser TabEditUserModel::getUserById(int userId)
 {
-    return mainModel->db.getUserById(userId);
+    return db->getUserById(userId);
 }
 
 void TabEditUserModel::addUserToDB(QString name, QString role, QString password)
 {
-    mainModel->db.addUserToDB(DBUser(-1, name, role, password));
+    db->addUserToDB(DBUser(-1, name, role, password));
 }
 
 void TabEditUserModel::updateUserDB(int id, QString name, QString role, QString password)
 {
-    mainModel->db.updateUserDB(DBUser(id, name, role, password));
+    db->updateUserDB(DBUser(id, name, role, password));
 }
 
 void TabEditUserModel::deleteUserFromDB(int userId)
 {
-    mainModel->db.deleteUserFromDB(userId);
+    db->deleteUserFromDB(userId);
 }
 
 bool TabEditUserModel::lastAdmin()
 {
-    if (mainModel->db.getAdminUserCount()>1)
+    if (db->getAdminUserCount()>1)
         return false;
     else
         return true;
