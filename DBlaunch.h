@@ -5,11 +5,11 @@
 
 
 
-class DBlaunch
+class DBLaunch
 {
 public:
-    DBlaunch();
-    DBlaunch(int id, int booster_rocket_id, int upper_block_id, int spaceport_id, int price_year, const QString &prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload, bool valid);
+    DBLaunch();
+    DBLaunch(int id, int booster_rocket_id, int upper_block_id, int spaceport_id, int price_year, const QString &prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload, bool valid);
 
     int id() const;
     int booster_rocket_id() const;

@@ -17,7 +17,7 @@ TabPredictionModel::TabPredictionModel()
 
 }
 
-TabPredictionModel::TabPredictionModel(database *db)
+TabPredictionModel::TabPredictionModel(DataBase *db)
 {
     this->db = db;
 }
@@ -265,7 +265,7 @@ QVector<QVector<QPair<QString,QString>>> TabPredictionModel::predictPrices(QStri
             QString upperBlockName = boosterRocketValues[i].mid(fInd+3,sInd-(fInd+4));
             QString spaceportName = boosterRocketValues[i].mid(sInd+1, boosterRocketValues[i].length()-(sInd+2));
 
-            DBlaunch currentLaunch = db->getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName);
+            DBLaunch currentLaunch = db->getLaunchFromParamIds(boosterRocketName, upperBlockName, spaceportName);
             qreal launchPrice = currentLaunch.launch_price();
             qreal deliveryPrice = currentLaunch.delivery_price();
             int launchDeliveryStartYear = currentLaunch.price_year();
@@ -443,7 +443,7 @@ QVector<FileProjectValue> TabPredictionModel::loadFromFile(QString filePath)
 
         for (int j=0;j<launchIds.length();j++)
         {
-            DBlaunch a = db->getLaunchById(launchIds[i]);
+            DBLaunch a = db->getLaunchById(launchIds[i]);
             QString boosterRocketName = db->getNameFromTableById("unit",a.booster_rocket_id());
             QString upperBlockName = db->getNameFromTableById("unit",a.upper_block_id());
             QString spaceportName = db->getNameFromTableById("spaceport",a.spaceport_id());

@@ -26,14 +26,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    database*  db = model.getDBLink();
+    DataBase*  db = model.getDBLink();
     tabCatalogAndComparisonModel = TabCatalogAndComparisonModel(db);
 
     tabPredictionModel = TabPredictionModel(db);
-    tabNewProjectModel = TabNewProjectModel(db);
-    tabEditDBModel = TabEditDBModel(db);
-    tabNewExtrasModel = TabNewExtrasModel(db);
-    tabNewCraftModel = TabNewCraftModel(db);
+    tabNewProjectModel = TabEditProjectModel(db);
+//    tabEditDBModel = TabEditDBModel(db);
+    tabNewExtrasModel = TabEditExtrasModel(db);
+    tabNewCraftModel = TabEditCraftModel(db);
 
     tabEditUserModel = TabEditUserModel(db);
     rebuildTabs();
@@ -978,7 +978,7 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
 {
     if (boosterRocket != "" && upperBlock != "" && spaceport != "")
     {
-        DBlaunch currentLaunch = tabNewExtrasModel.getLaunchFromParamIds(boosterRocket,upperBlock, spaceport);
+        DBLaunch currentLaunch = tabNewExtrasModel.getLaunchFromParamIds(boosterRocket,upperBlock, spaceport);
 
         ui->doubleSpinBox->setValue(currentLaunch.delivery_price());
         ui->doubleSpinBox_2->setValue(currentLaunch.launch_price());

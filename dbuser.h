@@ -11,8 +11,6 @@ public:
     DBUser();
     DBUser(int id, const QString &name, const QString &role, const QString &password);
 
-
-
     int id() const;
     void setId(int newId);
     const QString &name() const;

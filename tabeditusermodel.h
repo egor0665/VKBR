@@ -9,7 +9,6 @@ class TabEditUserModel
 {
 public:
     TabEditUserModel();
-//    TabEditUserModel(MainModel* _mainModel);
 
     int getUserIdByName(QString name);
     DBUser getUserById(int userId);
@@ -17,9 +16,9 @@ public:
     void updateUserDB(int id, QString name, QString role, QString password);
     void deleteUserFromDB(int userId);
     bool lastAdmin();
-    TabEditUserModel(database *db);
+    TabEditUserModel(DataBase *db);
 private:
-    database* db;
+    DataBase* db;
 };
 
 #endif // TABEDITUSERMODEL_H

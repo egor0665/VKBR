@@ -4,18 +4,16 @@
 #include <MainModel.h>
 #include <qstring.h>
 
-class TabNewProjectModel
+class TabEditProjectModel
 {
 public:
-    TabNewProjectModel();
-//    TabNewProjectModel(MainModel *_mainModel);
+    TabEditProjectModel();
     void addProjectToDB(QString name, QString type, QString unit_name);
     QVector<QVector<qreal>> getProjectPricesFromName(QString projectName);
     void updateProjectInfo(QString projectName, QVector<qreal> pre_prices, QVector<qreal> first_unit_prices, QVector<qreal> last_unit_prices, QVector<qreal> post_prices, QVector<qreal> serial_prices);
-    TabNewProjectModel(database *db);
+    TabEditProjectModel(DataBase *db);
 private:
-//    MainModel* mainModel;
-    database* db;
+    DataBase* db;
 };
 
 #endif // TABNEWPROJECTMODEL_H

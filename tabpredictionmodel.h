@@ -13,7 +13,6 @@ class TabPredictionModel
 
 public:
     TabPredictionModel();
-//    TabPredictionModel(MainModel* _mainModel);
     QStringList getNamesFromTableStringList(QString tableName);
     int projectModelAddProject(QString projectName);
     QStringList getValidLaunchesNamesStringList();
@@ -28,11 +27,10 @@ public:
     void saveToPdf(QString name, QVector<QVector<QString>> data, QVector<QString> values,  QVector<QPair<QVector<QString>,QString>> chartValues, int startYear, int endYear, QString filePath);
 
     void setUpValues();
-    TabPredictionModel(database *db);
+    TabPredictionModel(DataBase *db);
     QStringList QVectorToQStringList(QVector<QString> vector);
 private:
-//    MainModel* mainModel;
-    database* db;
+    DataBase* db;
     PredictionModel predictionModel;
     FileManager *fileManager;
     qreal inflationMatrix[INFLATIONMATRIXN][INFLATIONMATRIXN];

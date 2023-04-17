@@ -33,14 +33,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    database db;
+    DataBase db;
     MainModel model;
 
     TabPredictionModel tabPredictionModel;
-    TabNewProjectModel tabNewProjectModel;
-    TabEditDBModel tabEditDBModel;
-    TabNewExtrasModel tabNewExtrasModel;
-    TabNewCraftModel tabNewCraftModel;
+    TabEditProjectModel tabNewProjectModel;
+    //TabEditDBModel tabEditDBModel;
+    TabEditExtrasModel tabNewExtrasModel;
+    TabEditCraftModel tabNewCraftModel;
     TabCatalogAndComparisonModel tabCatalogAndComparisonModel;
     TabEditUserModel tabEditUserModel;
 
@@ -75,7 +75,6 @@ protected:
     QTextEdit *econInfoField;
     QComboBox *projectTypeComboBox;
     QLineEdit *projectNameField;
-    //QVector<QString> comparisonTableFields;
 
     void buildDisplayTab();
     void buildCompareTab();

@@ -12,9 +12,7 @@ class TabCatalogAndComparisonModel
 {
 public:
     TabCatalogAndComparisonModel();
-    //TabCatalogAndComparisonModel(MainModel* _mainModel);
-    TabCatalogAndComparisonModel(database* d);
-    QTreeWidget *navigationTreeWidget;
+    TabCatalogAndComparisonModel(DataBase* d);
 
     QVector <QPair<QString,QString>> splitValues(QString values);
     QVector<QVector <QPair<QString,QString>>> getUnitData(int unitId);
@@ -39,8 +37,7 @@ public:
     void saveToPdfComparisonTab(QVector<QString> names, QVector<QImage> images, QVector<QVector<QString>> values, QVector<QVector<QString>> compareValues, QVector<int> selectedValues1, QVector<int> selectedValues2, QChartView* chart1 , QChartView* chart2 ,QString filePath);
 private:
     FileManager *fileManager;
-    //MainModel* mainModel;
-    database* db;
+    DataBase* db;
 };
 
 #endif // TABCATALOGANDCOMPARISONMODEL_H

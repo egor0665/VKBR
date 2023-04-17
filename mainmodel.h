@@ -14,18 +14,15 @@ class MainModel
 {
 public:
     MainModel();
-    database db;
-    ChartManager chartManager;
+    DataBase db;
     QVector <QString> getNamesFromTable(QString tableName);
     QStringList getNamesFromTableStringList(QString tableName);
     QStringList QVectorToQStringList(QVector <QString> vector);
-//    void updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload, bool valid);
-
     QString login(QString name, QString password);
     const QString &getUserRole() const;
     void setUserRole(const QString &newUserRole);
 
-    database *getDBLink();
+    DataBase *getDBLink();
 protected:
     QString userRole;
 };

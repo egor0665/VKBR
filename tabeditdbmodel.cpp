@@ -10,7 +10,7 @@ TabEditDBModel::TabEditDBModel()
 //    mainModel = _mainModel;
 //}
 
-TabEditDBModel::TabEditDBModel(database *db)
+TabEditDBModel::TabEditDBModel(DataBase *db)
 {
     this->db = db;
 }

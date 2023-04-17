@@ -12,7 +12,7 @@ TabEditUserModel::TabEditUserModel()
 //    mainModel = _mainModel;
 //}
 
-TabEditUserModel::TabEditUserModel(database *db)
+TabEditUserModel::TabEditUserModel(DataBase *db)
 {
     this->db = db;
 }

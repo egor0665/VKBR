@@ -11,11 +11,11 @@
 
 MainModel::MainModel()
 {
-    db = database();
+    db = DataBase();
     db.createConnection();
 }
 
-database* MainModel::getDBLink()
+DataBase* MainModel::getDBLink()
 {
     return &db;
 }

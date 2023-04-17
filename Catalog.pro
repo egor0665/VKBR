@@ -19,25 +19,19 @@ SOURCES += \
     DBspaceport.cpp \
     DBunit.cpp \
     DBupper_block.cpp \
-    chartdialog.cpp \
-    chartmanager.cpp \
-    chartview.cpp \
     database.cpp \
     dbproject.cpp \
     dbspacecraft.cpp \
     dbuser.cpp \
     filemanager.cpp \
     fileprojectvalue.cpp \
-    launchdata.cpp \
     main.cpp \
     mainmodel.cpp \
     mainwindow.cpp \
-    menu.cpp \
     predictionmodel.cpp \
     projectset.cpp \
     savetopdfdialog.cpp \
     tabcatalogandcomparisonmodel.cpp \
-    tabeditdbmodel.cpp \
     tabeditusermodel.cpp \
     tabnewcraftmodel.cpp \
     tabnewextrasmodel.cpp \
@@ -55,9 +49,6 @@ HEADERS += \
     DBunit.h \
     DBupper_block.h \
     PALETTE.h \
-    chartdialog.h \
-    chartmanager.h \
-    chartview.h \
     comparevalue.h \
     database.h \
     dbChangeValue.h \
@@ -65,15 +56,12 @@ HEADERS += \
     dbuser.h \
     filemanager.h \
     fileprojectvalue.h \
-    launchdata.h \
     mainmodel.h \
     mainwindow.h \
-    menu.h \
     predictionmodel.h \
     projectset.h \
     savetopdfdialog.h \
     tabcatalogandcomparisonmodel.h \
-    tabeditdbmodel.h \
     tabeditusermodel.h \
     tabnewcraftmodel.h \
     tabnewextrasmodel.h \
@@ -83,7 +71,6 @@ HEADERS += \
     userloginwindow.h
 
 FORMS += \
-    chartdialog.ui \
     mainwindow.ui \
     savetopdfdialog.ui \
     userloginwindow.ui

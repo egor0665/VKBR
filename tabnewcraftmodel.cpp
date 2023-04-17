@@ -1,7 +1,7 @@
 #include "tabnewcraftmodel.h"
 #include <QDebug>
 
-TabNewCraftModel::TabNewCraftModel()
+TabEditCraftModel::TabEditCraftModel()
 {
 
 }
@@ -11,12 +11,12 @@ TabNewCraftModel::TabNewCraftModel()
 //    mainModel = _mainModel;
 //}
 
-TabNewCraftModel::TabNewCraftModel(database *db)
+TabEditCraftModel::TabEditCraftModel(DataBase *db)
 {
     this->db = db;
 }
 
-QString TabNewCraftModel::addUnitToDB(
+QString TabEditCraftModel::addUnitToDB(
         QString unit_class,
         QString name,
         QString purpose,
@@ -71,7 +71,7 @@ QString TabNewCraftModel::addUnitToDB(
         for (int i=0;i<upperBlockIds.length();i++)
             for (int j=0;j<spaceportIds.length();j++)
             {
-                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketId, upperBlockIds[i],spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
+                DBLaunch tmpLaunch = DBLaunch(-1, boosterRocketId, upperBlockIds[i],spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
                 db->addLaunchInformation(tmpLaunch);
             }
     }
@@ -85,7 +85,7 @@ QString TabNewCraftModel::addUnitToDB(
         for (int i=0;i<boosterRocketIds.length();i++)
             for (int j=0;j<spaceportIds.length();j++)
             {
-                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockId,spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
+                DBLaunch tmpLaunch = DBLaunch(-1, boosterRocketIds[i], upperBlockId,spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
                 db->addLaunchInformation(tmpLaunch);
             }
     }
@@ -97,7 +97,7 @@ QString TabNewCraftModel::addUnitToDB(
     return "db.addUnitToDBRetId(newUnit);";
 }
 
-QString TabNewCraftModel::updateUnitDB(
+QString TabEditCraftModel::updateUnitDB(
         int id,
         QString unit_class,
         QString name,
@@ -156,7 +156,7 @@ QString TabNewCraftModel::updateUnitDB(
         for (int i=0;i<upperBlockIds.length();i++)
             for (int j=0;j<spaceportIds.length();j++)
             {
-                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketId, upperBlockIds[i],spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
+                DBLaunch tmpLaunch = DBLaunch(-1, boosterRocketId, upperBlockIds[i],spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
                 db->addLaunchInformation(tmpLaunch);
             }
     }
@@ -170,7 +170,7 @@ QString TabNewCraftModel::updateUnitDB(
         for (int i=0;i<boosterRocketIds.length();i++)
             for (int j=0;j<spaceportIds.length();j++)
             {
-                DBlaunch tmpLaunch = DBlaunch(-1, boosterRocketIds[i], upperBlockId,spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
+                DBLaunch tmpLaunch = DBLaunch(-1, boosterRocketIds[i], upperBlockId,spaceportIds[j],2020,"0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",0,0,0,0, false);
                 db->addLaunchInformation(tmpLaunch);
             }
     }
@@ -182,37 +182,37 @@ QString TabNewCraftModel::updateUnitDB(
     return "db.addUnitToDBRetId(newUnit);";
 }
 
-DBUnit TabNewCraftModel::getUnitDataByName(QString unitName)
+DBUnit TabEditCraftModel::getUnitDataByName(QString unitName)
 {
     return db->getUnitInfoFromName(unitName);
 }
 
-DBOrganization TabNewCraftModel::getOrganizationById(int organizationId)
+DBOrganization TabEditCraftModel::getOrganizationById(int organizationId)
 {
     return db->getOrganizationInfoFromId(organizationId);
 }
 
-DBSpaceport TabNewCraftModel::getSpaceportById(int spaceportId)
+DBSpaceport TabEditCraftModel::getSpaceportById(int spaceportId)
 {
     return db->getSpaceportInfoFromId(spaceportId);
 }
 
-DBBooster_rocket TabNewCraftModel::getBoosterRocketById(int boosterRocketId)
+DBBooster_rocket TabEditCraftModel::getBoosterRocketById(int boosterRocketId)
 {
     return db->getBooster_rocketInfoFromId(boosterRocketId);
 }
 
-DBUpper_block TabNewCraftModel::getUpperBlockById(int upperBlockId)
+DBUpper_block TabEditCraftModel::getUpperBlockById(int upperBlockId)
 {
     return db->getUpper_blockInfoFromId(upperBlockId);
 }
 
-DBSpacecraft TabNewCraftModel::getSpacecraftById(int spacecraftId)
+DBSpacecraft TabEditCraftModel::getSpacecraftById(int spacecraftId)
 {
     return db->getSpacecraftInfoFromId(spacecraftId);
 }
 
-void TabNewCraftModel::deleteSpacecraft(int unitId)
+void TabEditCraftModel::deleteSpacecraft(int unitId)
 {
     QString unitClass = db->getUnitClassById(unitId);
     if (unitClass=="РН")
@@ -232,12 +232,12 @@ void TabNewCraftModel::deleteSpacecraft(int unitId)
     db->deleteUnit(unitId);
 }
 
-bool TabNewCraftModel::getUpdateUnitImageChanged() const
+bool TabEditCraftModel::getUpdateUnitImageChanged() const
 {
     return updateUnitImageChanged;
 }
 
-void TabNewCraftModel::setUpdateUnitImageChanged(bool newUpdateUnitImageChanged)
+void TabEditCraftModel::setUpdateUnitImageChanged(bool newUpdateUnitImageChanged)
 {
     updateUnitImageChanged = newUpdateUnitImageChanged;
 }

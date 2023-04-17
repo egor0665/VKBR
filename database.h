@@ -4,7 +4,6 @@
 #include "DBProject.h"
 #include "DBUser.h"
 #include "DBspacecraft.h"
-
 #include <DBorganization.h>
 #include <QMainWindow>
 #include <QObject>
@@ -16,10 +15,10 @@
 #include <dbChangeValue.h>
 #include <DBlaunch.h>
 
-class database
+class DataBase
 {
 public:
-    database();
+    DataBase();
     bool createConnection();
     QVector <QPair<QString,QString>> getUnitClassesAndNames();
     QVector <QString> getUnitNames();
@@ -33,22 +32,17 @@ public:
     QString getUnitClassById(int unitId);
     QVector <QString> getOrganizationNames();
     QVector <QString> getNamesFromTable(QString tableName);
-
     DBUpper_block getUpper_blockInfoFromId(int unitId);
-
     QVector <QString> getTableNames();
     QVector <QString> getTableDescriptions();
-
     int getTableColumnCount(QString tableName);
     QVector <QString> getTableColumnNames(QString tableName);
     QVector <QString> getDataFromTable(QString tableName);
-
     QVector<QVector<QString>> getValuesFromTable(QString tableName, int valuesNum);
     QString updateDataInTable(QString tableName, QVector<dbChangeValue> dbValuesToChange);
     int getOrganizationIdFromName(QString organizationName);
     int getSpaceportIdFromName(QString spaceportName);
     int addUnitToDBRetId(DBUnit unit);
-
     void addBoosterRocketToDB(DBBooster_rocket boosterRocket);
     void addUpperBlockToDB(DBUpper_block upperBlock);
     void addOrganoizationToDB(DBOrganization newOrganization);
@@ -58,9 +52,9 @@ public:
     DBProject getProjectInfoFromName(QString projectName);
     void updateProjectPricesByName(QString projectName, QString new_pre_prices, QString new_first_unit_prices, QString new_last_unit_prices, QString new_post_prices, QString new_serial_prices);
     QVector <int> getIdsFromTable(QString tableName);
-    void addLaunchInformation(DBlaunch launch);
+    void addLaunchInformation(DBLaunch launch);
     QVector <QString> getUnitNamesByType(QString type);
-    DBlaunch getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport);
+    DBLaunch getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport);
     int getSpacecraftLifetimeById(int unitId);
     void updateLaunchPricesByIds(int boosterRocketId, int upperBlockId, int spaceportId, int price_year, QString prices, qreal launch_price, qreal delivery_price, qreal min_payload, qreal max_payload, bool valid);
     QVector<QVector<int>> getValidLaunchesIds();
@@ -73,7 +67,7 @@ public:
     void updateUpperBlockDB(DBUpper_block upperBlock);
     void updateBoosterRocketDB(DBBooster_rocket boosterRocket);
     DBProject getProjectInfoFromId(int projectId);
-    DBlaunch getLaunchById(int id);
+    DBLaunch getLaunchById(int id);
     void deleteUnit(int unitId);
     void deleteBoosterRocket(int unitId);
     void deleteSpacecraft(int unitId);

@@ -4,15 +4,14 @@
 #include <MainModel.h>
 #include <qstringlist.h>
 
-class TabNewExtrasModel
+class TabEditExtrasModel
 {
 public:
-    TabNewExtrasModel();
-//    TabNewExtrasModel(MainModel *_mainModel);
+    TabEditExtrasModel();
     void addOrganizationToDB(QString name);
     void addSpaceportToDB(QString name);
     QStringList getUnitNamesByTypeStringList(QString type);
-    DBlaunch getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport);
+    DBLaunch getLaunchFromParamIds(QString boosterRocket, QString upperBlock, QString spaceport);
     QVector<qreal> pricesToVector(QString prices);
     int getOrganizationId(QString name);
     int getSpaceportId(QString name);
@@ -22,12 +21,12 @@ public:
     void deleteSpaceport(int id);
     QVector<qreal> getInflation();
     void updateInflation(QVector<QPair<int,qreal>> values);
-    TabNewExtrasModel(database *db);
+    TabEditExtrasModel(DataBase *db);
     void updateLaunchPricesByIds(QString boosterRocketName, QString upperBlockName, QString spaceportName, int priceYear, QString prices, qreal launchPrice, qreal deliveryPrice, qreal minPayload, qreal maxPayload, bool valid);
     QStringList QVectorToQStringList(QVector<QString> vector);
 private:
 //    MainModel* mainModel;
-    database* db;
+    DataBase* db;
 };
 
 #endif // TABNEWEXTRASMODEL_H

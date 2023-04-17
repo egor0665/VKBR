@@ -5,11 +5,10 @@
 #include <qdatetime.h>
 #include <qstring.h>
 
-class TabNewCraftModel
+class TabEditCraftModel
 {
 public:
-    TabNewCraftModel();
-//    TabNewCraftModel(MainModel* _mainModel);
+    TabEditCraftModel();
     QString addUnitToDB(QString unit_class,
             QString name,
             QString purpose,
@@ -72,10 +71,9 @@ public:
     bool getUpdateUnitImageChanged() const;
     void setUpdateUnitImageChanged(bool newUpdateUnitImageChanged);
 
-    TabNewCraftModel(database *db);
+    TabEditCraftModel(DataBase *db);
 private:
-//    MainModel* mainModel;
-    database* db;
+    DataBase* db;
     bool updateUnitImageChanged;
 };
 

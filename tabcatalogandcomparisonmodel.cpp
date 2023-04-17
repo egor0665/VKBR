@@ -11,7 +11,7 @@ TabCatalogAndComparisonModel::TabCatalogAndComparisonModel()
 //    mainModel = _mainModel;
 //}
 
-TabCatalogAndComparisonModel::TabCatalogAndComparisonModel(database *db)
+TabCatalogAndComparisonModel::TabCatalogAndComparisonModel(DataBase *db)
 {
     this->db = db;
 }
