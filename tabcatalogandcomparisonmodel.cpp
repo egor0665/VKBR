@@ -6,10 +6,6 @@ TabCatalogAndComparisonModel::TabCatalogAndComparisonModel()
 {
 
 }
-//TabCatalogAndComparisonModel::TabCatalogAndComparisonModel(MainModel *_mainModel)
-//{
-//    mainModel = _mainModel;
-//}
 
 TabCatalogAndComparisonModel::TabCatalogAndComparisonModel(DataBase *db)
 {
@@ -259,41 +255,6 @@ QVector<QPair<QString,QStringList>> TabCatalogAndComparisonModel::formCompareTab
             }
         }
     }
-
-    //    QVector<QPair<QString,QStringList>> singleValuesVector;
-    //    for (int i=0; i<unitValues_1.length();i++)
-    //    {
-    //        QString compVal = unitValues_1[i].first;
-    //        bool found = false;
-    //        for (int j=0;j<unitValues_2.length();j++)
-    //        {
-    //            if (unitValues_2[j].first==compVal){
-    //                compareVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second,unitValues_2[j].second}));
-    //                found=true;
-    //                break;
-    //            }
-    //        }
-    //        if (!found) {
-    //            singleValuesVector.append(QPair<QString,QStringList>(compVal, {unitValues_1[i].second, ""}));
-    //        }
-    //    }
-
-    //    for (int i=0; i<unitValues_2.length();i++)
-    //    {
-    //        QString compVal = unitValues_2[i].first;
-    //        bool found = false;
-    //        for (int j=0;j<unitValues_1.length();j++)
-    //        {
-    //            if (unitValues_1[j].first==compVal){
-    //                found=true;
-    //                break;
-    //            }
-    //        }
-    //        if (!found) {
-    //            singleValuesVector.append(QPair<QString,QStringList>(compVal, { "", unitValues_2[i].second}));
-    //        }
-    //    }
-    //    compareVector.append(singleValuesVector);
     return compareVector;
 }
 

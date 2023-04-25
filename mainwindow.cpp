@@ -61,7 +61,6 @@ void MainWindow::rebuildTabs()
     buildEditUsersTab();
 }
 
-
 void MainWindow::startAuth()
 {
     this->setEnabled(false);
@@ -128,6 +127,43 @@ void MainWindow::showHintMessage(QString text, QString type)
         ui->label_56->setText("");
         ui->label_56->hide();
     });
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Сохранить сценарий", "Сохранить файл сценария?", QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+    if (reply == QMessageBox::Yes)
+    {
+        if (saveFilePath != "")
+        {
+            saveToFile(saveFilePath);
+            showHintMessage("Успешно сохранено в " + saveFilePath, "notification");
+            QApplication::quit();
+            event->accept();
+        }
+        else
+        {
+            QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
+            if (filePath != "")
+            {
+                saveToFile(filePath);
+                showHintMessage("Успешно сохранено в "+ filePath, "notification");
+                QApplication::quit();
+                event->accept();
+            }
+            else event->ignore();
+        }
+    }
+    else if (reply == QMessageBox::Cancel)
+    {
+        event->ignore();
+    }
+    else
+    {
+        QApplication::quit();
+        event->accept();
+    }
 }
 
 void MainWindow::enableUI()
@@ -346,24 +382,6 @@ void MainWindow::rebuildCompareTable(QVector<QString> selectedUnits)
         for (int i=0;i<ui->tableWidget_4->columnCount();i++)
             ui->tableWidget_4->setColumnWidth(i,newColWidth);
     }
-//    if (ui->tableWidget_4->rowCount()>0)
-//        for(int i=0;i<ui->tableWidget_4->columnCount();i++)
-//            ui->tableWidget_4->item(0,i)->setFlags(Qt::ItemIs);
-
-//    QPixmap image;
-//    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1).toUtf8()), "PNG");
-//    //QImage picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_1));
-//    ui->label_7->setPixmap(image.scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
-//    image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2).toUtf8()), "PNG");
-//    //picture = QImage(tabCatalogAndComparisonModel.getUnitImageFromId(unitId_2));
-//    ui->label_8->setPixmap(image.scaled(ui->comboBox->width()/2,ui->comboBox->width()/2,Qt::KeepAspectRatio));
-
-//    ui->tableWidget_4->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-//    ui->tableWidget_4->setColumnWidth(1,ui->tableWidget_4->width()/2);
-//    comparator.clearValues();
-//    for (int i=0;)
-//    comparator.addUnitName(unitName1);
-//    comparator.addUnitName(unitName2);
 
 }
 
@@ -1377,7 +1395,6 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column, QString space
                 {
                     if (valuesVector[i][j-1].first!="0") ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
                     else ui->tableWidget_8->item(startRow+i,j)->setText("");
-                    //ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
                     if (valuesVector[i][j-1].second == "normal")
                         ui->tableWidget_8->item(startRow+i,j)->setBackgroundColor(QColor(255,255,255));
                     if (valuesVector[i][j-1].second == "current")
@@ -1391,7 +1408,6 @@ void MainWindow::on_tableWidget_8_cellChanged(int row, int column, QString space
                     if (valuesVector[i][j-1].first!="0") ui->tableWidget_8->item(startRow+i,j)->setText(valuesVector[i][j-1].first);
                     else ui->tableWidget_8->item(startRow+i,j)->setText("");
                 }
-
 
             QVector<qreal> spaceCraftTotal, boosterRocketTotal, total;
             for (int i=0;i<ui->tableWidget_8->columnCount();i++)

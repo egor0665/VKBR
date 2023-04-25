@@ -51,7 +51,6 @@ HEADERS += \
     PALETTE.h \
     comparevalue.h \
     database.h \
-    dbChangeValue.h \
     dbproject.h \
     dbuser.h \
     filemanager.h \

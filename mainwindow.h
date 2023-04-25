@@ -61,6 +61,7 @@ public:
     void buildEditUsersTab();
     void enableTabsLogin();
     void showHintMessage(QString text, QString type);
+    void closeEvent(QCloseEvent *event);
 public slots:
     void login(QString name,QString password);
     void closeApp();
@@ -86,7 +87,6 @@ protected:
     void buildChart();
     void buildChartTable();
     bool readyToStore;
-    QVector<dbChangeValue> dbValuesToChange;
 
     void rebuildTabs();
     void buildEditProjectTab();
