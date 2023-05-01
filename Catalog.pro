@@ -1,4 +1,4 @@
-QT       += core gui sql charts printsupport
+QT       += core gui sql charts printsupport testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -37,6 +37,8 @@ SOURCES += \
     tabnewextrasmodel.cpp \
     tabnewprojectmodel.cpp \
     tabpredictionmodel.cpp \
+    test_tests.cpp \
+    tests.cpp \
     unitcomparator.cpp \
     userloginwindow.cpp
 
@@ -66,6 +68,8 @@ HEADERS += \
     tabnewextrasmodel.h \
     tabnewprojectmodel.h \
     tabpredictionmodel.h \
+    test_tests.h \
+    tests.h \
     unitcomparator.h \
     userloginwindow.h
 

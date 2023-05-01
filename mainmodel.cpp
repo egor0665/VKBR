@@ -12,7 +12,14 @@
 MainModel::MainModel()
 {
     db = DataBase();
-    db.createConnection();
+    bool open = db.createConnection();
+    if (!open){
+         QMessageBox::warning(0,"Ошибка подключения к БД","Ошибка подключения к БД");
+    }
+    else
+    {
+        QMessageBox::information(0,"Успешное подключения к БД","Успешное подключения к БД");
+    }
 }
 
 DataBase* MainModel::getDBLink()

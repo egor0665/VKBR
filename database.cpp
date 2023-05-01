@@ -31,16 +31,10 @@ bool DataBase::createConnection()
     db.setDatabaseName("CATALOG");
     db.setUserName("postgres");
     db.setPassword("ADMIN");
-    if (!db.open()){
-        //QMessageBox::warning(0,"Ошибка подключения к БД","Ошибка подключения к БД");
-         QMessageBox::warning(0,"Ошибка подключения к БД",db.lastError().text());
+    if (!db.open())
         return false;
-    }
     else
-    {
-        QMessageBox::information(0,"Успешное подключения к БД","Успешное подключения к БД");
         return true;
-    }
 }
 QVector<QPair<QString,QString>> DataBase::getUnitClassesAndNames()
 {
@@ -97,8 +91,7 @@ DBUnit DataBase::getUnitInfoFromName(QString name)
     QSqlQuery query;
     query.exec("SELECT id, unit_class, name, purpose, project, objective, work_status, developer_id, extra_developer_id, manufacturer_id, launches, customer_id, successful, first_launch, first_launch_spaceport_id, financing_type, control_system_type, image_url, price, price_year FROM unit WHERE unit.name LIKE '" + name + " %'");
     query.next();
-    //qDebug() <<query.value(0)<<query.value(1)<<query.value(2)<<query.value(3)<<query.value(4)<<query.value(5)<<query.value(6)<<query.value(7)<<query.value(8)<<query.value(9)<<query.value(10)<<query.value(11)<<query.value(12)<<query.value(13)<<query.value(14)<<query.value(15)<<query.value(16)<<query.value(17)<<query.value(18);
-    qDebug() << "IMGSSS" << query.value(17);
+    qDebug() <<query.value(13);
 
     DBUnit tmpUnit = DBUnit(query.value(0).toInt(),
                         query.value(1).toString().trimmed(),
@@ -113,7 +106,7 @@ DBUnit DataBase::getUnitInfoFromName(QString name)
                         query.value(10).toInt(),
                         query.value(11).toInt(),
                         query.value(12).toInt(),
-                        QDateTime::fromString(query.value(13).toString().trimmed(), "yyyy-MM-dd hh:mm:ss"),
+                        query.value(13).toDateTime(),
                         query.value(14).toInt(),
                         query.value(15).toString().trimmed(),
                         query.value(16).toString().trimmed(),
@@ -203,8 +196,8 @@ DBBooster_rocket DataBase::getBooster_rocketInfoFromId(int unitId)
     DBBooster_rocket tmpBooster_rocket = DBBooster_rocket(query.value(0).toInt(),
                                                  query.value(1).toInt(),
                                                  query.value(2).toInt(),
-                                                 query.value(4).toString().trimmed(),
-                                                 query.value(5).toString().trimmed());
+                                                 query.value(3).toString().trimmed(),
+                                                 query.value(4).toString().trimmed());
     return tmpBooster_rocket;
 }
 DBUpper_block DataBase::getUpper_blockInfoFromId(int unitId)
@@ -625,8 +618,8 @@ void DataBase::addLaunchInformation(DBLaunch launch)
                 QString::number(launch.launch_price()) + ", " +
                 QString::number(launch.delivery_price()) + ", " +
                 QString::number(launch.min_payload()) + ", " +
-                QString::number(launch.max_payload()) + ", " +
-                launch.valid() + ")");
+                QString::number(launch.max_payload()) + ", '" +
+                QString::number(launch.valid()) + "')");
     qDebug() << query.lastError();
     return;
 }
