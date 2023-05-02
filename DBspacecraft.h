@@ -26,6 +26,12 @@ public:
 
     QStringList getValues();
 
+    void setId(int newId);
+    void setWeight(qreal newWeight);
+    void setActive_lifetime(qreal newActive_lifetime);
+    void setPhys_info(const QString &newPhys_info);
+    void setEcon_info(const QString &newEcon_info);
+
 private:
     int _id;
     qreal _weight;

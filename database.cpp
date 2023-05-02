@@ -404,6 +404,7 @@ int DataBase::updateUnitDBRetId(DBUnit unit)
                ", extra_developer_id = " + QString::number(unit.extra_developer_id()) +
                ", manufacturer_id = " + QString::number(unit.manufacturer_id()) +
                ", launches = " + QString::number(unit.launches()) +
+               ", customer_id = " + QString::number(unit.customer_id()) +
                ", successful = " + QString::number(unit.successful()) +
                ", first_launch = '" + unit.first_launch().toString("yyyy-MM-dd HH:mm:ss") +
                "', first_launch_spaceport_id = " + QString::number(unit.first_launch_spaceport_id()) +

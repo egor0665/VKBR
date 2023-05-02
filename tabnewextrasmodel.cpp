@@ -38,11 +38,6 @@ void TabEditExtrasModel::addSpaceportToDB(QString name)
         }
 }
 
-//QStringList TabNewExtrasModel::getNamesFromTableStringList(QString tableName)
-//{
-//     return QVectorToQStringList(mainModel->getNamesFromTable(tableName));
-//}
-
 QStringList TabEditExtrasModel::getUnitNamesByTypeStringList(QString type)
 {
     return QVectorToQStringList(db->getUnitNamesByType(type));

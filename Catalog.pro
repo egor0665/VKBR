@@ -38,7 +38,6 @@ SOURCES += \
     tabnewprojectmodel.cpp \
     tabpredictionmodel.cpp \
     test_tests.cpp \
-    tests.cpp \
     unitcomparator.cpp \
     userloginwindow.cpp
 
@@ -69,7 +68,6 @@ HEADERS += \
     tabnewprojectmodel.h \
     tabpredictionmodel.h \
     test_tests.h \
-    tests.h \
     unitcomparator.h \
     userloginwindow.h
 

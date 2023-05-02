@@ -131,38 +131,45 @@ void MainWindow::showHintMessage(QString text, QString type)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Сохранить сценарий", "Сохранить файл сценария?", QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
-    if (reply == QMessageBox::Yes)
+    if (this->isEnabled())
     {
-        if (saveFilePath != "")
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Сохранить сценарий", "Сохранить файл сценария?", QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+        if (reply == QMessageBox::Yes)
         {
-            saveToFile(saveFilePath);
-            showHintMessage("Успешно сохранено в " + saveFilePath, "notification");
-            QApplication::quit();
-            event->accept();
-        }
-        else
-        {
-            QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
-            if (filePath != "")
+            if (saveFilePath != "")
             {
-                saveToFile(filePath);
-                showHintMessage("Успешно сохранено в "+ filePath, "notification");
+                saveToFile(saveFilePath);
+                showHintMessage("Успешно сохранено в " + saveFilePath, "notification");
                 QApplication::quit();
                 event->accept();
             }
-            else event->ignore();
+            else
+            {
+                QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "C://", "*.scn");
+                if (filePath != "")
+                {
+                    saveToFile(filePath);
+                    showHintMessage("Успешно сохранено в "+ filePath, "notification");
+                    QApplication::quit();
+                    event->accept();
+                }
+                else event->ignore();
+            }
         }
-    }
-    else if (reply == QMessageBox::Cancel)
-    {
-        event->ignore();
+        else if (reply == QMessageBox::Cancel)
+        {
+            event->ignore();
+        }
+        else
+        {
+            QApplication::quit();
+            event->accept();
+        }
     }
     else
     {
         QApplication::quit();
-        event->accept();
     }
 }
 

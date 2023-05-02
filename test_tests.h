@@ -10,8 +10,15 @@ class Test_Tests : public QObject
 public:
     explicit Test_Tests(QObject *parent = 0);
 
-private slots: // должны быть приватными
-    void DBCreateGetCheck(); // int max(int, int)
+private slots:
+    void DBCreateGetCheck();
+    void tabCatalogAndComparisonCheck();
+    void tabEditUserModelCheck();
+    void tabEditCraftModelCheck();
+    void tabEditExtrasModelCheck();
+    void tabEditProjectModelCheck();
+    void tabPredictionModelCheck();
+    void fileSaveTest();
     void DBDeleteCheck();
 private:
     DataBase db;

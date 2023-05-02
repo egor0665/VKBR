@@ -199,8 +199,8 @@ QStringList DBUnit::getValues()
     values.append(QString::number(this->extra_developer_id()));
     values.append(QString::number(this->manufacturer_id()));
     values.append(QString::number(this->launches()));
-    values.append(QString::number(this->successful()));
     values.append(QString::number(this->customer_id()));
+    values.append(QString::number(this->successful()));
     values.append(this->first_launch().toString());
     values.append(QString::number(this->first_launch_spaceport_id()));
     values.append(this->financing_type());

@@ -57,16 +57,6 @@ void TabPredictionModel::setUpValues()
             inflationMatrix[i][j] = inflationMatrix[i][j+1] * 1/inflationPercents[j+1];
         }
     }
-
-//    for (int i=0;i<inflationPercents.length();i++)
-//    {
-//        for (int j=0;j<inflationPercents.length();j++)
-//        {
-//            debugMatrix += QString::number(inflationMatrix[i][j]) + " ";
-//        }
-//        debugMatrix += '\n' ;
-//    }
-//    qDebug() << debugMatrix;
 }
 QStringList TabPredictionModel::getNamesFromTableStringList(QString tableName)
 {

@@ -50,3 +50,28 @@ QStringList DBSpacecraft::getValues()
     return values;
 }
 
+void DBSpacecraft::setId(int newId)
+{
+    _id = newId;
+}
+
+void DBSpacecraft::setWeight(qreal newWeight)
+{
+    _weight = newWeight;
+}
+
+void DBSpacecraft::setActive_lifetime(qreal newActive_lifetime)
+{
+    _active_lifetime = newActive_lifetime;
+}
+
+void DBSpacecraft::setPhys_info(const QString &newPhys_info)
+{
+    _phys_info = newPhys_info;
+}
+
+void DBSpacecraft::setEcon_info(const QString &newEcon_info)
+{
+    _econ_info = newEcon_info;
+}
+

@@ -24,6 +24,12 @@ public:
     int max_payload() const;
     int min_payload() const;
 
+    void setId(int newId);
+    void setMax_payload(int newMax_payload);
+    void setMin_payload(int newMin_payload);
+    void setPhys_info(const QString &newPhys_info);
+    void setEcon_info(const QString &newEcon_info);
+
 private:
     int _id;
     int _max_payload;

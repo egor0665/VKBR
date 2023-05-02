@@ -24,6 +24,16 @@ public:
     const QString &first_unit_prices() const;
     const QString &last_unit_prices() const;
 
+    void setId(int newId);
+    void setName(const QString &newName);
+    void setType(const QString &newType);
+    void setUnit_id(int newUnit_id);
+    void setFirst_unit_prices(const QString &newFirst_unit_prices);
+    void setLast_unit_prices(const QString &newLast_unit_prices);
+    void setPre_prices(const QString &newPre_prices);
+    void setPost_prices(const QString &newPost_prices);
+    void setSerial_prices(const QString &newSerial_prices);
+
 private:
     int _id;
     QString _name;

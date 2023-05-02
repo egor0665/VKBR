@@ -5,30 +5,6 @@ ProjectSet::ProjectSet()
 
 }
 
-//ProjectSet::ProjectSet(const QString &projectType, const QString &projectName, int projectId, int unitId, const QVector<int> &EDWLaunchYears, const QVector<int> &seriesLaunchYears, const QVector<qreal> &spacecraftPrices, const QVector<QString> &boosterRockets, const QVector<int> &spacecraftBlocks, const QVector<qreal> &boosterRocketPrices, const QVector<qreal> &prePrices, int prePricesStartYear, const QVector<qreal> &firstUnitPrices, int firstUnitStartYear, const QVector<qreal> &lastUnitPrices, int lastUnitStartYear, const QVector<qreal> &postPrices, int postPricesStartYear, const QVector<qreal> &serialPrices, int serialPricesStartYear) : projectType(projectType),
-//    projectName(projectName),
-//    projectId(projectId),
-//    unitId(unitId),
-//    EDWLaunchYears(EDWLaunchYears),
-//    seriesLaunchYears(seriesLaunchYears),
-//    spacecraftPrices(spacecraftPrices),
-//    boosterRockets(boosterRockets),
-//    spacecraftBlocks(spacecraftBlocks),
-//    boosterRocketPrices(boosterRocketPrices),
-//    prePrices(prePrices),
-//    prePricesStartYear(prePricesStartYear),
-//    firstUnitPrices(firstUnitPrices),
-//    firstUnitStartYear(firstUnitStartYear),
-//    lastUnitPrices(lastUnitPrices),
-//    lastUnitStartYear(lastUnitStartYear),
-//    postPrices(postPrices),
-//    postPricesStartYear(postPricesStartYear),
-//    serialPrices(serialPrices),
-//    serialPricesStartYear(serialPricesStartYear)
-//{}
-
-
-
 const QVector<int> &ProjectSet::getEDWLaunchYears() const
 {
     return EDWLaunchYears;
