@@ -93,6 +93,7 @@ QString TabEditCraftModel::addUnitToDB(
     {
         DBSpacecraft newSpacecraft = DBSpacecraft(newUnitId, weight, activeLifetime, physInfo, econInfo);
         db->addSpacecraftToDB(newSpacecraft);
+
     }
     return "db.addUnitToDBRetId(newUnit);";
 }
@@ -217,18 +218,20 @@ void TabEditCraftModel::deleteSpacecraft(int unitId)
     QString unitClass = db->getUnitClassById(unitId);
     if (unitClass=="РН")
     {
-        db->deleteBoosterRocket(unitId);
         db->deleteLaunchByBoosterRocket(unitId);
+        db->deleteBoosterRocket(unitId);
     }
 
     else if (unitClass=="РБ")
     {
-        db->deleteUpperBlock(unitId);
         db->deleteLaunchByUpperBlock(unitId);
+        db->deleteUpperBlock(unitId);
     }
     else if (unitClass=="КА")
+    {
+        db->deleteProjectWithUnitId(unitId);
         db->deleteSpacecraft(unitId);
-    db->deleteProjectWithUnitId(unitId);
+    }
     db->deleteUnit(unitId);
 }
 

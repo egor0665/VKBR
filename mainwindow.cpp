@@ -120,7 +120,7 @@ void MainWindow::showHintMessage(QString text, QString type)
         ui->label_56->setStyleSheet("QLabel {color : red}");
     else if (type == "notification")
         ui->label_56->setStyleSheet("QLabel {color : blue}");
-    else if (type == "notification")
+    else if (type == "text")
         ui->label_56->setStyleSheet("QLabel {color : black}");
     QTimer::singleShot(8000, this, [this] ()
     {
@@ -394,45 +394,50 @@ void MainWindow::rebuildCompareTable(QVector<QString> selectedUnits)
 
 void MainWindow::on_tableWidget_4_cellDoubleClicked(int row, int column)
 {
-    QColor color;
-    if (ui->tableWidget_4->item(row,column)->backgroundColor() == Qt::yellow)
+    qDebug() << row;
+    if (row!=0 && tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,column)->text())!=0)
     {
-        comparator.removeValuesFromComparison(ui->tableWidget_4->item(row,0)->text());
-        color = Qt::white;
-    }
-    else if (ui->tableWidget_4->item(row,column)->backgroundColor() == Qt::green)
-    {
-        comparator.removeValuesFromComparison(ui->tableWidget_4->item(row,0)->text());
-        QVector <qreal> tmpValues;
-        for (int i = 1;i<ui->tableWidget_4->columnCount();i++)
+            QColor color;
+        if (ui->tableWidget_4->item(row,column)->backgroundColor() == Qt::yellow)
         {
-            qreal tmpVal = tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0);
-            if (tmpVal == 0)
-                tmpValues.append(0);
-            else
-                tmpValues.append(1/tmpVal);
+            comparator.removeValuesFromComparison(ui->tableWidget_4->item(row,0)->text());
+            color = Qt::white;
+        }
+        else if (ui->tableWidget_4->item(row,column)->backgroundColor() == Qt::green)
+        {
+            comparator.removeValuesFromComparison(ui->tableWidget_4->item(row,0)->text());
+            QVector <qreal> tmpValues;
+            for (int i = 1;i<ui->tableWidget_4->columnCount();i++)
+            {
+                qreal tmpVal = tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0);
+                if (tmpVal == 0)
+                    tmpValues.append(0);
+                else
+                    tmpValues.append(1/tmpVal);
+            }
+
+            comparator.addValuesToComparison(ui->tableWidget_4->item(row,0)->text(), tmpValues);
+            color = Qt::yellow;
+        }
+        else
+        {
+            QVector <qreal> tmpValues;
+            for (int i = 1;i<ui->tableWidget_4->columnCount();i++)
+                tmpValues.append(tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0));
+            comparator.addValuesToComparison(ui->tableWidget_4->item(row,0)->text(), tmpValues);
+
+            color = Qt::green;
         }
 
-        comparator.addValuesToComparison(ui->tableWidget_4->item(row,0)->text(), tmpValues);
-        color = Qt::yellow;
+        for(int i=0;i<ui->tableWidget_4->columnCount();i++){
+            ui->tableWidget_4->item(row,i)->setBackgroundColor(color);
+        }
+
+        buildChartTable();
+        buildChart();
     }
     else
-    {
-        QVector <qreal> tmpValues;
-        for (int i = 1;i<ui->tableWidget_4->columnCount();i++)
-            tmpValues.append(tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,i)->text(),0));
-        comparator.addValuesToComparison(ui->tableWidget_4->item(row,0)->text(), tmpValues);
-
-        color = Qt::green;
-    }
-
-    for(int i=0;i<ui->tableWidget_4->columnCount();i++){
-        ui->tableWidget_4->item(row,i)->setBackgroundColor(color);
-    }
-    tabCatalogAndComparisonModel.getNumberFromString(ui->tableWidget_4->item(row,column)->text());
-    buildChartTable();
-    buildChart();
-
+        showHintMessage("Нельзя сравнивать строки не содержащие числовых значений", "text");
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -776,106 +781,115 @@ void MainWindow::on_pushButton_4_clicked()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    int maxPayload = 0;
-    int minPayload = 0;
-    qreal weight = 0;
-    qreal activeLifetime = 0;
-    QString physInfo = "";
-    QString econInfo = "";
-    QString unitClass = ui->comboBoxUnitClass->currentText();
-    if (unitClass == "РН")
+    if (ui->lineEditUnitName->text()!="")
     {
-        maxPayload = maxPayloadField->value();
-        minPayload = minPayloadField->value();
-        econInfo = econInfoField->toPlainText();
-        physInfo = physInfoField->toPlainText();
-    }
-    else if (unitClass == "РБ")
-    {
-        econInfo = econInfoField->toPlainText();
-        physInfo = physInfoField->toPlainText();
-    }
-    else if (unitClass == "КА")
-    {
-        weight = weightField->value();
-        activeLifetime = activeLifetimeField->value();
-        econInfo = econInfoField->toPlainText();
-        physInfo = physInfoField->toPlainText();
-    }
-    QByteArray image;
-    QBuffer buffer(&image);
-    buffer.open(QBuffer::WriteOnly);
-    QImage(ui->labelUnitImageURL->text()).save(&buffer, "PNG");
+        int maxPayload = 0;
+        int minPayload = 0;
+        qreal weight = 0;
+        qreal activeLifetime = 0;
+        QString physInfo = "";
+        QString econInfo = "";
+        QString unitClass = ui->comboBoxUnitClass->currentText();
+        if (unitClass == "РН")
+        {
+            maxPayload = maxPayloadField->value();
+            minPayload = minPayloadField->value();
+            econInfo = econInfoField->toPlainText();
+            physInfo = physInfoField->toPlainText();
+        }
+        else if (unitClass == "РБ")
+        {
+            econInfo = econInfoField->toPlainText();
+            physInfo = physInfoField->toPlainText();
+        }
+        else if (unitClass == "КА")
+        {
+            weight = weightField->value();
+            activeLifetime = activeLifetimeField->value();
+            econInfo = econInfoField->toPlainText();
+            physInfo = physInfoField->toPlainText();
+        }
+        QByteArray image;
+        QBuffer buffer(&image);
+        buffer.open(QBuffer::WriteOnly);
+        QImage(ui->labelUnitImageURL->text()).save(&buffer, "PNG");
 
-    QString unitName = ui->lineEditUnitName->text();
-    if (ui->label_53->text().toInt() == -1)
-    {            
-        tabNewCraftModel.addUnitToDB(
-                    ui->comboBoxUnitClass->currentText(),
-                    ui->lineEditUnitName->text(),
-                    ui->textEditUnitPurpose->toPlainText(),
-                    ui->comboBoxUnitProject->currentText(),
-                    ui->textEditUnitObjective->toPlainText(),
-                    ui->lineEditUnitWorkStatus->text(),
-                    ui->comboBoxUnitDeveloperId->currentText(),
-                    ui->comboBoxUnitExtraDeveloperId->currentText(),
-                    ui->comboBoxUnitManufacturerId->currentText(),
-                    ui->spinBoxUnitLaunches->value(),
-                    ui->comboBoxUnitCustomer->currentText(),
-                    ui->spinBoxUnitSuccessfulLaunches->value(),
-                    ui->dateTimeEditFirstLaunch->dateTime(),
-                    ui->comboBoxUnitFirstLaunchSpaceport->currentText(),
-                    ui->lineEditFinancingType->text(),
-                    ui->lineEditControlSystem->text(),
-                    image.toBase64(),
-                    ui->doubleSpinBoxUnitPrice->value(),
-                    ui->spinBoxUnitPriceYear->value(),
-                    maxPayload,
-                    minPayload,
-                    weight,
-                    activeLifetime,
-                    econInfo,
-                    physInfo);
-        QString projectName = projectNameField->text();
-        if (projectName == "")
-            projectName = ui->lineEditUnitName->text();
-        tabNewProjectModel.addProjectToDB(projectName,projectTypeComboBox->currentText(),unitName);
-        rebuildTabs();
-        ui->comboBox_10->setCurrentIndex(ui->comboBox_10->findText(unitName));
-        showHintMessage("Аппарат добавлен в базу данных", "notification");
+        QString unitName = ui->lineEditUnitName->text();
+        if (ui->label_53->text().toInt() == -1)
+        {
+            tabNewCraftModel.addUnitToDB(
+                        ui->comboBoxUnitClass->currentText(),
+                        ui->lineEditUnitName->text(),
+                        ui->textEditUnitPurpose->toPlainText(),
+                        ui->comboBoxUnitProject->currentText(),
+                        ui->textEditUnitObjective->toPlainText(),
+                        ui->lineEditUnitWorkStatus->text(),
+                        ui->comboBoxUnitDeveloperId->currentText(),
+                        ui->comboBoxUnitExtraDeveloperId->currentText(),
+                        ui->comboBoxUnitManufacturerId->currentText(),
+                        ui->spinBoxUnitLaunches->value(),
+                        ui->comboBoxUnitCustomer->currentText(),
+                        ui->spinBoxUnitSuccessfulLaunches->value(),
+                        ui->dateTimeEditFirstLaunch->dateTime(),
+                        ui->comboBoxUnitFirstLaunchSpaceport->currentText(),
+                        ui->lineEditFinancingType->text(),
+                        ui->lineEditControlSystem->text(),
+                        image.toBase64(),
+                        ui->doubleSpinBoxUnitPrice->value(),
+                        ui->spinBoxUnitPriceYear->value(),
+                        maxPayload,
+                        minPayload,
+                        weight,
+                        activeLifetime,
+                        econInfo,
+                        physInfo);
+            if (unitClass == "КА")
+            {
+                QString projectName = projectNameField->text();
+                if (projectName == "")
+                    projectName = ui->lineEditUnitName->text();
+                tabNewProjectModel.addProjectToDB(projectName,projectTypeComboBox->currentText(),unitName);
+            }
+
+            rebuildTabs();
+            ui->comboBox_10->setCurrentIndex(ui->comboBox_10->findText(unitName));
+            showHintMessage("Аппарат добавлен в базу данных", "notification");
+        }
+        else
+        {
+            tabNewCraftModel.updateUnitDB(
+                        ui->label_53->text().toInt(),
+                        ui->comboBoxUnitClass->currentText(),
+                        ui->lineEditUnitName->text(),
+                        ui->textEditUnitPurpose->toPlainText(),
+                        ui->comboBoxUnitProject->currentText(),
+                        ui->textEditUnitObjective->toPlainText(),
+                        ui->lineEditUnitWorkStatus->text(),
+                        ui->comboBoxUnitDeveloperId->currentText(),
+                        ui->comboBoxUnitExtraDeveloperId->currentText(),
+                        ui->comboBoxUnitManufacturerId->currentText(),
+                        ui->spinBoxUnitLaunches->value(),
+                        ui->comboBoxUnitCustomer->currentText(),
+                        ui->spinBoxUnitSuccessfulLaunches->value(),
+                        ui->dateTimeEditFirstLaunch->dateTime(),
+                        ui->comboBoxUnitFirstLaunchSpaceport->currentText(),
+                        ui->lineEditFinancingType->text(),
+                        ui->lineEditControlSystem->text(),
+                        image.toBase64(),
+                        ui->doubleSpinBoxUnitPrice->value(),
+                        ui->spinBoxUnitPriceYear->value(),
+                        maxPayload,
+                        minPayload,
+                        weight,
+                        activeLifetime,
+                        econInfo,
+                        physInfo);
+            showHintMessage("Данные об аппарате обновлены", "notification");
+        }
+        tabNewCraftModel.setUpdateUnitImageChanged(false);
     }
     else
-    {
-        tabNewCraftModel.updateUnitDB(
-                    ui->label_53->text().toInt(),
-                    ui->comboBoxUnitClass->currentText(),
-                    ui->lineEditUnitName->text(),
-                    ui->textEditUnitPurpose->toPlainText(),
-                    ui->comboBoxUnitProject->currentText(),
-                    ui->textEditUnitObjective->toPlainText(),
-                    ui->lineEditUnitWorkStatus->text(),
-                    ui->comboBoxUnitDeveloperId->currentText(),
-                    ui->comboBoxUnitExtraDeveloperId->currentText(),
-                    ui->comboBoxUnitManufacturerId->currentText(),
-                    ui->spinBoxUnitLaunches->value(),
-                    ui->comboBoxUnitCustomer->currentText(),
-                    ui->spinBoxUnitSuccessfulLaunches->value(),
-                    ui->dateTimeEditFirstLaunch->dateTime(),
-                    ui->comboBoxUnitFirstLaunchSpaceport->currentText(),
-                    ui->lineEditFinancingType->text(),
-                    ui->lineEditControlSystem->text(),
-                    image.toBase64(),
-                    ui->doubleSpinBoxUnitPrice->value(),
-                    ui->spinBoxUnitPriceYear->value(),
-                    maxPayload,
-                    minPayload,
-                    weight,
-                    activeLifetime,
-                    econInfo,
-                    physInfo);
-        showHintMessage("Данные об аппарате обновлены", "notification");
-    }
-    tabNewCraftModel.setUpdateUnitImageChanged(false);
+        showHintMessage("Нельзя создать аппарат без названия", "error");
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -950,36 +964,46 @@ void MainWindow::buildAddExtrasTab()
 
 void MainWindow::on_pushButton_5_clicked()
 {
-    if(ui->label_10->text()=="-1")
+    if (ui->lineEdit_6->text()!="")
     {
-        tabNewExtrasModel.addOrganizationToDB(ui->lineEdit_6->text());
-        showHintMessage("Организация добавлена в базу данных", "notification");
+        if(ui->label_10->text()=="-1")
+        {
+            tabNewExtrasModel.addOrganizationToDB(ui->lineEdit_6->text());
+            showHintMessage("Организация добавлена в базу данных", "notification");
+        }
+        else
+        {
+            tabNewExtrasModel.updateOrganizationDB(ui->label_10->text().toInt(), ui->lineEdit_6->text());
+            showHintMessage("Данные об организации обновлены", "notification");
+        }
+        QString name = ui->lineEdit_6->text();
+        rebuildTabs();
+        ui->comboBox->setCurrentIndex(ui->comboBox->findText(name));
     }
     else
-    {
-        tabNewExtrasModel.updateOrganizationDB(ui->label_10->text().toInt(), ui->lineEdit_6->text());
-        showHintMessage("Данные об организации обновлены", "notification");
-    }
-    QString name = ui->lineEdit_6->text();
-    rebuildTabs();
-    ui->comboBox->setCurrentIndex(ui->comboBox->findText(name));
+        showHintMessage("Нельзя создать организацию без названия", "error");
 }
 
 void MainWindow::on_pushButton_6_clicked()
 {
-     if(ui->label_9->text()=="-1")
-     {
-         tabNewExtrasModel.addSpaceportToDB(ui->lineEdit_7->text());
-         showHintMessage("Космодром добавлен в базу данных", "notification");
-     }
-     else
-     {
-         tabNewExtrasModel.updateSpaceportDB(ui->label_9->text().toInt(), ui->lineEdit_7->text());
-         showHintMessage("Данные о космодроме обновлены", "notification");
-     }
-     QString name = ui->lineEdit_7->text();
-     rebuildTabs();
-     ui->comboBox_2->setCurrentIndex(ui->comboBox_2->findText(name));
+    if (ui->lineEdit_7->text()!="")
+    {
+        if(ui->label_9->text()=="-1")
+        {
+            tabNewExtrasModel.addSpaceportToDB(ui->lineEdit_7->text());
+            showHintMessage("Космодром добавлен в базу данных", "notification");
+        }
+        else
+        {
+            tabNewExtrasModel.updateSpaceportDB(ui->label_9->text().toInt(), ui->lineEdit_7->text());
+            showHintMessage("Данные о космодроме обновлены", "notification");
+        }
+        QString name = ui->lineEdit_7->text();
+        rebuildTabs();
+        ui->comboBox_2->setCurrentIndex(ui->comboBox_2->findText(name));
+    }
+    else
+        showHintMessage("Нельзя создать космодром без названия", "error");
 }
 
 void MainWindow::on_comboBox_6_currentIndexChanged(const QString &arg1)
@@ -1023,7 +1047,14 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
     }
 }
 
-
+void MainWindow::on_tableWidget_9_cellChanged(int row, int column)
+{
+    QRegExp number("\\d*");
+    if (!number.exactMatch(ui->tableWidget_9->item(row,column)->text()))
+    {
+        ui->tableWidget_9->item(row,column)->setText("0");
+    }
+}
 
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 {
@@ -1122,6 +1153,7 @@ void MainWindow::on_pushButton_18_clicked()
        values.append(QPair<int,qreal>(2023+i, ui->tableWidget_10->item(0,i)->text().toDouble()));
    }
    tabNewExtrasModel.updateInflation(values);
+   showHintMessage("Показатели инфляции обновлены", "notification");
 }
 //===============================================================================================================================================
 //
@@ -1181,6 +1213,16 @@ void MainWindow::on_pushButton_11_clicked()
     tabNewProjectModel.updateProjectInfo(ui->comboBox_5->currentText(), pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices);
     showHintMessage("Данные о проекте обновлены", "notification");
 }
+
+void MainWindow::on_tableWidget_7_cellChanged(int row, int column)
+{
+    QRegExp number("\\d*");
+    if (!number.exactMatch(ui->tableWidget_7->item(row,column)->text()))
+    {
+        ui->tableWidget_7->item(row,column)->setText("0");
+    }
+}
+
 
 //===============================================================================================================================================
 //
@@ -1705,24 +1747,35 @@ void MainWindow::on_comboBox_4_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_pushButton_21_clicked()
 {
-    if(ui->label_55->text()=="-1")
-        tabEditUserModel.addUserToDB(ui->lineEdit_3->text(), ui->comboBox_9->currentText(), ui->lineEdit_4->text());
+    if (ui->lineEdit_3->text()!="" && ui->lineEdit_4->text()!="")
+    {
+        if(ui->label_55->text()=="-1")
+            tabEditUserModel.addUserToDB(ui->lineEdit_3->text(), ui->comboBox_9->currentText(), ui->lineEdit_4->text());
+        else
+            tabEditUserModel.updateUserDB(ui->label_55->text().toInt(), ui->lineEdit_3->text(), ui->comboBox_9->currentText(), ui->lineEdit_4->text());
+        QString name = ui->lineEdit_3->text();
+        buildEditUsersTab();
+        ui->comboBox_4->setCurrentIndex(ui->comboBox_4->findText(name));
+    }
     else
-        tabEditUserModel.updateUserDB(ui->label_55->text().toInt(), ui->lineEdit_3->text(), ui->comboBox_9->currentText(), ui->lineEdit_4->text());
-    QString name = ui->lineEdit_3->text();
-    buildEditUsersTab();
-    ui->comboBox_4->setCurrentIndex(ui->comboBox_4->findText(name));
+        showHintMessage("Нельзя создать пользователя без имени или пароля", "error");
 }
 
 void MainWindow::on_pushButton_22_clicked()
 {
-    if (tabEditUserModel.getUserById(tabEditUserModel.getUserIdByName(ui->comboBox_4->currentText())).role() == "Администратор" && tabEditUserModel.lastAdmin())
-        showHintMessage("Невозможно удалить единственного пользователя с ролью Администратор", "error");
-    else
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Удалить пользователя","Вы действительно хотите удалить пользователя?", QMessageBox::Yes|QMessageBox::Cancel);
+    if (reply == QMessageBox::Yes)
     {
-        tabEditUserModel.deleteUserFromDB(ui->label_55->text().toInt());
-        buildEditUsersTab();
+        if (ui->label_51->text().mid(0,ui->label_51->text().indexOf(',')) == ui->comboBox_4->currentText())
+            showHintMessage("Невозможно удалить аккаунт, с которого осуществляется доступ", "error");
+        else
+        {
+            tabEditUserModel.deleteUserFromDB(ui->label_55->text().toInt());
+            buildEditUsersTab();
+        }
     }
+
 }
 
 //===============================================================================================================================================
