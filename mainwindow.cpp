@@ -504,8 +504,6 @@ void MainWindow::buildChart()
     if (!comparator.isEmpty())
     {
         QPair<qreal,qreal> minMax = comparator.getMinMax();
-        const qreal angularMin = 1;
-        const qreal angularMax = 10;
 
         const qreal radialMin = 0;
         const qreal radialMax = minMax.second;
@@ -516,11 +514,10 @@ void MainWindow::buildChart()
         chart->setTitle("Сравнение аппаратов");
 
         QValueAxis *angularAxis = new QValueAxis();
-        angularAxis->setTickCount(0);
         angularAxis->setLabelFormat("%d");
         angularAxis->setShadesVisible(true);
         angularAxis->setShadesBrush(QBrush(QColor(249, 249, 255)));
-        angularAxis->setMax(comparator.getValues().length()+1);
+        angularAxis->setMax(comparator.getValues().length()+2);
         angularAxis->setMin(1);
         angularAxis->setTickCount(comparator.compareValues().length());
         chart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
@@ -531,21 +528,19 @@ void MainWindow::buildChart()
         radialAxis->setMax(radialMax);
         radialAxis->setMin(radialMin);
         chart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
-        //chart->setAnimationOptions(QChart::SeriesAnimations);
         for (int i=0;i<seriesSummary.length();i++)
         {
             qDebug() << seriesSummary[i];
             chart->addSeries(seriesSummary[i]);
         }
-
-        // ВТОРОЙ ГРАФИК
         chart->legend()->setAlignment(Qt::AlignRight);
         ui->widget->setChart(chart);
+        // ВТОРОЙ ГРАФИК
+
 
         QChart *chart2 = new QChart();
         chart2->addSeries(tabCatalogAndComparisonModel.createChartBarSeries(comparator.unitNames().length(), comparator.compareValues(), comparator.unitNames()));
         chart2->setTitle("Сравнение аппаратов");
-        //chart2->setAnimationOptions(QChart::SeriesAnimations);
         QStringList categories;
 
         for (int i=0;i<ui->tableWidget_5->rowCount();i++)
@@ -841,8 +836,8 @@ void MainWindow::on_pushButton_2_clicked()
                         minPayload,
                         weight,
                         activeLifetime,
-                        econInfo,
-                        physInfo);
+                        physInfo,
+                        econInfo);
             if (unitClass == "КА")
             {
                 QString projectName = projectNameField->text();
@@ -882,8 +877,8 @@ void MainWindow::on_pushButton_2_clicked()
                         minPayload,
                         weight,
                         activeLifetime,
-                        econInfo,
-                        physInfo);
+                        physInfo,
+                        econInfo);
             showHintMessage("Данные об аппарате обновлены", "notification");
         }
         tabNewCraftModel.setUpdateUnitImageChanged(false);

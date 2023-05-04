@@ -269,6 +269,7 @@ QVector <QLineSeries*> TabCatalogAndComparisonModel::createChartLineSeries(int u
             series->append(j, compareValues[j]._values[i]);
             qDebug() << j<< compareValues[j]._values[i];
         }
+        //series->append(compNum+1, compareValues[0]._values[i]);
         qDebug() << 0 << compareValues[0]._values[i];
         seriesSummary.append(series);
     }
