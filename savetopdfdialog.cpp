@@ -246,3 +246,21 @@ void SaveToPdfDialog::on_tabWidget_tabCloseRequested(int index)
     ui->tabWidget->removeTab(index);
 }
 
+
+void SaveToPdfDialog::on_spinBox_valueChanged(int arg1)
+{
+    if (arg1>ui->spinBox_2->value())
+    {
+        ui->spinBox->setValue(ui->spinBox_2->value());
+    }
+}
+
+
+void SaveToPdfDialog::on_spinBox_2_valueChanged(int arg1)
+{
+    if (arg1<ui->spinBox->value())
+    {
+        ui->spinBox_2->setValue(ui->spinBox->value());
+    }
+}
+

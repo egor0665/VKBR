@@ -30,6 +30,10 @@ private slots:
 
     void on_tabWidget_tabCloseRequested(int index);
 
+    void on_spinBox_valueChanged(int arg1);
+
+    void on_spinBox_2_valueChanged(int arg1);
+
 private:
     Ui::SaveToPdfDialog *ui;
 };

@@ -254,7 +254,8 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
         //---------------------
         QPixmap image;
         image.loadFromData(QByteArray::fromBase64(tabCatalogAndComparisonModel.getUnitImageFromId(unitId).toUtf8()), "PNG");
-        ui->label->setPixmap(image);
+        int size = ui->tableWidget_2->width()/3;
+        ui->label->setPixmap(image.scaled(size,size,Qt::KeepAspectRatio));
     }
 }
 void MainWindow::on_pushButton_23_clicked()
@@ -925,26 +926,28 @@ void MainWindow::buildAddExtrasTab()
     ui->comboBox_8->clear();
     ui->tableWidget_10->clear();
     ui->tableWidget_10->setRowCount(0);
-    ui->tableWidget_10->setColumnCount(18); // Указываем число колонок
+    ui->tableWidget_10->setColumnCount(17); // Указываем число колонок
     ui->tableWidget_10->setShowGrid(true); // Включаем сетку
     ui->tableWidget_10->setSelectionMode(QAbstractItemView::NoSelection);
-    ui->tableWidget_10->setHorizontalHeaderLabels({"","2024","2025","2026","2027","2028","2029","2030","2031","2032","2033","2034","2035","2036","2037","2038","2039","2040"});
+    ui->tableWidget_10->setHorizontalHeaderLabels({"2024","2025","2026","2027","2028","2029","2030","2031","2032","2033","2034","2035","2036","2037","2038","2039","2040"});
     ui->tableWidget_10->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_10->insertRow(0);
-    ui->tableWidget_10->setItem(0, 0,  new QTableWidgetItem("Проценты"));
+    ui->tableWidget_10->setVerticalHeaderLabels({"Проценты"});
+    //ui->tableWidget_10->setItem(0, 0,  new QTableWidgetItem("Проценты"));
     QVector<qreal> inflation = tabNewExtrasModel.getInflation();
     for (int i=0;i<inflation.length();i++)
-        ui->tableWidget_10->setItem(0,i+1,new QTableWidgetItem(QString::number(inflation[i])));
+        ui->tableWidget_10->setItem(0,i,new QTableWidgetItem(QString::number(inflation[i])));
 
     ui->tableWidget_9->clear();
     ui->tableWidget_9->setRowCount(0);
-    ui->tableWidget_9->setColumnCount(18); // Указываем число колонок
+    ui->tableWidget_9->setColumnCount(17); // Указываем число колонок
     ui->tableWidget_9->setShowGrid(true); // Включаем сетку
     ui->tableWidget_9->setSelectionMode(QAbstractItemView::NoSelection);
-    ui->tableWidget_9->setHorizontalHeaderLabels({"","2024","2025","2026","2027","2028","2029","2030","2031","2032","2033","2034","2035","2036","2037","2038","2039","2040"});
+    ui->tableWidget_9->setHorizontalHeaderLabels({"2024","2025","2026","2027","2028","2029","2030","2031","2032","2033","2034","2035","2036","2037","2038","2039","2040"});
     ui->tableWidget_9->horizontalHeader()->setStretchLastSection(true);
     ui->tableWidget_9->insertRow(0);
-    ui->tableWidget_9->setItem(0, 0,  new QTableWidgetItem("Цены"));
+    ui->tableWidget_9->setVerticalHeaderLabels({"Цены"});
+//    ui->tableWidget_9->setItem(0, 0,  new QTableWidgetItem("Цены"));
 
     ui->comboBox_6->addItems(tabNewExtrasModel.getUnitNamesByTypeStringList("РН"));
     ui->comboBox_7->addItems(tabNewExtrasModel.getUnitNamesByTypeStringList("РБ"));
@@ -1034,9 +1037,9 @@ void MainWindow::rebuildEditLaunchTable(QString boosterRocket, QString upperBloc
         else
             ui->checkBox->setCheckState(Qt::Unchecked);
         QVector<qreal> prices = tabNewExtrasModel.pricesToVector(currentLaunch.prices());
-        for (int i=1;i<ui->tableWidget_9->columnCount();i++)
+        for (int i=0;i<ui->tableWidget_9->columnCount();i++)
         {
-            ui->tableWidget_9->setItem(0, i,  new QTableWidgetItem(QString::number(prices[i-1])));
+            ui->tableWidget_9->setItem(0, i,  new QTableWidgetItem(QString::number(prices[i])));
         }
 
     }
@@ -1123,7 +1126,7 @@ void MainWindow::on_pushButton_12_clicked()
     QString spaceportName = ui->comboBox_8->currentText();
     int priceYear = ui->spinBox_2->value();
     QString prices = "";
-    for (int i=1;i<ui->tableWidget_9->columnCount();i++)
+    for (int i=0;i<ui->tableWidget_9->columnCount();i++)
     {
         prices += ui->tableWidget_9->item(0,i)->text() + ";";
     }
@@ -1143,9 +1146,9 @@ void MainWindow::on_pushButton_12_clicked()
 void MainWindow::on_pushButton_18_clicked()
 {
    QVector<QPair<int,qreal>> values;
-   for (int i=1;i<ui->tableWidget_10->columnCount();i++)
+   for (int i=0;i<ui->tableWidget_10->columnCount();i++)
    {
-       values.append(QPair<int,qreal>(2023+i, ui->tableWidget_10->item(0,i)->text().toDouble()));
+       values.append(QPair<int,qreal>(2024+i, ui->tableWidget_10->item(0,i)->text().toDouble()));
    }
    tabNewExtrasModel.updateInflation(values);
    showHintMessage("Показатели инфляции обновлены", "notification");
@@ -1163,10 +1166,10 @@ void MainWindow::buildEditProjectTab()
     ui->tableWidget_7->clearContents();
     ui->tableWidget_7->setRowCount(0);
 
-    ui->tableWidget_7->setColumnCount(18); // Указываем число колонок
+    ui->tableWidget_7->setColumnCount(17); // Указываем число колонок
     ui->tableWidget_7->setShowGrid(true); // Включаем сетку
     ui->tableWidget_7->setSelectionMode(QAbstractItemView::NoSelection);
-    ui->tableWidget_7->setHorizontalHeaderLabels({"","2024","2025","2026","2027","2028","2029","2030","2031","2032","2033","2034","2035","2036","2037","2038","2039","2040"});
+    ui->tableWidget_7->setHorizontalHeaderLabels({"2024","2025","2026","2027","2028","2029","2030","2031","2032","2033","2034","2035","2036","2037","2038","2039","2040"});
     ui->tableWidget_7->horizontalHeader()->setStretchLastSection(true);
     //ui->tableWidget_6->setEditTriggers(QTableWidget::NoEditTriggers);
 
@@ -1176,11 +1179,12 @@ void MainWindow::buildEditProjectTab()
     ui->tableWidget_7->insertRow(rowCount+2);
     ui->tableWidget_7->insertRow(rowCount+3);
     ui->tableWidget_7->insertRow(rowCount+4);
-    ui->tableWidget_7->setItem(rowCount, 0,  new QTableWidgetItem("ЭП, КД, Макет, испытания"));
-    ui->tableWidget_7->setItem(rowCount+1, 0,  new QTableWidgetItem("Создание первого ОКР КА"));
-    ui->tableWidget_7->setItem(rowCount+2, 0,  new QTableWidgetItem("Создание последнего ОКР КА"));
-    ui->tableWidget_7->setItem(rowCount+3, 0,  new QTableWidgetItem("НЭО, документация"));
-    ui->tableWidget_7->setItem(rowCount+4, 0,  new QTableWidgetItem("Создание серийного образца"));
+    ui->tableWidget_7->setVerticalHeaderLabels({"ЭП, КД, Макет, испытания", "Создание первого ОКР КА", "Создание последнего ОКР КА", "НЭО, документация", "Создание серийного образца"});
+//                                               Item(rowCount, 0,  new QTableWidgetItem());
+//    ui->tableWidget_7->setItem(rowCount+1, 0,  new QTableWidgetItem());
+//    ui->tableWidget_7->setItem(rowCount+2, 0,  new QTableWidgetItem());
+//    ui->tableWidget_7->setItem(rowCount+3, 0,  new QTableWidgetItem());
+//    ui->tableWidget_7->setItem(rowCount+4, 0,  new QTableWidgetItem());
     ui->comboBox_5->addItems(model.getNamesFromTableStringList("project"));
 }
 
@@ -1188,8 +1192,8 @@ void MainWindow::on_comboBox_5_currentIndexChanged(const QString &arg1)
 {
     QVector<QVector<qreal>> prices = tabNewProjectModel.getProjectPricesFromName(arg1);
     for (int i=0;i<5; i++){
-        for (int j=1;j<prices[i].length();j++){
-            ui->tableWidget_7->setItem(i, j, new QTableWidgetItem(QString::number(prices[i][j-1])));
+        for (int j=0;j<ui->tableWidget_7->columnCount();j++){
+            ui->tableWidget_7->setItem(i, j, new QTableWidgetItem(QString::number(prices[i][j])));
         }
     }
 }
@@ -1197,7 +1201,7 @@ void MainWindow::on_comboBox_5_currentIndexChanged(const QString &arg1)
 void MainWindow::on_pushButton_11_clicked()
 {
     QVector<qreal> pre_prices, first_unit_prices, last_unit_prices, post_prices, serial_prices;
-    for (int i=1;i<ui->tableWidget_7->columnCount();i++)
+    for (int i=0;i<ui->tableWidget_7->columnCount();i++)
     {
         pre_prices.append(ui->tableWidget_7->item(0,i)->text().toDouble());
         first_unit_prices.append(ui->tableWidget_7->item(1,i)->text().toDouble());
